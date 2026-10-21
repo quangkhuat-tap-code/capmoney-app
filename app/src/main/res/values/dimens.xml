@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Khoảng cách lề Spacing / Padding -->
+    <dimen name="spacing_tiny">4dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_large">24dp</dimen>
+
+    <!-- Độ bo góc Card & Nút -->
+    <dimen name="corner_radius_small">12dp</dimen>
+    <dimen name="corner_radius_card">20dp</dimen>
+    <dimen name="corner_radius_pill">50dp</dimen>
+
+    <!-- Cỡ chữ Font size -->
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_body">14sp</dimen>
+    <dimen name="text_size_title">18sp</dimen>
+    <dimen name="text_size_money_large">32sp</dimen>
+</resources>
