@@ -18,7 +18,7 @@ Ký hiệu trạng thái:
 
 | Phần | Người | Nội dung | Nhánh (cả 2 repo) | BE | FE | Ghi chú |
 |---|---|---|---|---|---|---|
-| Phần 1 | **Lâm Anh** | Chụp ảnh ghi chi tiêu, Tab Home (lưới + lịch), API giao dịch, API danh mục | `lamanh` | ✅ 5/5 | ✅ 7/7 code xong | PR app đang mở; còn PR backend, test trên máy |
+| Phần 1 | **Lâm Anh** | Chụp ảnh ghi chi tiêu, Tab Home (lưới + lịch), API giao dịch, API danh mục | `lamanh` | ✅ 5/5 | ✅ 7/7 code xong, đã test | PR app đang mở; còn PR backend, test lại với API ví thật |
 | Phần 2 | **Trung** | Đăng nhập/đăng ký, Tab Tài khoản (ví, chuyển tiền), Tab Cá nhân | `feature/wallets-auth` | ⬜ 0/4 | ⏳ 0/6 | **BE-3 (`GET /api/wallets`) đang chặn Lâm Anh** |
 | Phần 3 | **Quang** | Tab Thống kê (donut), Tab Ngân sách, cache offline Room | `feature/stats-budget` | ⬜ 0/2 | ⏳ 0/5 | |
 
@@ -32,7 +32,7 @@ Lâm Anh: PR app lamanh → develop ─────────┬──► Trun
 Lâm Anh: PR backend lamanh → develop ─────────► Trung, Quang có README + multer mới
   (không chặn ai: develop backend đã có API Phần 1)
 
-Trung: BE-3 GET /api/wallets ─────────────────► Lâm Anh test được màn chụp ảnh + nghiệm thu
+Trung: BE-3 GET /api/wallets ─────────────────► Lâm Anh test lại màn chụp ảnh với API thật + nghiệm thu
 Trung: AN-3 màn Đăng nhập làm màn mở app ──────► Cả nhóm bỏ dòng DEV ONLY, đăng nhập thật để test
 ```
 
@@ -64,10 +64,12 @@ Trung: AN-3 màn Đăng nhập làm màn mở app ──────► Cả nh�
 | A-4 | Tab Home dạng lưới ảnh | ✅ | — | Commit `f47ba66` |
 | A-5 | Tab Home dạng lịch | ✅ | — | Commit `cbb726c` |
 | A-6 | Chi tiết và xoá giao dịch | ✅ | — | Commit `b7e0017` |
-| A-T1 | Test Tab Home trên emulator (H1–H15) | ⬜ | — | Dùng token dev, không cần chờ ai |
-| A-PR | Push `lamanh` + PR `lamanh` → `develop` | 🔄 | — | Đã push, PR **đang mở**, chờ duyệt và merge. **Trung, Quang chờ PR này** để bắt đầu FE. Đã bỏ hết dòng co-author trong 7 commit |
-| A-T2 | Test màn chụp ảnh (C1–C15) | ⏳ | Trung BE-3 | Cần `GET /api/wallets` |
-| A-T3 | Nghiệm thu toàn luồng (7 bước, file 06 mục 4) | ⏳ | Trung BE-3 | |
+| A-7 | `.gitignore` bỏ qua `.env` và `/doc/` | ✅ | — | Commit `5b5b616` |
+| A-T1 | Test Tab Home trên emulator (H1–H15) | ✅ | — | Xong 24/10/2026, dùng token dev. Không phát sinh lỗi, không cần commit sửa |
+| A-PR | Push `lamanh` + PR `lamanh` → `develop` | 🔄 | — | Đã push, PR **đang mở**, chờ duyệt và merge. **Trung, Quang chờ PR này** để bắt đầu FE. Đã bỏ hết dòng co-author trong 8 commit |
+| A-T2 | Test màn chụp ảnh (C1–C15) bằng **route giả** `/api/wallets` | ✅ | — | 14/15 đạt, 0 lỗi. C15 (ảnh camera 12MP) chưa test được trên emulator. Route giả đã xoá, không commit |
+| A-T2b | Test lại màn chụp ảnh với `GET /api/wallets` **thật** | ⏳ | Trung BE-3 | Chạy lại C1, C6, C9, C10 + thử C15 trên điện thoại thật |
+| A-T3 | Nghiệm thu toàn luồng (7 bước, file 06 mục 4) | ⏳ | Trung BE-3 | Bước 4 cần `GET /api/wallets` thật để xem số dư ví |
 
 ---
 
@@ -130,7 +132,7 @@ Màn Đăng nhập của Trung **không** chặn Quang: test bằng token dev (H
 |---|---|---|
 | **Lâm Anh** | A-PR: nhờ duyệt và merge PR app `lamanh` → `develop` (đã mở) | Trung và Quang chưa bắt đầu FE được khi `develop` app chưa có Phần 1 |
 | **Lâm Anh** | B-PR: PR backend `lamanh` → `develop` | Cả nhóm có README + `multer@2` |
-| **Lâm Anh** | A-T1: test Tab Home H1–H15 | Không phụ thuộc ai |
+| **Lâm Anh** | Báo Trung khi `GET /api/wallets` xong thì nhắn để test lại màn chụp (A-T2b, A-T3) | Màn chụp mới test bằng route giả |
 | **Trung** | BE-1 → BE-2 → BE-3 → BE-4, rồi push + PR backend | BE-3 mở khoá test màn chụp ảnh của Lâm Anh |
 | **Quang** | BE-1 → BE-2, rồi push + PR backend | Không phụ thuộc ai |
 
@@ -142,3 +144,4 @@ Màn Đăng nhập của Trung **không** chặn Quang: test bằng token dev (H
 |---|---|---|
 | 24/10/2026 | Lâm Anh | Tạo file. Phần 1: BE xong 5/5, FE code xong 7/7. Phần 2, 3 chưa bắt đầu |
 | 24/10/2026 | Lâm Anh | Phần 1: đã push `lamanh` app (commit đã bỏ dòng co-author, mã commit mới), mở PR app vào `develop` |
+| 24/10/2026 | Lâm Anh | Phần 1: test xong Tab Home H1–H15; màn chụp C1–C15 đạt 14/15 bằng route giả (C15 chưa test được). Thêm `.env`, `/doc/` vào `.gitignore` (`5b5b616`) |
