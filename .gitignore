@@ -14,3 +14,6 @@
 .cxx
 local.properties
 .idea/
+.env
+# Tai lieu noi bo
+/doc/

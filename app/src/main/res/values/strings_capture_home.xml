@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- CaptureExpenseActivity strings -->
+    <string name="capture_title">Ghi chi tiêu</string>
+    <string name="capture_close">Đóng</string>
+    <string name="capture_take_photo">📷 Chụp ảnh</string>
+    <string name="capture_pick_photo">🖼️ Chọn từ thư viện</string>
+    <string name="capture_change_photo">Đổi ảnh</string>
+    <string name="capture_remove_photo">Xóa ảnh</string>
+    <string name="capture_type_expense">Chi tiêu</string>
+    <string name="capture_type_income">Thu nhập</string>
+    <string name="capture_choose_category">Chọn danh mục</string>
+    <string name="capture_choose_wallet">Chọn ví</string>
+    <string name="capture_note_hint">Ghi chú (không bắt buộc)</string>
+    <string name="capture_save">Lưu</string>
+    <string name="capture_saved">Đã lưu giao dịch</string>
+    <string name="capture_err_amount">Vui lòng nhập số tiền</string>
+    <string name="capture_err_wallet">Vui lòng chọn ví</string>
+    <string name="capture_err_category">Vui lòng chọn danh mục</string>
+    <string name="capture_err_balance">Số dư ví không đủ (còn %1$s)</string>
+    <string name="capture_err_no_wallet">Bạn chưa có ví nào. Hãy tạo ví ở tab Tài khoản</string>
+    <string name="capture_err_no_camera">Không tìm thấy ứng dụng camera trên máy</string>
+    <string name="capture_err_image">Không xử lý được ảnh, hãy chọn ảnh khác</string>
+    <string name="capture_error_network">Không kết nối được máy chủ. Kiểm tra mạng và thử lại</string>
+    <string name="capture_error_unauthorized">Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại</string>
+    <string name="capture_error_unknown">Đã có lỗi xảy ra, vui lòng thử lại</string>
+    <string name="capture_retry">Thử lại</string>
+    <string name="capture_discard_title">Bỏ giao dịch này?</string>
+    <string name="capture_discard_keep">Tiếp tục nhập</string>
+    <string name="capture_discard_confirm">Bỏ</string>
+    <string name="capture_no_category">Chưa có danh mục</string>
+
+    <!-- HomeFragment strings -->
+    <string name="home_total_expense">Chi tiêu</string>
+    <string name="home_total_income">Thu nhập</string>
+    <string name="home_mode_grid">🖼️ Lưới ảnh</string>
+    <string name="home_mode_calendar">📅 Lịch</string>
+    <string name="home_empty">Chưa có giao dịch nào trong tháng này.\nBấm + để chụp khoản đầu tiên</string>
+    <string name="home_retry">Thử lại</string>
+    <string name="home_day_title">Ngày %1$s</string>
+    <string name="home_detail_wallet">Ví</string>
+    <string name="home_detail_time">Thời gian</string>
+    <string name="home_detail_note">Ghi chú</string>
+    <string name="home_delete">Xóa giao dịch</string>
+    <string name="home_delete_title">Xóa giao dịch?</string>
+    <string name="home_delete_msg_expense">Số tiền %1$s sẽ được hoàn lại vào ví %2$s.</string>
+    <string name="home_delete_msg_income">Số tiền %1$s sẽ bị trừ khỏi ví %2$s.</string>
+    <string name="home_delete_cancel">Hủy</string>
+    <string name="home_delete_confirm">Xóa</string>
+    <string name="home_deleted">Đã xóa giao dịch</string>
+
+    <string-array name="home_weekdays">
+        <item>T2</item>
+        <item>T3</item>
+        <item>T4</item>
+        <item>T5</item>
+        <item>T6</item>
+        <item>T7</item>
+        <item>CN</item>
+    </string-array>
+</resources>
