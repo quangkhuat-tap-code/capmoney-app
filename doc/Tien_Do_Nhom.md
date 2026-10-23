@@ -51,7 +51,7 @@ Trung: AN-3 màn Đăng nhập làm màn mở app ──────► Cả nh�
 | B-5 | `DELETE /api/transactions/:id` (hoàn số dư, xoá ảnh) | ✅ | — | Đã có trên `develop` |
 | B-T | Test 15 ca B1–B15 | ✅ | — | 15/15 đạt ngày 23/10/2026 |
 | B-6 | Seed danh mục chạy lại không trùng, README, sửa comment route | ✅ | — | Commit `4c5733a`, chỉ trên `lamanh` |
-| B-PR | PR `lamanh` → `develop` | ⬜ | — | Đưa README + `multer@2` vào `develop` cho cả nhóm |
+| B-PR | PR `lamanh` → `develop` | 🔄 | — | PR #1 **đang mở**, chờ duyệt và merge. Đưa README + `multer@2` vào `develop` cho cả nhóm |
 
 ### 2.2. Android (repo `capmoney-app`, nhánh `lamanh`)
 
@@ -131,7 +131,7 @@ Màn Đăng nhập của Trung **không** chặn Quang: test bằng token dev (H
 | Người | Việc | Vì sao gấp |
 |---|---|---|
 | **Lâm Anh** | A-PR: nhờ duyệt và merge PR app `lamanh` → `develop` (đã mở) | Trung và Quang chưa bắt đầu FE được khi `develop` app chưa có Phần 1 |
-| **Lâm Anh** | B-PR: PR backend `lamanh` → `develop` | Cả nhóm có README + `multer@2` |
+| **Lâm Anh** | B-PR: nhờ duyệt và merge PR backend #1 `lamanh` → `develop` (đã mở) | Cả nhóm có README + `multer@2` |
 | **Lâm Anh** | Báo Trung khi `GET /api/wallets` xong thì nhắn để test lại màn chụp (A-T2b, A-T3) | Màn chụp mới test bằng route giả |
 | **Trung** | BE-1 → BE-2 → BE-3 → BE-4, rồi push + PR backend | BE-3 mở khoá test màn chụp ảnh của Lâm Anh |
 | **Quang** | BE-1 → BE-2, rồi push + PR backend | Không phụ thuộc ai |
@@ -145,3 +145,4 @@ Màn Đăng nhập của Trung **không** chặn Quang: test bằng token dev (H
 | 24/10/2026 | Lâm Anh | Tạo file. Phần 1: BE xong 5/5, FE code xong 7/7. Phần 2, 3 chưa bắt đầu |
 | 24/10/2026 | Lâm Anh | Phần 1: đã push `lamanh` app (commit đã bỏ dòng co-author, mã commit mới), mở PR app vào `develop` |
 | 24/10/2026 | Lâm Anh | Phần 1: test xong Tab Home H1–H15; màn chụp C1–C15 đạt 14/15 bằng route giả (C15 chưa test được). Thêm `.env`, `/doc/` vào `.gitignore` (`5b5b616`) |
+| 24/10/2026 | Lâm Anh | Phần 1: mở PR backend #1 `lamanh` → `develop` |
