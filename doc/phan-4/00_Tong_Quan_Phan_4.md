@@ -151,7 +151,7 @@ Layout, drawable, string mới đặt tên **bắt đầu bằng** tiền tố c
 |---|---|---|
 | `database_init.sql` (backend) | 4B-3 | Thêm `avatar_url VARCHAR(255) NULL` vào `CREATE TABLE users`, để máy mới cài có sẵn cột |
 | `AndroidManifest.xml` | 4A-2, 4C-2 | Khai báo `SearchActivity` (`exported="false"`); thêm `<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />` |
-| `app/build.gradle` | 4A-3 | Thêm `implementation 'com.google.mlkit:text-recognition:16.0.1'` |
+| `app/build.gradle` | 4A-3 | Thêm `implementation 'com.google.android.gms:play-services-mlkit-text-recognition:19.0.1'` (bản qua Google Play services, xem 4A-3) |
 
 **Vẫn không sửa:** `MainActivity`, `activity_main.xml`, `ApiClient`, `ApiResponse`, `SharedPrefManager`, `colors.xml`, `dimens.xml`, `strings.xml`, `themes.xml`, `settings.gradle`, `auth.middleware.js`, `db.js`.
 

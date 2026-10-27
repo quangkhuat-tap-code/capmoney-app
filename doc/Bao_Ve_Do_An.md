@@ -38,7 +38,7 @@ Thời lượng gợi ý: mở đầu 2 phút + mỗi người 5–6 phút (3 ph
 3. **Tab Home:** lưới ảnh 3 cột hoặc lịch tháng (tuần bắt đầu thứ Hai), thẻ tổng Chi/Thu; mất mạng vẫn xem tháng đã mở nhờ Room.
 4. **4A-1 Sửa giao dịch:** hoàn tác giao dịch cũ rồi áp giao dịch mới, khoá các ví **theo thứ tự id** để tránh deadlock, ví nào âm thì chặn.
 5. **4A-2 Tìm kiếm:** tìm trong ghi chú và tên danh mục, mọi tháng, **không phân biệt dấu** ("ca phe" ra "cà phê"), 20 dòng/trang, cuộn tới cuối tự tải trang sau.
-6. **4A-3 Đọc hoá đơn:** ML Kit đọc chữ **ngay trên máy**, không cần mạng; ưu tiên dòng có chữ "Tổng / Thanh toán", tự điền số tiền, có nút Hoàn tác.
+6. **4A-3 Đọc hoá đơn:** ML Kit đọc chữ **ngay trên máy** (mô hình của Google Play services, chạy cả khi máy bay); ghép các dòng cùng hàng ngang, ưu tiên dòng có chữ "Tổng / Thanh toán" cuối cùng, tự điền số tiền, có nút Hoàn tác.
 
 ### 3.2. Demo (khoảng 3 phút)
 
@@ -108,7 +108,7 @@ Tab Ngân sách đặt Ăn uống 500.000 → ghi 2 khoản chi → hiện thôn
 | Tiền dùng kiểu gì? | Quang | `DECIMAL(15,2)` trong MySQL để không sai số như số thực; server ép về number khi trả JSON |
 | Offline hoạt động thế nào? | Quang | Có mạng thì lưu bản sao vào Room; lỗi mạng thì đọc bản sao + banner giờ lưu. Chỉ **xem**, không ghi khi mất mạng |
 | Vì sao ngưỡng 80%? | Quang | Đủ sớm để kịp điều chỉnh; trùng màu vàng của Tab Ngân sách |
-| Đọc hoá đơn có gửi ảnh lên mạng không? | Lâm Anh | Không, ML Kit bản gói sẵn chạy trên máy, chạy được cả khi máy bay |
+| Đọc hoá đơn có gửi ảnh lên mạng không? | Lâm Anh | Không, ML Kit chạy trên máy, chạy được cả khi máy bay. Chọn bản qua Google Play services thay vì bản gói sẵn vì bản gói sẵn làm APK tăng từ 9,7MB lên 54MB |
 | Xoay màn hình có mất dữ liệu không? | Ai cũng được | Không: dữ liệu giữ trong ViewModel (sống qua xoay màn hình), LiveData đẩy lại cho giao diện mới |
 | Nhóm chia việc, tránh đè code nhau thế nào? | Lâm Anh | Mỗi phần có danh sách file riêng, file dùng chung sửa bằng commit riêng; làm trên nhánh riêng, vào `develop` qua Pull Request |
 

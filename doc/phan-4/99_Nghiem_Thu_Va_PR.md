@@ -57,6 +57,6 @@ Nội dung PR:
 | Phần con | Nội dung |
 |---|---|
 | 4B | Ai có DB cũ phải chạy `node scripts/run-sql.js migrations/phan4_users_avatar.sql`, nếu không Tab Cá nhân lỗi 500 |
-| 4A | APK lớn hơn khoảng 4–5MB vì có mô hình ML Kit |
+| 4A | Đọc hoá đơn cần máy có Google Play services (ML Kit bản Play services, APK gần như không tăng). Tab Home có nút kính lúp mở màn tìm kiếm |
 | 4C | Room lên `version = 2`: lần đầu mở app bản mới, cache offline cũ bị xoá một lần |
 | Cả nhóm | Đọc phần mình trong [../Bao_Ve_Do_An.md](../Bao_Ve_Do_An.md) |

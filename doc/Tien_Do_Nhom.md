@@ -21,7 +21,7 @@ Ký hiệu trạng thái:
 | Phần 1 | **Lâm Anh** | Chụp ảnh ghi chi tiêu, Tab Home (lưới + lịch), API giao dịch, API danh mục | `lamanh` | ✅ 5/5 | ✅ 7/7, nghiệm thu xong với API ví thật | Xong cả C15 trên điện thoại thật |
 | Phần 2 | **Trung** (Lâm Anh làm thay) | Đăng nhập/đăng ký, Tab Tài khoản (ví, chuyển tiền), Tab Cá nhân | **`lamanh`** | ✅ 4/4 | ✅ 6/6, nghiệm thu đạt | Đã merge [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) vào `develop` (27/10) |
 | Phần 3 | **Quang** (Lâm Anh làm thay) | Tab Thống kê (donut), Tab Ngân sách, cache offline Room | **`lamanh`** | ✅ 2/2 | ✅ 5/5, nghiệm thu đạt | Đã merge cùng [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) |
-| Phần 4 | **Lâm Anh** code + test · trình bày: 4A Lâm Anh, 4B Trung, 4C Quang | 9 tính năng mở rộng (mục 5) | **`lamanh`** | ⬜ 0/6 | ⬜ 0/9 | Tài liệu viết 27/10, chưa code |
+| Phần 4 | **Lâm Anh** code + test · trình bày: 4A Lâm Anh, 4B Trung, 4C Quang | 9 tính năng mở rộng (mục 5) | **`lamanh`** | 🔄 2/6 | 🔄 3/9 | 4A xong, đã push `lamanh` (chưa mở PR). Còn 4B, 4C |
 
 27/10/2026: toàn bộ Phần 2 và Phần 3 đã làm xong trên nhánh **`lamanh`** (không dùng `feature/wallets-auth`, `feature/stats-budget`). Trung, Quang **không** làm lại; kéo `lamanh` về để review.
 
@@ -135,9 +135,9 @@ Chi tiết: [phan-4/00_Tong_Quan_Phan_4.md](phan-4/00_Tong_Quan_Phan_4.md). Mỗ
 
 | Mã | Tính năng | Trình bày | BE | FE | Ghi chú |
 |---|---|---|---|---|---|
-| 4A-1 | Sửa giao dịch (`PUT /api/transactions/:id`) | Lâm Anh | ⬜ | ⬜ | [4A-1](phan-4/4A-1_Sua_Giao_Dich.md) |
-| 4A-2 | Tìm kiếm giao dịch | Lâm Anh | ⬜ | ⬜ | [4A-2](phan-4/4A-2_Tim_Kiem_Giao_Dich.md) · sửa `AndroidManifest.xml` (commit riêng) |
-| 4A-3 | Đọc số tiền từ ảnh hoá đơn (ML Kit) | Lâm Anh | — | ⬜ | [4A-3](phan-4/4A-3_Doc_So_Tien_Hoa_Don.md) · sửa `app/build.gradle` (commit riêng) |
+| 4A-1 | Sửa giao dịch (`PUT /api/transactions/:id`) | Lâm Anh | ✅ | ✅ | [4A-1](phan-4/4A-1_Sua_Giao_Dich.md) · BE `5dfa746` (E1→E9: 23/23), app `3074a2f` (EA1→EA8). Kèm sửa lỗi ô lưới Home giữ ví cũ `7e0d32e` |
+| 4A-2 | Tìm kiếm giao dịch | Lâm Anh | ✅ | ✅ | [4A-2](phan-4/4A-2_Tim_Kiem_Giao_Dich.md) · BE `5fa78ff` (S1→S6: 20/20), manifest `a656980`, app `99da4fa` (SA1→SA7) |
+| 4A-3 | Đọc số tiền từ ảnh hoá đơn (ML Kit) | Lâm Anh | — | ✅ | [4A-3](phan-4/4A-3_Doc_So_Tien_Hoa_Don.md) · `build.gradle` `39a2533`, app `a0e37ed`. Unit test R1→R7, RA1→RA7 đạt trên emulator; RA8 (điện thoại thật) chưa chạy |
 | 4B-1 | Lịch sử chuyển tiền | Trung | ⬜ | ⬜ | [4B-1](phan-4/4B-1_Lich_Su_Chuyen_Tien.md) |
 | 4B-2 | Đổi mật khẩu | Trung | ⬜ | ⬜ | [4B-2](phan-4/4B-2_Doi_Mat_Khau.md) |
 | 4B-3 | Ảnh đại diện | Trung | ⬜ | ⬜ | [4B-3](phan-4/4B-3_Anh_Dai_Dien.md) · thêm cột `users.avatar_url` (migration + `database_init.sql`) |
@@ -182,3 +182,4 @@ Chi tiết: [phan-4/00_Tong_Quan_Phan_4.md](phan-4/00_Tong_Quan_Phan_4.md). Mỗ
 | 27/10/2026 | Lâm Anh | A-T2c: C15 đạt trên điện thoại thật (ảnh 12MP 2,5MB → 98KB, không bị xoay). Phần 1 xong hết |
 | 27/10/2026 | Lâm Anh | Sửa thẻ tổng ở Tab Home hiện "-0 đ". Merge [app #5](https://github.com/quangkhuat-tap-code/capmoney-app/pull/5) vào `develop` |
 | 27/10/2026 | Lâm Anh | Viết tài liệu Phần 4 (9 tính năng mở rộng, `doc/phan-4/`) và chia phần bảo vệ ([Bao_Ve_Do_An.md](Bao_Ve_Do_An.md)): Lâm Anh code + test, mỗi người trình bày 1 phần |
+| 27/10/2026 | Lâm Anh | Phần 4A xong (sửa giao dịch, tìm kiếm, đọc số tiền hoá đơn), test đạt, đã push `lamanh` 2 repo. ML Kit đổi sang bản Play services (APK 9,4MB thay vì 54MB) |

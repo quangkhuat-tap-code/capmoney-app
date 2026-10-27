@@ -7,13 +7,15 @@
 
 Chụp hoá đơn xong, app **tự điền số tiền** đọc được trên ảnh. Đây là điểm nhấn đúng với khẩu hiệu "Ghi lại chi tiêu bằng một tấm ảnh".
 
-Dùng **ML Kit Text Recognition** bản gói sẵn (bundled): chạy **ngay trên máy**, không cần mạng, không gửi ảnh đi đâu, không tốn phí.
+Dùng **ML Kit Text Recognition** bản qua **Google Play services**: nhận chữ chạy **ngay trên máy**, không gửi ảnh đi đâu, không tốn phí. Mô hình do Play services tải **một lần** (máy ảo và điện thoại test đã có sẵn); sau đó chạy được cả khi mất mạng.
+
+> **Đã đổi so với bản đầu của tài liệu (27/10/2026):** bản gói sẵn `com.google.mlkit:text-recognition:16.0.1` làm APK debug tăng từ 9,7MB lên 54MB (thư viện native khoảng 11MB × 4 kiến trúc CPU), nên dùng bản Play services: APK gần như không tăng (9,4MB). Đổi lại máy phải có Google Play services.
 
 ## File
 
 | File | Việc |
 |---|---|
-| `app/build.gradle` | Thêm `implementation 'com.google.mlkit:text-recognition:16.0.1'`. **Commit riêng** |
+| `app/build.gradle` | Thêm `implementation 'com.google.android.gms:play-services-mlkit-text-recognition:19.0.1'`. **Commit riêng** |
 | `ui/capture/ReceiptAmountParser.java` | **Tạo mới**. Hàm thuần Java (không dùng Android), nhận các dòng chữ, trả số tiền đoán được hoặc `-1` |
 | `ui/capture/ReceiptScanner.java` | **Tạo mới**. Gọi ML Kit trên ảnh, trả danh sách dòng chữ qua callback trên main thread |
 | `ui/capture/CaptureExpenseActivity.java`, `CaptureViewModel.java` | Gọi quét sau khi có ảnh, điền số tiền, hiện chip |
@@ -68,7 +70,7 @@ Chạy: `./gradlew :app:testDebugUnitTest`.
 | RA3 | Gõ 50.000 trước rồi mới chọn ảnh | Không ghi đè; chip "Hoá đơn ghi … · Dùng số này"; bấm → đổi thành số trên hoá đơn |
 | RA4 | Ảnh không có chữ (đồ ăn) | Không điền gì, không báo lỗi |
 | RA5 | Chuyển sang Thu nhập rồi chọn ảnh | Không quét |
-| RA6 | Tắt mạng (chế độ máy bay) rồi chọn ảnh hoá đơn | Vẫn đọc được (ML Kit chạy trên máy) |
+| RA6 | Tắt mạng (chế độ máy bay) rồi chọn ảnh hoá đơn | Vẫn đọc được (ML Kit chạy trên máy, mô hình đã có sẵn) |
 | RA7 | Xoay màn hình sau khi đọc | Không quét lại, chip giữ nguyên |
 | RA8 | Điện thoại thật (Vivo), hoá đơn thật | Ghi kết quả đúng/sai vào PR (hoá đơn mờ, nhàu có thể sai: chấp nhận được vì có Hoàn tác) |
 
@@ -77,4 +79,4 @@ Chạy: `./gradlew :app:testDebugUnitTest`.
 ## Xong khi
 
 - [ ] Đạt R1 → R7, RA1 → RA8.
-- [ ] APK tăng khoảng 4–5MB do mô hình gói sẵn (ghi vào PR).
+- [x] APK gần như không tăng (9,4MB) nhờ dùng bản Play services.
