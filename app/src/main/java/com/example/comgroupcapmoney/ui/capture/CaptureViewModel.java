@@ -13,6 +13,7 @@ import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.data.repository.TransactionRepository;
 import com.example.comgroupcapmoney.model.Category;
 import com.example.comgroupcapmoney.model.Transaction;
+import com.example.comgroupcapmoney.ui.budget.BudgetAlertNotifier;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
 import com.example.comgroupcapmoney.utils.ImageUtils;
@@ -372,6 +373,8 @@ public class CaptureViewModel extends AndroidViewModel {
                                 finalFile.delete();
                             }
                             saving.setValue(false);
+                            // 4C-2: khoan chi moi lam danh muc cham 80% / vuot 100% ngan sach thi bao
+                            BudgetAlertNotifier.checkAfterExpense(getApplication(), data);
                             event.setValue(new SingleEvent<>(new UiEvent(UiEvent.KIND_SAVED,
                                     context.getString(R.string.capture_saved))));
                         }

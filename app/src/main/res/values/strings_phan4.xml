@@ -42,4 +42,23 @@
 
     <!-- 4B-3 Anh dai dien -->
     <string name="avatar_cd_change">Đổi ảnh đại diện</string>
+
+    <!-- 4C-1 Bieu do 6 thang -->
+    <string name="trend_title">6 tháng gần nhất</string>
+    <string name="trend_legend_expense">Chi</string>
+    <string name="trend_legend_income">Thu</string>
+    <string name="trend_empty">Chưa có dữ liệu 6 tháng gần nhất</string>
+    <string name="trend_offline">Cần kết nối mạng để xem xu hướng</string>
+    <string name="trend_error">Không tải được xu hướng</string>
+    <string name="trend_selected">Tháng %1$d/%2$d · Chi %3$s · Thu %4$s</string>
+
+    <!-- 4C-2 Thong bao vuot ngan sach -->
+    <string name="budget_alert_channel">Cảnh báo ngân sách</string>
+    <string name="budget_alert_warning_title">⚠️ Sắp hết ngân sách</string>
+    <string name="budget_alert_warning_text">%1$s đã dùng %2$d%% ngân sách tháng %3$d</string>
+    <string name="budget_alert_over_title">🔴 Đã vượt ngân sách</string>
+    <string name="budget_alert_over_text">Vượt ngân sách %1$s: %2$s / %3$s</string>
+
+    <!-- 4C-3 Tab Tai khoan offline -->
+    <string name="wallet_cache_banner">Đang xem số dư đã lưu lúc %1$s (không có mạng)</string>
 </resources>
