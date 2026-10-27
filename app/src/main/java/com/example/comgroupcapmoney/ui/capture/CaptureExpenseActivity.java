@@ -13,6 +13,7 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -27,6 +28,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.example.comgroupcapmoney.R;
@@ -79,6 +83,7 @@ public class CaptureExpenseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_capture_expense);
+        applyWindowInsets();
 
         if (savedInstanceState != null) {
             String uriStr = savedInstanceState.getString(KEY_PENDING_CAPTURE_URI);
@@ -113,6 +118,17 @@ public class CaptureExpenseActivity extends AppCompatActivity {
         if (pendingCaptureUri != null) {
             outState.putString(KEY_PENDING_CAPTURE_URI, pendingCaptureUri.toString());
         }
+    }
+
+    // targetSdk 35+ bat buoc edge-to-edge, adjustResize khong con tu day layout len tren ban phim
+    private void applyWindowInsets() {
+        View root = ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
+            v.setPadding(bars.left, bars.top, bars.right, Math.max(bars.bottom, ime.bottom));
+            return WindowInsetsCompat.CONSUMED;
+        });
     }
 
     private void initViews() {

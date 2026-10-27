@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/bg_card"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_large">
+
+    <TextView
+        android:id="@+id/wallet_form_tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_medium"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_size_title"
+        android:textStyle="bold" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/wallet_form_layout_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxBackgroundColor="@color/bg_card_secondary"
+            app:boxBackgroundMode="filled"
+            app:boxCornerRadiusBottomEnd="@dimen/corner_radius_small"
+            app:boxCornerRadiusBottomStart="@dimen/corner_radius_small"
+            app:boxCornerRadiusTopEnd="@dimen/corner_radius_small"
+            app:boxCornerRadiusTopStart="@dimen/corner_radius_small"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+        app:errorEnabled="true"
+        app:hintEnabled="false">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/wallet_form_et_name"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical"
+            android:hint="@string/wallet_hint_name"
+            android:inputType="textCapSentences"
+            android:maxLength="100"
+            android:maxLines="1"
+            android:paddingStart="@dimen/spacing_medium"
+            android:paddingEnd="@dimen/spacing_medium"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/wallet_form_toggle_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/wallet_form_btn_cash"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/wallet_type_cash"
+            android:textAllCaps="false"
+            android:textColor="@color/text_primary"
+            app:backgroundTint="@color/wallet_toggle_bg"
+            app:strokeColor="@color/bg_card_secondary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/wallet_form_btn_bank"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/wallet_type_bank"
+            android:textAllCaps="false"
+            android:textColor="@color/text_primary"
+            app:backgroundTint="@color/wallet_toggle_bg"
+            app:strokeColor="@color/bg_card_secondary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/wallet_form_btn_saving"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/wallet_type_saving"
+            android:textAllCaps="false"
+            android:textColor="@color/text_primary"
+            app:backgroundTint="@color/wallet_toggle_bg"
+            app:strokeColor="@color/bg_card_secondary" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <EditText
+        android:id="@+id/wallet_form_et_balance"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:background="@drawable/bg_auth_input"
+        android:hint="@string/wallet_hint_balance"
+        android:importantForAutofill="no"
+        android:inputType="number"
+        android:maxLength="19"
+        android:paddingStart="@dimen/spacing_medium"
+        android:paddingEnd="@dimen/spacing_medium"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:textSize="16sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/wallet_form_btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="@dimen/spacing_large"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="@string/common_save"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:backgroundTint="@color/color_accent"
+        app:cornerRadius="@dimen/corner_radius_pill" />
+</LinearLayout>

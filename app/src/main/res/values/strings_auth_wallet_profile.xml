@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_error_network">Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại</string>
+    <string name="common_error_unknown">Có lỗi xảy ra, vui lòng thử lại</string>
+    <string name="common_cancel">Huỷ</string>
+    <string name="common_save">Lưu</string>
+    <string name="common_retry">Thử lại</string>
+
+    <string name="auth_login_title">Đăng nhập</string>
+    <string name="auth_login_subtitle">Ghi lại chi tiêu bằng một tấm ảnh</string>
+    <string name="auth_register_title">Tạo tài khoản</string>
+    <string name="auth_hint_full_name">Họ và tên</string>
+    <string name="auth_hint_email">Email</string>
+    <string name="auth_hint_password">Mật khẩu</string>
+    <string name="auth_hint_confirm_password">Nhập lại mật khẩu</string>
+    <string name="auth_btn_login">Đăng nhập</string>
+    <string name="auth_btn_register">Đăng ký</string>
+    <string name="auth_go_register">Chưa có tài khoản? Đăng ký</string>
+    <string name="auth_go_login">Đã có tài khoản? Đăng nhập</string>
+    <string name="auth_error_full_name">Vui lòng nhập họ tên</string>
+    <string name="auth_error_email">Email không hợp lệ</string>
+    <string name="auth_error_password">Mật khẩu phải từ 6 đến 72 ký tự</string>
+    <string name="auth_error_confirm">Mật khẩu nhập lại không khớp</string>
+    <string name="auth_session_expired">Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại</string>
+
+    <string name="wallet_title">Tài khoản</string>
+    <string name="wallet_total_assets">Tổng tài sản</string>
+    <string name="wallet_count">%1$d ví</string>
+    <string name="wallet_section_payment">Ví thanh toán</string>
+    <string name="wallet_section_saving">Sổ tiết kiệm</string>
+    <string name="wallet_empty_saving">Chưa có sổ tiết kiệm</string>
+    <string name="wallet_badge_default">Mặc định</string>
+    <string name="wallet_btn_add">+ Thêm ví mới</string>
+    <string name="wallet_btn_transfer">Chuyển tiền giữa các ví</string>
+    <string name="wallet_form_add_title">Thêm ví mới</string>
+    <string name="wallet_form_edit_title">Sửa ví</string>
+    <string name="wallet_hint_name">Tên ví</string>
+    <string name="wallet_hint_balance">Số dư</string>
+    <string name="wallet_type_cash">Tiền mặt</string>
+    <string name="wallet_type_bank">Ngân hàng</string>
+    <string name="wallet_type_saving">Tiết kiệm</string>
+    <string name="wallet_error_name">Vui lòng nhập tên ví</string>
+    <string name="wallet_confirm_balance_title">Điều chỉnh số dư?</string>
+    <string name="wallet_confirm_balance_msg">Số dư sẽ đổi từ %1$s thành %2$s. Thay đổi này không tạo giao dịch.</string>
+    <string name="wallet_created">Đã thêm ví</string>
+    <string name="wallet_updated">Đã cập nhật ví</string>
+
+    <string name="transfer_title">Chuyển tiền</string>
+    <string name="transfer_from">Từ ví</string>
+    <string name="transfer_to">Đến ví</string>
+    <string name="transfer_hint_amount">Số tiền</string>
+    <string name="transfer_hint_note">Ghi chú (không bắt buộc)</string>
+    <string name="transfer_available">Số dư khả dụng: %1$s</string>
+    <string name="transfer_btn">Chuyển</string>
+    <string name="transfer_need_two_wallets">Cần ít nhất 2 ví để chuyển tiền</string>
+    <string name="transfer_error_same">Ví nguồn và ví đích phải khác nhau</string>
+    <string name="transfer_error_amount">Số tiền phải lớn hơn 0</string>
+    <string name="transfer_error_balance">Số dư ví nguồn không đủ</string>
+    <string name="transfer_success">Đã chuyển %1$s</string>
+
+    <string name="profile_title">Cá nhân</string>
+    <string name="profile_stat_transactions">Giao dịch</string>
+    <string name="profile_stat_income">Tổng thu</string>
+    <string name="profile_stat_expense">Tổng chi</string>
+    <string name="profile_member_since">Thành viên từ %1$s</string>
+    <string name="profile_btn_logout">Đăng xuất</string>
+    <string name="profile_logout_confirm_title">Đăng xuất?</string>
+    <string name="profile_logout_confirm_msg">Bạn sẽ cần đăng nhập lại để dùng ứng dụng.</string>
+</resources>
