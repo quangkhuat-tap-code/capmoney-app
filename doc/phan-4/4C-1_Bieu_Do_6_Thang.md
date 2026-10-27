@@ -47,7 +47,8 @@ Tab Thống kê (Phần 3) chỉ xem **1 tháng**. Task này thêm biểu đồ 
 
 - `BarChart` nhóm 2 cột mỗi tháng: Chi `color_expense`, Thu `color_income`. `groupBars(...)` với `barWidth 0.35`, `barSpace 0.05`, `groupSpace 0.2`.
 - Trục X: nhãn `T5`, `T6`, … (tháng 1 của năm mới ghi `T1/27` để biết qua năm). Trục Y trái: `CurrencyUtils.formatShort` (`1,2tr`); tắt trục phải, tắt mô tả, chữ màu `text_secondary`, lưới mờ.
-- Bấm vào cột: hiện `MarkerView` đơn giản ghi số đầy đủ `CurrencyUtils.format(...)`.
+- Bấm vào cột: dòng chữ `trend_tv_selected` dưới biểu đồ ghi "Tháng 10/2026 · Chi … · Thu …" (`CurrencyUtils.format`). Làm thay `MarkerView` cho đơn giản, không cần layout riêng.
+- Nhãn trục X canh giữa nhóm cột (vị trí `i + 0.5`) nên tự viết `ValueFormatter` lấy phần nguyên; `IndexAxisValueFormatter` làm tròn và lệch 1 tháng.
 - **Không** phụ thuộc nút Chi/Thu của donut (biểu đồ cột luôn hiện cả hai).
 - Cả 6 tháng đều 0 → ẩn biểu đồ, ghi "Chưa có dữ liệu 6 tháng gần nhất".
 - **Mất mạng**: donut vẫn đọc Room như Phần 3, còn biểu đồ cột **ẩn**, ghi "Cần kết nối mạng để xem xu hướng" (Room chỉ lưu tháng đã mở, không đủ 6 tháng).

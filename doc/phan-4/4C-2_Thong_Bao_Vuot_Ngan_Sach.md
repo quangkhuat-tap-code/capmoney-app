@@ -15,7 +15,7 @@ Không cần backend mới: dùng `GET /api/budgets?month=&year=` có sẵn.
 |---|---|
 | `AndroidManifest.xml` | Thêm `<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />`. **Commit riêng** (có thể gộp với commit manifest của 4A-2 nếu làm cùng lúc, ghi rõ trong message) |
 | `ui/budget/BudgetAlertNotifier.java` | **Tạo mới**: hàm quyết định (thuần Java) + tạo kênh, hiện thông báo |
-| `ui/capture/CaptureExpenseActivity.java` | Sau khi lưu **khoản chi mới** thành công: gọi `BudgetAlertNotifier.checkAfterExpense(appContext, categoryId, amount, transactionDate)`. Chỉ thêm **1 lời gọi** |
+| `ui/capture/CaptureViewModel.java` | Sau khi lưu **khoản chi mới** thành công: gọi `BudgetAlertNotifier.checkAfterExpense(getApplication(), data)` với giao dịch server trả về. Chỉ thêm **1 lời gọi** (đặt ở ViewModel vì có sẵn giao dịch vừa lưu; sửa giao dịch không gọi) |
 | `ui/budget/BudgetFormDialog.java` | Lưu ngân sách thành công lần đầu → xin quyền thông báo (Android 13+) |
 | `res/drawable/ic_budget_alert.xml` | Biểu tượng nhỏ trên thanh trạng thái (vector, 1 màu trắng) |
 | `test/.../ui/budget/BudgetAlertNotifierTest.java` | **Tạo mới** |

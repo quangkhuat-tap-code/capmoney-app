@@ -1,6 +1,6 @@
 # Tiến độ nhóm CapMoney
 
-> Cập nhật: **27/10/2026**. Ai xong task nào thì sửa cột "Trạng thái" của task đó và ghi ngày cập nhật ở dòng này.
+> Cập nhật: **28/10/2026**. Ai xong task nào thì sửa cột "Trạng thái" của task đó và ghi ngày cập nhật ở dòng này.
 > Chi tiết từng task: Phần 1 ở `doc/phan-1/`, Phần 2 ở `doc/phan-2/`, Phần 3 ở `doc/phan-3/`, Phần 4 (mở rộng) ở `doc/phan-4/`. Chia phần bảo vệ: [Bao_Ve_Do_An.md](Bao_Ve_Do_An.md). Quy trình chung: [Huong_Dan_Lam_Viec_Nhom.md](Huong_Dan_Lam_Viec_Nhom.md).
 
 Ký hiệu trạng thái:
@@ -21,7 +21,7 @@ Ký hiệu trạng thái:
 | Phần 1 | **Lâm Anh** | Chụp ảnh ghi chi tiêu, Tab Home (lưới + lịch), API giao dịch, API danh mục | `lamanh` | ✅ 5/5 | ✅ 7/7, nghiệm thu xong với API ví thật | Xong cả C15 trên điện thoại thật |
 | Phần 2 | **Trung** (Lâm Anh làm thay) | Đăng nhập/đăng ký, Tab Tài khoản (ví, chuyển tiền), Tab Cá nhân | **`lamanh`** | ✅ 4/4 | ✅ 6/6, nghiệm thu đạt | Đã merge [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) vào `develop` (27/10) |
 | Phần 3 | **Quang** (Lâm Anh làm thay) | Tab Thống kê (donut), Tab Ngân sách, cache offline Room | **`lamanh`** | ✅ 2/2 | ✅ 5/5, nghiệm thu đạt | Đã merge cùng [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) |
-| Phần 4 | **Lâm Anh** code + test · trình bày: 4A Lâm Anh, 4B Trung, 4C Quang | 9 tính năng mở rộng (mục 5) | **`lamanh`** | 🔄 5/6 | 🔄 6/9 | 4A, 4B xong, đã push `lamanh` (chưa mở PR). Còn 4C |
+| Phần 4 | **Lâm Anh** code + test · trình bày: 4A Lâm Anh, 4B Trung, 4C Quang | 9 tính năng mở rộng (mục 5) | **`lamanh`** | ✅ 6/6 | ✅ 9/9 | 4A, 4B, 4C xong, đã push `lamanh` 2 repo (chưa mở PR). Còn RA8, VA6 trên điện thoại thật |
 
 27/10/2026: toàn bộ Phần 2 và Phần 3 đã làm xong trên nhánh **`lamanh`** (không dùng `feature/wallets-auth`, `feature/stats-budget`). Trung, Quang **không** làm lại; kéo `lamanh` về để review.
 
@@ -141,9 +141,9 @@ Chi tiết: [phan-4/00_Tong_Quan_Phan_4.md](phan-4/00_Tong_Quan_Phan_4.md). Mỗ
 | 4B-1 | Lịch sử chuyển tiền | Trung | ✅ | ✅ | [4B-1](phan-4/4B-1_Lich_Su_Chuyen_Tien.md) · BE `4b8c153` (T1→T6: 14/14), app `1c7b0f1` (TA1→TA5) |
 | 4B-2 | Đổi mật khẩu | Trung | ✅ | ✅ | [4B-2](phan-4/4B-2_Doi_Mat_Khau.md) · BE `f8b7af2` (P1→P7: 11/11), app `725a467` (PA1→PA5) |
 | 4B-3 | Ảnh đại diện | Trung | ✅ | ✅ | [4B-3](phan-4/4B-3_Anh_Dai_Dien.md) · migration + `database_init.sql` `ec798c9`, BE `80029b0` (V1→V8: 16/16), app `4d9239f` (VA1→VA5; VA6 điện thoại thật chưa chạy) |
-| 4C-1 | Biểu đồ Chi/Thu 6 tháng | Quang | ⬜ | ⬜ | [4C-1](phan-4/4C-1_Bieu_Do_6_Thang.md) |
-| 4C-2 | Thông báo vượt ngân sách | Quang | — | ⬜ | [4C-2](phan-4/4C-2_Thong_Bao_Vuot_Ngan_Sach.md) · quyền `POST_NOTIFICATIONS` |
-| 4C-3 | Tab Tài khoản xem được khi mất mạng | Quang | — | ⬜ | [4C-3](phan-4/4C-3_Tab_Tai_Khoan_Offline.md) · Room lên `version = 2` |
+| 4C-1 | Biểu đồ Chi/Thu 6 tháng | Quang | ✅ | ✅ | [4C-1](phan-4/4C-1_Bieu_Do_6_Thang.md) · BE `98a1cff` (TR1→TR6: 18/18), app `f7c1e04` (TRA1→TRA6) |
+| 4C-2 | Thông báo vượt ngân sách | Quang | — | ✅ | [4C-2](phan-4/4C-2_Thong_Bao_Vuot_Ngan_Sach.md) · manifest `42c9549`, app `422127c`. Unit test N1→N6, NA1→NA8 đạt |
+| 4C-3 | Tab Tài khoản xem được khi mất mạng | Quang | — | ✅ | [4C-3](phan-4/4C-3_Tab_Tai_Khoan_Offline.md) · app `8088850` (W1→W8). Room lên `version = 2` |
 | 99 | Nghiệm thu, 3 cặp PR (4A, 4B, 4C) | — | ⬜ | ⬜ | [99](phan-4/99_Nghiem_Thu_Va_PR.md) |
 
 ---
@@ -185,3 +185,4 @@ Chi tiết: [phan-4/00_Tong_Quan_Phan_4.md](phan-4/00_Tong_Quan_Phan_4.md). Mỗ
 | 27/10/2026 | Lâm Anh | Viết tài liệu Phần 4 (9 tính năng mở rộng, `doc/phan-4/`) và chia phần bảo vệ ([Bao_Ve_Do_An.md](Bao_Ve_Do_An.md)): Lâm Anh code + test, mỗi người trình bày 1 phần |
 | 27/10/2026 | Lâm Anh | Phần 4A xong (sửa giao dịch, tìm kiếm, đọc số tiền hoá đơn), test đạt, đã push `lamanh` 2 repo. ML Kit đổi sang bản Play services (APK 9,4MB thay vì 54MB) |
 | 27/10/2026 | Lâm Anh | Phần 4B xong (lịch sử chuyển tiền, đổi mật khẩu, ảnh đại diện + cột `users.avatar_url`), test đạt, đã push `lamanh` 2 repo |
+| 28/10/2026 | Lâm Anh | Phần 4C xong (biểu đồ 6 tháng, thông báo vượt ngân sách, Tab Tài khoản offline), test đạt, đã push `lamanh` 2 repo. Phần 4 xong 9/9, chưa mở PR |

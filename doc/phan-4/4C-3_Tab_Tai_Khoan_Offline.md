@@ -24,7 +24,7 @@ Tài liệu kỹ thuật gốc (mục 1.1) ghi Room lưu **giao dịch và ví**
 
 - Cache theo **người dùng** (`SharedPrefManager.getUserId()`), để đăng xuất rồi đăng nhập tài khoản khác không thấy ví của người trước.
 - `loadWallets()` thành công → `WalletCache.saveWallets(list)` (giữ thứ tự server trả về qua `sortOrder`), ẩn banner.
-- Lỗi đúng chữ `R.string.capture_error_network`:
+- Lỗi đúng chữ `R.string.common_error_network` (chữ lỗi mạng của repository Phần 2):
   - Cache có dữ liệu → hiện danh sách ví và Tổng tài sản từ cache; banner "Đang xem số dư đã lưu lúc HH:mm dd/MM (không có mạng)" (dùng màu và drawable giống `tv_offline_banner` của Tab Home); **khoá** nút Thêm ví, Chuyển tiền, Lịch sử, và bấm vào ví không mở form sửa.
   - Cache trống → báo lỗi + Thử lại như hiện tại.
 - Lỗi khác (`400`, `500`) → giữ cách báo lỗi hiện tại, **không** đọc cache.
