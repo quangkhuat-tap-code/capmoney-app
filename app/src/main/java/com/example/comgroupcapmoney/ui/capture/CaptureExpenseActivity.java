@@ -44,6 +44,7 @@ import com.example.comgroupcapmoney.utils.ImageUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -67,6 +68,7 @@ public class CaptureExpenseActivity extends AppCompatActivity {
     private CaptureViewModel viewModel;
     private boolean editing;
     private TextView tvPhotoEmoji;
+    private Chip receiptChip;
     private Uri pendingCaptureUri;
 
     private ImageButton btnClose;
@@ -168,6 +170,7 @@ public class CaptureExpenseActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btn_save);
         progressSave = findViewById(R.id.progress_save);
         tvPhotoEmoji = findViewById(R.id.edit_tv_photo_emoji);
+        receiptChip = findViewById(R.id.receipt_chip);
     }
 
     // Che do sua: anh lay tu server (khong doi duoc), khoa nut Chi/Thu, dien san du lieu
@@ -251,6 +254,11 @@ public class CaptureExpenseActivity extends AppCompatActivity {
                 if (!s.toString().equals(formatted)) {
                     etAmount.setText(formatted);
                     etAmount.setSelection(formatted.length());
+                }
+                // Nguoi dung tu sua so tien thi an chip doc hoa don (xoay man hinh khong doi so nen khong an)
+                Long old = viewModel.getAmount().getValue();
+                if (old == null || old != v) {
+                    viewModel.dismissReceiptChip();
                 }
                 viewModel.setAmount(v);
 
@@ -406,6 +414,29 @@ public class CaptureExpenseActivity extends AppCompatActivity {
             }
         });
 
+        viewModel.getReceiptChip().observe(this, chip -> {
+            if (chip == null) {
+                receiptChip.setVisibility(View.GONE);
+                return;
+            }
+            String money = CurrencyUtils.format(chip.amount);
+            if (chip.mode == CaptureViewModel.ReceiptChip.FILLED) {
+                setAmountText(chip.amount);
+                receiptChip.setText(getString(R.string.receipt_filled, money));
+                receiptChip.setOnClickListener(v -> {
+                    viewModel.dismissReceiptChip();
+                    setAmountText(0);
+                });
+            } else {
+                receiptChip.setText(getString(R.string.receipt_suggest, money));
+                receiptChip.setOnClickListener(v -> {
+                    viewModel.dismissReceiptChip();
+                    setAmountText(chip.amount);
+                });
+            }
+            receiptChip.setVisibility(View.VISIBLE);
+        });
+
         viewModel.getType().observe(this, type -> {
             boolean isExpense = Transaction.TYPE_EXPENSE.equals(type);
             int colorRes = isExpense ? R.color.color_expense : R.color.color_income;
@@ -491,6 +522,15 @@ public class CaptureExpenseActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    // Dat so vao o tien tu chip hoa don; TextWatcher tu dinh dang va cap nhat ViewModel
+    private void setAmountText(long value) {
+        String text = value > 0 ? CurrencyUtils.formatInput(value) : "";
+        if (!text.equals(etAmount.getText().toString())) {
+            etAmount.setText(text);
+            etAmount.setSelection(text.length());
+        }
     }
 
     private void updateWalletCategoryRow(WalletOption wallet, Category category) {

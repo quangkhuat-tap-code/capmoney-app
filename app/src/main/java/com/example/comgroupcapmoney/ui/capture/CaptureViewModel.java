@@ -3,6 +3,8 @@ package com.example.comgroupcapmoney.ui.capture;
 import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -64,6 +66,23 @@ public class CaptureViewModel extends AndroidViewModel {
 
     // Che do sua (4A-1): giao dich dang sua, null = them moi
     private Transaction editTx;
+
+    // Doc so tien tu anh hoa don (4A-3)
+    public static class ReceiptChip {
+        public static final int FILLED = 1;   // da tu dien vao o so tien, chip "Hoan tac"
+        public static final int SUGGEST = 2;  // o so tien da co so, chip "Dung so nay"
+
+        public final long amount;
+        public final int mode;
+
+        ReceiptChip(long amount, int mode) {
+            this.amount = amount;
+            this.mode = mode;
+        }
+    }
+
+    private final MutableLiveData<ReceiptChip> receiptChip = new MutableLiveData<>(null);
+    private int scanSeq = 0;
 
     public CaptureViewModel(@NonNull Application application) {
         super(application);
@@ -155,6 +174,45 @@ public class CaptureViewModel extends AndroidViewModel {
 
     public void setPhoto(Uri uri) {
         photoUri.setValue(uri);
+        scanReceipt(uri);
+    }
+
+    public LiveData<ReceiptChip> getReceiptChip() { return receiptChip; }
+
+    public void dismissReceiptChip() {
+        receiptChip.setValue(null);
+    }
+
+    // Chi quet khi them moi khoan chi; ket qua cua anh cu (da doi anh khac) thi bo qua
+    private void scanReceipt(Uri uri) {
+        final int mySeq = ++scanSeq;
+        receiptChip.setValue(null);
+        if (uri == null || editTx != null || !Transaction.TYPE_EXPENSE.equals(type.getValue())) {
+            return;
+        }
+        executor.execute(() -> {
+            File file;
+            try {
+                file = ImageUtils.compressForUpload(getApplication(), uri);
+            } catch (Exception e) {
+                return;
+            }
+            final File scanFile = file;
+            Handler main = new Handler(Looper.getMainLooper());
+            main.post(() -> ReceiptScanner.scan(getApplication(), scanFile, found -> {
+                scanFile.delete();
+                if (mySeq != scanSeq || found == ReceiptAmountParser.NOT_FOUND) {
+                    return;
+                }
+                Long current = amount.getValue();
+                if (current == null || current <= 0) {
+                    amount.setValue(found);
+                    receiptChip.setValue(new ReceiptChip(found, ReceiptChip.FILLED));
+                } else if (current != found) {
+                    receiptChip.setValue(new ReceiptChip(found, ReceiptChip.SUGGEST));
+                }
+            }));
+        });
     }
 
     public void setAmount(long v) {

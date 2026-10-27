@@ -14,4 +14,8 @@
     <string name="search_cd_open">Tìm kiếm giao dịch</string>
     <string name="search_cd_back">Quay lại</string>
     <string name="search_cd_clear">Xoá từ khoá</string>
+
+    <!-- 4A-3 Doc so tien tu anh hoa don -->
+    <string name="receipt_filled">Đã đọc %1$s từ hoá đơn · Hoàn tác</string>
+    <string name="receipt_suggest">Hoá đơn ghi %1$s · Dùng số này</string>
 </resources>
