@@ -111,6 +111,38 @@
                 android:textSize="@dimen/text_size_body"
                 android:visibility="gone" />
 
+            <!-- Banner offline: dang xem du lieu da luu trong Room -->
+            <LinearLayout
+                android:id="@+id/stats_layout_offline_banner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_stats_offline_banner"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="10dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⚠"
+                    android:textColor="@color/color_warning"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/stats_tv_offline_banner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/spacing_small"
+                    android:layout_weight="1"
+                    android:textColor="@color/color_warning"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
             <!-- Thanh tai du lieu -->
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/stats_progress"

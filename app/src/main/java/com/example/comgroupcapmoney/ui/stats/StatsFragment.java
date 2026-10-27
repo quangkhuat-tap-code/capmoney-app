@@ -32,8 +32,11 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class StatsFragment extends Fragment {
 
@@ -46,6 +49,8 @@ public class StatsFragment extends Fragment {
     private MaterialButton btnExpense;
     private MaterialButton btnIncome;
     private TextView tvSummaryLine;
+    private View layoutOfflineBanner;
+    private TextView tvOfflineBanner;
     private LinearProgressIndicator progress;
     private PieChart pieChart;
     private RecyclerView rvCategories;
@@ -112,6 +117,8 @@ public class StatsFragment extends Fragment {
         btnExpense = view.findViewById(R.id.stats_btn_expense);
         btnIncome = view.findViewById(R.id.stats_btn_income);
         tvSummaryLine = view.findViewById(R.id.stats_tv_summary_line);
+        layoutOfflineBanner = view.findViewById(R.id.stats_layout_offline_banner);
+        tvOfflineBanner = view.findViewById(R.id.stats_tv_offline_banner);
         progress = view.findViewById(R.id.stats_progress);
         pieChart = view.findViewById(R.id.stats_pie_chart);
         rvCategories = view.findViewById(R.id.stats_rv_categories);
@@ -187,6 +194,7 @@ public class StatsFragment extends Fragment {
         viewModel.getSummary().observe(getViewLifecycleOwner(), s -> render());
         viewModel.getLoading().observe(getViewLifecycleOwner(), l -> render());
         viewModel.getError().observe(getViewLifecycleOwner(), e -> render());
+        viewModel.getOfflineCachedAt().observe(getViewLifecycleOwner(), at -> render());
     }
 
     private void updateTypeToggle(String type) {
@@ -239,6 +247,15 @@ public class StatsFragment extends Fragment {
         tvSummaryLine.setText(getString(R.string.stats_summary_line,
                 CurrencyUtils.format(s.getTotalIncome()), CurrencyUtils.format(s.getTotalExpense())));
 
+        Long cachedAt = viewModel.getOfflineCachedAt().getValue();
+        if (cachedAt != null) {
+            String time = new SimpleDateFormat("HH:mm dd/MM", Locale.US).format(new Date(cachedAt));
+            tvOfflineBanner.setText(getString(R.string.stats_offline_banner, time));
+            layoutOfflineBanner.setVisibility(View.VISIBLE);
+        } else {
+            layoutOfflineBanner.setVisibility(View.GONE);
+        }
+
         if (s != boundSummary) {
             bindSummary(s);
         }
@@ -252,6 +269,7 @@ public class StatsFragment extends Fragment {
 
     private void hideContent() {
         tvSummaryLine.setVisibility(View.GONE);
+        layoutOfflineBanner.setVisibility(View.GONE);
         pieChart.setVisibility(View.GONE);
         rvCategories.setVisibility(View.GONE);
         layoutEmpty.setVisibility(View.GONE);
