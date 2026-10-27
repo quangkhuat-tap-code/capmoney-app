@@ -21,7 +21,7 @@ Ký hiệu trạng thái:
 | Phần 1 | **Lâm Anh** | Chụp ảnh ghi chi tiêu, Tab Home (lưới + lịch), API giao dịch, API danh mục | `lamanh` | ✅ 5/5 | ✅ 7/7, nghiệm thu xong với API ví thật | Xong cả C15 trên điện thoại thật |
 | Phần 2 | **Trung** (Lâm Anh làm thay) | Đăng nhập/đăng ký, Tab Tài khoản (ví, chuyển tiền), Tab Cá nhân | **`lamanh`** | ✅ 4/4 | ✅ 6/6, nghiệm thu đạt | Đã merge [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) vào `develop` (27/10) |
 | Phần 3 | **Quang** (Lâm Anh làm thay) | Tab Thống kê (donut), Tab Ngân sách, cache offline Room | **`lamanh`** | ✅ 2/2 | ✅ 5/5, nghiệm thu đạt | Đã merge cùng [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) |
-| Phần 4 | **Lâm Anh** code + test · trình bày: 4A Lâm Anh, 4B Trung, 4C Quang | 9 tính năng mở rộng (mục 5) | **`lamanh`** | ✅ 6/6 | ✅ 9/9 | 4A, 4B, 4C xong, đã push `lamanh` 2 repo (chưa mở PR). Còn RA8, VA6 trên điện thoại thật |
+| Phần 4 | **Lâm Anh** code + test · trình bày: 4A Lâm Anh, 4B Trung, 4C Quang | 9 tính năng mở rộng (mục 5) | **`lamanh`** | ✅ 6/6 | ✅ 9/9 | Đã merge vào `develop` (28/10): 4A [app #6](https://github.com/quangkhuat-tap-code/capmoney-app/pull/6) + [backend #3](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/3), 4B [app #7](https://github.com/quangkhuat-tap-code/capmoney-app/pull/7) + [backend #4](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/4), 4C [app #8](https://github.com/quangkhuat-tap-code/capmoney-app/pull/8) + [backend #5](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/5). Còn RA8, VA6 trên điện thoại thật |
 
 27/10/2026: toàn bộ Phần 2 và Phần 3 đã làm xong trên nhánh **`lamanh`** (không dùng `feature/wallets-auth`, `feature/stats-budget`). Trung, Quang **không** làm lại; kéo `lamanh` về để review.
 
@@ -144,7 +144,7 @@ Chi tiết: [phan-4/00_Tong_Quan_Phan_4.md](phan-4/00_Tong_Quan_Phan_4.md). Mỗ
 | 4C-1 | Biểu đồ Chi/Thu 6 tháng | Quang | ✅ | ✅ | [4C-1](phan-4/4C-1_Bieu_Do_6_Thang.md) · BE `98a1cff` (TR1→TR6: 18/18), app `f7c1e04` (TRA1→TRA6) |
 | 4C-2 | Thông báo vượt ngân sách | Quang | — | ✅ | [4C-2](phan-4/4C-2_Thong_Bao_Vuot_Ngan_Sach.md) · manifest `42c9549`, app `422127c`. Unit test N1→N6, NA1→NA8 đạt |
 | 4C-3 | Tab Tài khoản xem được khi mất mạng | Quang | — | ✅ | [4C-3](phan-4/4C-3_Tab_Tai_Khoan_Offline.md) · app `8088850` (W1→W8). Room lên `version = 2` |
-| 99 | Nghiệm thu, 3 cặp PR (4A, 4B, 4C) | — | ⬜ | ⬜ | [99](phan-4/99_Nghiem_Thu_Va_PR.md) |
+| 99 | Nghiệm thu, 3 cặp PR (4A, 4B, 4C) | — | ✅ | ✅ | [99](phan-4/99_Nghiem_Thu_Va_PR.md) · Merge 28/10: develop backend `aebf722`, app `e057590`. PR app có comment ảnh chụp màn hình. PR 4A, 4B mở từ nhánh tạm `lamanh-phan4a`, `lamanh-phan4b` (đã xoá sau khi merge) vì 1 nhánh chỉ mở được 1 PR |
 
 ---
 
@@ -153,9 +153,9 @@ Chi tiết: [phan-4/00_Tong_Quan_Phan_4.md](phan-4/00_Tong_Quan_Phan_4.md). Mỗ
 | Người | Việc | Ghi chú |
 |---|---|---|
 | **Cả nhóm** | Sau khi merge 4B: ai đã có DB cũ chạy `node scripts/run-sql.js migrations/phan4_users_avatar.sql` (backend) | Không chạy thì Tab Cá nhân lỗi 500 vì thiếu cột `avatar_url` |
-| **Lâm Anh** | Code + test Phần 4 (mục 5), mở PR 4A, 4B, 4C | Theo thứ tự trong [phan-4/00](phan-4/00_Tong_Quan_Phan_4.md) |
+| **Lâm Anh** | Chạy RA8 (đọc hoá đơn), VA6 (ảnh đại diện) trên điện thoại thật | Cần sửa tạm `ApiClient` như lúc chạy C15, không commit |
 | **Trung, Quang** | Đọc phần mình trong [Bao_Ve_Do_An.md](Bao_Ve_Do_An.md) (Trung mục 4, Quang mục 5), tự chạy demo ít nhất 1 lần | Không cần code |
-| **Trung, Quang** | Kéo `develop` mới về **cả 2 repo** (Hướng dẫn mục 4.1). **Không** làm lại task Phần 2, 3 | Phần 2, 3 đã merge 27/10 |
+| **Trung, Quang** | Kéo `develop` mới về **cả 2 repo** (Hướng dẫn mục 4.1). **Không** làm lại task Phần 2, 3, 4 | Phần 2, 3 merge 27/10; Phần 4 merge 28/10 |
 | **Cả nhóm** | Sau khi merge: app mở vào màn Đăng nhập, đăng ký tài khoản để test (không cần dòng `DEV ONLY`) | Tài khoản seed `dev@example.test` không đăng nhập được; muốn dùng dữ liệu user 1 thì vẫn lấy token bằng `npm run dev:token` |
 | **Cả nhóm** | Màn mới thêm vào `MainActivity` phải tự xử lý insets status bar (Android 15+) | Làm giống `HomeFragment.onViewCreated`; activity riêng làm giống `CaptureExpenseActivity.applyWindowInsets()` |
 
@@ -186,3 +186,4 @@ Chi tiết: [phan-4/00_Tong_Quan_Phan_4.md](phan-4/00_Tong_Quan_Phan_4.md). Mỗ
 | 27/10/2026 | Lâm Anh | Phần 4A xong (sửa giao dịch, tìm kiếm, đọc số tiền hoá đơn), test đạt, đã push `lamanh` 2 repo. ML Kit đổi sang bản Play services (APK 9,4MB thay vì 54MB) |
 | 27/10/2026 | Lâm Anh | Phần 4B xong (lịch sử chuyển tiền, đổi mật khẩu, ảnh đại diện + cột `users.avatar_url`), test đạt, đã push `lamanh` 2 repo |
 | 28/10/2026 | Lâm Anh | Phần 4C xong (biểu đồ 6 tháng, thông báo vượt ngân sách, Tab Tài khoản offline), test đạt, đã push `lamanh` 2 repo. Phần 4 xong 9/9, chưa mở PR |
+| 28/10/2026 | Lâm Anh | Mở và merge 3 cặp PR Phần 4 vào `develop`: 4A [app #6](https://github.com/quangkhuat-tap-code/capmoney-app/pull/6), [backend #3](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/3); 4B [app #7](https://github.com/quangkhuat-tap-code/capmoney-app/pull/7), [backend #4](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/4); 4C [app #8](https://github.com/quangkhuat-tap-code/capmoney-app/pull/8), [backend #5](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/5). Chưa qua review của Trung, Quang |

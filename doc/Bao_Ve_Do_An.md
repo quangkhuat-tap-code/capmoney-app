@@ -9,9 +9,9 @@
 
 | Người | Trình bày | Màn hình | API | PR để chỉ |
 |---|---|---|---|---|
-| **Lâm Anh** | Phần 1 + **4A** · Ghi chi tiêu bằng ảnh, giao dịch | Màn chụp, Tab Home (lưới + lịch), chi tiết giao dịch, tìm kiếm | `/api/transactions` (GET, POST, PUT, DELETE, search), `/api/categories` | app #1, #4, #5, PR 4A |
-| **Trung** | Phần 2 + **4B** · Tài khoản, ví | Đăng nhập, Đăng ký, Tab Tài khoản, chuyển tiền, lịch sử chuyển tiền, Tab Cá nhân | `/api/auth/*`, `/api/wallets/*` | app #2, #3, backend #2, PR 4B |
-| **Quang** | Phần 3 + **4C** · Thống kê, ngân sách, offline | Tab Thống kê (donut + biểu đồ 6 tháng), Tab Ngân sách, thông báo, banner offline | `/api/analytics/*`, `/api/budgets` | app #2, backend #2, PR 4C |
+| **Lâm Anh** | Phần 1 + **4A** · Ghi chi tiêu bằng ảnh, giao dịch | Màn chụp, Tab Home (lưới + lịch), chi tiết giao dịch, tìm kiếm | `/api/transactions` (GET, POST, PUT, DELETE, search), `/api/categories` | app #1, #4, #5, [app #6](https://github.com/quangkhuat-tap-code/capmoney-app/pull/6), [backend #3](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/3) |
+| **Trung** | Phần 2 + **4B** · Tài khoản, ví | Đăng nhập, Đăng ký, Tab Tài khoản, chuyển tiền, lịch sử chuyển tiền, Tab Cá nhân | `/api/auth/*`, `/api/wallets/*` | app #2, #3, backend #2, [app #7](https://github.com/quangkhuat-tap-code/capmoney-app/pull/7), [backend #4](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/4) |
+| **Quang** | Phần 3 + **4C** · Thống kê, ngân sách, offline | Tab Thống kê (donut + biểu đồ 6 tháng), Tab Ngân sách, thông báo, banner offline | `/api/analytics/*`, `/api/budgets` | app #2, backend #2, [app #8](https://github.com/quangkhuat-tap-code/capmoney-app/pull/8), [backend #5](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/5) |
 
 **Phần chung** (ai mở đầu thì nói, đề xuất **Lâm Anh**, ~2 phút): ý tưởng, công nghệ, kiến trúc, 6 bảng DB, cách nhóm làm việc với Git (nhánh, PR, không push thẳng `develop`).
 
