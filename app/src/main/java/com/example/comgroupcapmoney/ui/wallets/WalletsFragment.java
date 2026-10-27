@@ -20,8 +20,11 @@ import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.model.Wallet;
 import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class WalletsFragment extends Fragment {
 
@@ -36,6 +39,10 @@ public class WalletsFragment extends Fragment {
     private TextView tvCount;
     private TextView tvEmptySaving;
     private TextView tvError;
+    private TextView tvCacheBanner;
+    private View btnAdd;
+    private View btnTransfer;
+    private View btnHistory;
 
     // Xoay man hinh: ViewModel da co du lieu thi lan onResume dau tien khong goi lai API
     private boolean skipNextResumeLoad;
@@ -70,9 +77,14 @@ public class WalletsFragment extends Fragment {
         setupList(view.findViewById(R.id.wallet_rv_payment), paymentAdapter);
         setupList(view.findViewById(R.id.wallet_rv_saving), savingAdapter);
 
-        view.findViewById(R.id.wallet_btn_add).setOnClickListener(v -> openAddWallet());
-        view.findViewById(R.id.wallet_btn_transfer).setOnClickListener(v -> openTransfer());
-        view.findViewById(R.id.wallet_btn_history).setOnClickListener(v ->
+        tvCacheBanner = view.findViewById(R.id.wallet_cache_banner);
+        btnAdd = view.findViewById(R.id.wallet_btn_add);
+        btnTransfer = view.findViewById(R.id.wallet_btn_transfer);
+        btnHistory = view.findViewById(R.id.wallet_btn_history);
+
+        btnAdd.setOnClickListener(v -> openAddWallet());
+        btnTransfer.setOnClickListener(v -> openTransfer());
+        btnHistory.setOnClickListener(v ->
                 TransferHistoryBottomSheet.newInstance().show(getChildFragmentManager(), "transfer_history"));
         view.findViewById(R.id.wallet_btn_retry).setOnClickListener(v -> viewModel.loadWallets());
 
@@ -86,6 +98,7 @@ public class WalletsFragment extends Fragment {
         viewModel.getWallets().observe(getViewLifecycleOwner(), list -> render());
         viewModel.getLoading().observe(getViewLifecycleOwner(), loading -> render());
         viewModel.getError().observe(getViewLifecycleOwner(), error -> render());
+        viewModel.getOfflineCachedAt().observe(getViewLifecycleOwner(), at -> render());
         viewModel.getUnauthorized().observe(getViewLifecycleOwner(), event -> {
             if (event != null && event.getContentIfNotHandled() != null) {
                 SessionManager.logout(requireActivity(), true);
@@ -151,9 +164,23 @@ public class WalletsFragment extends Fragment {
         paymentAdapter.submit(payment);
         savingAdapter.submit(saving);
         tvEmptySaving.setVisibility(saving.isEmpty() ? View.VISIBLE : View.GONE);
+
+        // 4C-3: dang xem ban luu khi mat mang thi hien banner va khoa cac nut ghi du lieu
+        Long cachedAt = viewModel.getOfflineCachedAt().getValue();
+        boolean offline = cachedAt != null;
+        if (offline) {
+            String time = new SimpleDateFormat("HH:mm dd/MM", Locale.US).format(new Date(cachedAt));
+            tvCacheBanner.setText(getString(R.string.wallet_cache_banner, time));
+        }
+        tvCacheBanner.setVisibility(offline ? View.VISIBLE : View.GONE);
+        for (View b : new View[]{btnAdd, btnTransfer, btnHistory}) {
+            b.setEnabled(!offline);
+            b.setAlpha(offline ? 0.4f : 1f);
+        }
     }
 
     private void onWalletClick(Wallet wallet) {
+        if (viewModel.isOffline()) return;
         WalletFormDialog.newInstance(wallet).show(getChildFragmentManager(), "wallet_form");
     }
 

@@ -58,4 +58,7 @@
     <string name="budget_alert_warning_text">%1$s đã dùng %2$d%% ngân sách tháng %3$d</string>
     <string name="budget_alert_over_title">🔴 Đã vượt ngân sách</string>
     <string name="budget_alert_over_text">Vượt ngân sách %1$s: %2$s / %3$s</string>
+
+    <!-- 4C-3 Tab Tai khoan offline -->
+    <string name="wallet_cache_banner">Đang xem số dư đã lưu lúc %1$s (không có mạng)</string>
 </resources>

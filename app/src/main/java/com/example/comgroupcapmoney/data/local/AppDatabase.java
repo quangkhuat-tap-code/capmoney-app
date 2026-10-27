@@ -5,12 +5,15 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {TransactionEntity.class}, version = 1, exportSchema = false)
+// version 2 (4C-3): them bang wallet_cache. fallbackToDestructiveMigration xoa cache cu 1 lan, khong mat du lieu that
+@Database(entities = {TransactionEntity.class, WalletEntity.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase instance;
 
     public abstract TransactionDao transactionDao();
+
+    public abstract WalletDao walletDao();
 
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
