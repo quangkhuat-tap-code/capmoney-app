@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.comgroupcapmoney.R;
+import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
 import com.google.android.material.button.MaterialButton;
@@ -70,6 +71,8 @@ public class HomeFragment extends Fragment {
         });
 
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+        // API bao 401 (token het han) thi ve man dang nhap
+        SessionManager.observeExpired(getViewLifecycleOwner(), requireActivity());
 
         initViews(view);
         setupWeekdays();

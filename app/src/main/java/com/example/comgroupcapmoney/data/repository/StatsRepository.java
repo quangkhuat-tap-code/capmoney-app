@@ -7,6 +7,7 @@ import com.example.comgroupcapmoney.data.api.StatsApi;
 import com.example.comgroupcapmoney.model.ApiResponse;
 import com.example.comgroupcapmoney.model.StatsSummary;
 import com.example.comgroupcapmoney.model.Transaction;
+import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
@@ -71,6 +72,7 @@ public class StatsRepository {
         }
 
         if (response.code() == 401) {
+            SessionManager.notifyExpired();
             cb.onError(appContext.getString(R.string.stats_error_unauthorized), false);
             return;
         }

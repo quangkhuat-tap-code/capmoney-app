@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.comgroupcapmoney.R;
+import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.model.Budget;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
@@ -71,6 +72,8 @@ public class BudgetFragment extends Fragment {
         });
 
         viewModel = new ViewModelProvider(requireActivity()).get(BudgetViewModel.class);
+        // API bao 401 (token het han) thi ve man dang nhap
+        SessionManager.observeExpired(getViewLifecycleOwner(), requireActivity());
         skipNextResumeLoad = savedInstanceState != null && viewModel.hasStarted();
 
         initViews(view);
