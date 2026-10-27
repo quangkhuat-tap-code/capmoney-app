@@ -6,12 +6,17 @@ import com.example.comgroupcapmoney.data.api.ApiClient;
 import com.example.comgroupcapmoney.data.api.AuthApi;
 import com.example.comgroupcapmoney.model.ApiResponse;
 import com.example.comgroupcapmoney.model.AuthResult;
+import com.example.comgroupcapmoney.model.User;
 import com.example.comgroupcapmoney.model.UserProfile;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,6 +49,21 @@ public class AuthRepository {
 
     public void getProfile(RepoCallback<UserProfile> cb) {
         api.getProfile().enqueue(wrap(appContext, cb, true));
+    }
+
+    // Sai mat khau hien tai server tra 400 nen khong bi coi la het phien
+    public void changePassword(String currentPassword, String newPassword, RepoCallback<Object> cb) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("current_password", currentPassword);
+        body.put("new_password", newPassword);
+        api.changePassword(body).enqueue(wrap(appContext, cb, true));
+    }
+
+    // Anh da nen (ImageUtils.compressForUpload), gui giong anh giao dich cua Phan 1
+    public void uploadAvatar(File imageFile, RepoCallback<User> cb) {
+        RequestBody fileBody = RequestBody.create(MediaType.parse("image/jpeg"), imageFile);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("image", "avatar.jpg", fileBody);
+        api.uploadAvatar(part).enqueue(wrap(appContext, cb, true));
     }
 
     // Dung chung cho AuthRepository va WalletRepository

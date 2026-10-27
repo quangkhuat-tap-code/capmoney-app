@@ -26,17 +26,56 @@
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/profile_tv_avatar"
-                android:layout_width="88dp"
-                android:layout_height="88dp"
+            <!-- Avatar: chu cai dau, anh dai dien (4B-3) chong len tren, bam de doi anh -->
+            <FrameLayout
+                android:id="@+id/avatar_container"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/spacing_large"
-                android:background="@drawable/bg_profile_avatar"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="36sp"
-                android:textStyle="bold" />
+                android:contentDescription="@string/avatar_cd_change"
+                android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                <TextView
+                    android:id="@+id/profile_tv_avatar"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_profile_avatar"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="36sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/profile_iv_avatar"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/avatar_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:indeterminate="true"
+                    android:visibility="gone"
+                    app:indicatorColor="@color/white"
+                    app:indicatorSize="40dp"
+                    app:trackColor="@color/transparent" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="bottom|end"
+                    android:background="@drawable/bg_avatar_camera_badge"
+                    android:importantForAccessibility="no"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_camera_24" />
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/profile_tv_name"
@@ -179,12 +218,28 @@
                 android:textColor="@color/color_accent"
                 android:visibility="gone" />
 
+            <!-- Doi mat khau (4B-2) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/profile_btn_change_password"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="@dimen/spacing_large"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/password_button"
+                android:textAllCaps="false"
+                android:textColor="@color/color_accent"
+                android:textSize="16sp"
+                app:cornerRadius="@dimen/corner_radius_pill"
+                app:strokeColor="@color/color_accent" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/profile_btn_logout"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:layout_marginTop="@dimen/spacing_large"
+                android:layout_marginTop="@dimen/spacing_small"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="@string/profile_btn_logout"

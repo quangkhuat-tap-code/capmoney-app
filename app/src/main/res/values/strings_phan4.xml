@@ -18,4 +18,28 @@
     <!-- 4A-3 Doc so tien tu anh hoa don -->
     <string name="receipt_filled">Đã đọc %1$s từ hoá đơn · Hoàn tác</string>
     <string name="receipt_suggest">Hoá đơn ghi %1$s · Dùng số này</string>
+
+    <!-- 4B-1 Lich su chuyen tien -->
+    <string name="transfer_history_button">🕘 Lịch sử chuyển tiền</string>
+    <string name="transfer_history_title">Lịch sử chuyển tiền</string>
+    <string name="transfer_history_route">%1$s → %2$s</string>
+    <string name="transfer_history_empty">Tháng này chưa chuyển tiền lần nào</string>
+    <string name="transfer_history_cd_prev">Tháng trước</string>
+    <string name="transfer_history_cd_next">Tháng sau</string>
+
+    <!-- 4B-2 Doi mat khau -->
+    <string name="password_button">Đổi mật khẩu</string>
+    <string name="password_title">Đổi mật khẩu</string>
+    <string name="password_hint_current">Mật khẩu hiện tại</string>
+    <string name="password_hint_new">Mật khẩu mới</string>
+    <string name="password_hint_confirm">Nhập lại mật khẩu mới</string>
+    <string name="password_err_current_empty">Vui lòng nhập mật khẩu hiện tại</string>
+    <string name="password_err_new_empty">Vui lòng nhập mật khẩu mới</string>
+    <string name="password_err_confirm_empty">Vui lòng nhập lại mật khẩu mới</string>
+    <string name="password_err_length">Mật khẩu phải từ 6 đến 72 ký tự</string>
+    <string name="password_err_mismatch">Mật khẩu nhập lại không khớp</string>
+    <string name="password_changed">Đã đổi mật khẩu</string>
+
+    <!-- 4B-3 Anh dai dien -->
+    <string name="avatar_cd_change">Đổi ảnh đại diện</string>
 </resources>
