@@ -51,4 +51,11 @@
     <string name="trend_offline">Cần kết nối mạng để xem xu hướng</string>
     <string name="trend_error">Không tải được xu hướng</string>
     <string name="trend_selected">Tháng %1$d/%2$d · Chi %3$s · Thu %4$s</string>
+
+    <!-- 4C-2 Thong bao vuot ngan sach -->
+    <string name="budget_alert_channel">Cảnh báo ngân sách</string>
+    <string name="budget_alert_warning_title">⚠️ Sắp hết ngân sách</string>
+    <string name="budget_alert_warning_text">%1$s đã dùng %2$d%% ngân sách tháng %3$d</string>
+    <string name="budget_alert_over_title">🔴 Đã vượt ngân sách</string>
+    <string name="budget_alert_over_text">Vượt ngân sách %1$s: %2$s / %3$s</string>
 </resources>

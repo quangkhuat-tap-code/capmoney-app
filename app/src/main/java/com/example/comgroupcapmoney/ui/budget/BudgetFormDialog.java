@@ -330,6 +330,8 @@ public class BudgetFormDialog extends BottomSheetDialogFragment {
             public void onSuccess(Budget data) {
                 Toast.makeText(appContext, R.string.budget_saved, Toast.LENGTH_SHORT).show();
                 if (!isAdded()) return;
+                // 4C-2: lan dau dat ngan sach thi xin quyen thong bao (Android 13+)
+                BudgetAlertNotifier.maybeAskPermission(requireActivity());
                 getParentFragmentManager().setFragmentResult(RESULT_BUDGET_CHANGED, new Bundle());
                 dismissAllowingStateLoss();
             }
