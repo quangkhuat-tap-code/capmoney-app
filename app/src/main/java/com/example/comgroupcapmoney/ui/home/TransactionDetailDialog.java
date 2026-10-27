@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.model.Transaction;
+import com.example.comgroupcapmoney.ui.capture.CaptureExpenseActivity;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -127,6 +128,12 @@ public class TransactionDetailDialog extends BottomSheetDialogFragment {
         } else {
             rowDetailNote.setVisibility(View.GONE);
         }
+
+        // Sua: mo man chup o che do sua, Home tu tai lai trong onResume khi quay ve
+        view.findViewById(R.id.btn_edit_tx).setOnClickListener(v -> {
+            dismiss();
+            startActivity(CaptureExpenseActivity.editIntent(requireContext(), tx));
+        });
 
         // Delete button
         btnDeleteTx.setOnClickListener(v -> {

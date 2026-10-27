@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 4A-1 Sua giao dich -->
+    <string name="edit_button">Sửa</string>
+    <string name="edit_title">Sửa giao dịch</string>
+    <string name="edit_save">Cập nhật</string>
+    <string name="edit_saved">Đã cập nhật giao dịch</string>
+    <string name="edit_discard_title">Bỏ thay đổi?</string>
+</resources>

@@ -119,6 +119,16 @@
                                 app:strokeColor="@color/text_secondary" />
                         </LinearLayout>
 
+                        <!-- Che do sua, giao dich khong co anh: hien emoji danh muc -->
+                        <TextView
+                            android:id="@+id/edit_tv_photo_emoji"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="48dp"
+                            android:textSize="72sp"
+                            android:visibility="gone" />
+
                         <!-- Amount input over pill at bottom of photo -->
                         <LinearLayout
                             android:id="@+id/layout_amount_pill"
