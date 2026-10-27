@@ -18,7 +18,7 @@ Ký hiệu trạng thái:
 
 | Phần | Người | Nội dung | Nhánh (cả 2 repo) | BE | FE | Ghi chú |
 |---|---|---|---|---|---|---|
-| Phần 1 | **Lâm Anh** | Chụp ảnh ghi chi tiêu, Tab Home (lưới + lịch), API giao dịch, API danh mục | `lamanh` | ✅ 5/5 | ✅ 7/7, nghiệm thu xong với API ví thật | Còn: C15 trên điện thoại thật |
+| Phần 1 | **Lâm Anh** | Chụp ảnh ghi chi tiêu, Tab Home (lưới + lịch), API giao dịch, API danh mục | `lamanh` | ✅ 5/5 | ✅ 7/7, nghiệm thu xong với API ví thật | Xong cả C15 trên điện thoại thật |
 | Phần 2 | **Trung** (Lâm Anh làm thay) | Đăng nhập/đăng ký, Tab Tài khoản (ví, chuyển tiền), Tab Cá nhân | **`lamanh`** | ✅ 4/4 | ✅ 6/6, nghiệm thu đạt | Đã merge [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) vào `develop` (27/10) |
 | Phần 3 | **Quang** (Lâm Anh làm thay) | Tab Thống kê (donut), Tab Ngân sách, cache offline Room | **`lamanh`** | ✅ 2/2 | ✅ 5/5, nghiệm thu đạt | Đã merge cùng [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) |
 
@@ -63,9 +63,9 @@ Ký hiệu trạng thái:
 | A-7 | `.gitignore` bỏ qua `.env` và `/doc/` | ✅ | — | Commit `5b5b616` |
 | A-T1 | Test Tab Home trên emulator (H1–H15) | ✅ | — | Xong 24/10/2026, dùng token dev. Không phát sinh lỗi, không cần commit sửa |
 | A-PR | Push `lamanh` + PR `lamanh` → `develop` | ✅ | — | PR #1 đã merge 24/10/2026 (`b5f382a`). `develop` app đã có Phần 1, build được |
-| A-T2 | Test màn chụp ảnh (C1–C15) bằng **route giả** `/api/wallets` | ✅ | — | 14/15 đạt, 0 lỗi. C15 (ảnh camera 12MP) chưa test được trên emulator. Route giả đã xoá, không commit |
+| A-T2 | Test màn chụp ảnh (C1–C15) bằng **route giả** `/api/wallets` | ✅ | — | 14/15 đạt (C15 đạt ở A-T2c), 0 lỗi. C15 (ảnh camera 12MP) chưa test được trên emulator. Route giả đã xoá, không commit |
 | A-T2b | Test lại màn chụp ảnh với `GET /api/wallets` **thật** | ✅ | — | 27/10/2026, emulator Pixel 7 Pro API 36: C1, C6, C9, C10 đạt 4/4. Ví mặc định, chip số dư đọc đúng từ API thật; C9 chặn ở client, không gọi API |
-| A-T2c | Thử C15 (ảnh camera 12MP) trên **điện thoại thật** | ⬜ | — | Emulator chỉ ra ảnh 14KB, không xoay. Cần điện thoại thật (đổi IP LAN tạm, không commit) |
+| A-T2c | Thử C15 (ảnh camera 12MP) trên **điện thoại thật** | ✅ | — | Đạt trên Vivo V2035 (Android 13). Ảnh gốc 4000×3000, 2,5MB → file tải lên 960×1280, 98KB, đứng đúng chiều. Dùng `adb reverse tcp:5000` + `127.0.0.1` tạm trong `ApiClient`, đã trả lại, không commit |
 | A-T3 | Nghiệm thu toàn luồng (7 bước, file 06 mục 4) | ✅ | — | 27/10/2026, đạt 7/7. Bước 4: `GET /api/wallets` thật trả ví 1 = 10.000.000 đ, file ảnh đã xoá. DB có sẵn giao dịch cũ nên thẻ Chi tiêu so theo chênh lệch (+50.000) |
 | A-8 | Sửa Tab Home + màn chụp bị đè lên status bar (Android 15+) | ✅ | — | Commit `c026a0f`, đã push `lamanh`. `targetSdk 37` bắt buộc edge-to-edge; thêm padding theo insets trong `HomeFragment`, `CaptureExpenseActivity` |
 | A-PR2 | PR #2 `lamanh` → `develop` ở cả 2 repo (Phần 1 A-8 + toàn bộ Phần 2, 3) | ✅ | — | Merge 27/10/2026: [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2). App `35a1465`, backend `3bce232` |
@@ -131,7 +131,6 @@ Test backend Phần 3 chạy trên user test riêng (không xoá giao dịch c�
 
 | Người | Việc | Ghi chú |
 |---|---|---|
-| **Lâm Anh** | Thử C15 trên điện thoại thật (A-T2c) | Emulator không thay được |
 | **Trung, Quang** | Kéo `develop` mới về **cả 2 repo** (Hướng dẫn mục 4.1). **Không** làm lại task Phần 2, 3 | Phần 2, 3 đã merge 27/10 |
 | **Cả nhóm** | Sau khi merge: app mở vào màn Đăng nhập, đăng ký tài khoản để test (không cần dòng `DEV ONLY`) | Tài khoản seed `dev@example.test` không đăng nhập được; muốn dùng dữ liệu user 1 thì vẫn lấy token bằng `npm run dev:token` |
 | **Cả nhóm** | Màn mới thêm vào `MainActivity` phải tự xử lý insets status bar (Android 15+) | Làm giống `HomeFragment.onViewCreated`; activity riêng làm giống `CaptureExpenseActivity.applyWindowInsets()` |
@@ -157,3 +156,4 @@ Test backend Phần 3 chạy trên user test riêng (không xoá giao dịch c�
 | 27/10/2026 | Lâm Anh | Merge PR [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) (`35a1465`) và [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) (`3bce232`) vào `develop`, chưa qua review của Trung, Quang (theo quyết định của Lâm Anh) |
 | 27/10/2026 | Lâm Anh | Sửa: Tab Home, Thống kê, Ngân sách, màn chụp tự về Đăng nhập khi token hết hạn. Merge [app #3](https://github.com/quangkhuat-tap-code/capmoney-app/pull/3) vào `develop` |
 | 27/10/2026 | Lâm Anh | Tab Home chạy offline bằng `TransactionCache`. Merge [app #4](https://github.com/quangkhuat-tap-code/capmoney-app/pull/4) vào `develop` |
+| 27/10/2026 | Lâm Anh | A-T2c: C15 đạt trên điện thoại thật (ảnh 12MP 2,5MB → 98KB, không bị xoay). Phần 1 xong hết |
