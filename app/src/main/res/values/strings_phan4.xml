@@ -26,4 +26,17 @@
     <string name="transfer_history_empty">Tháng này chưa chuyển tiền lần nào</string>
     <string name="transfer_history_cd_prev">Tháng trước</string>
     <string name="transfer_history_cd_next">Tháng sau</string>
+
+    <!-- 4B-2 Doi mat khau -->
+    <string name="password_button">Đổi mật khẩu</string>
+    <string name="password_title">Đổi mật khẩu</string>
+    <string name="password_hint_current">Mật khẩu hiện tại</string>
+    <string name="password_hint_new">Mật khẩu mới</string>
+    <string name="password_hint_confirm">Nhập lại mật khẩu mới</string>
+    <string name="password_err_current_empty">Vui lòng nhập mật khẩu hiện tại</string>
+    <string name="password_err_new_empty">Vui lòng nhập mật khẩu mới</string>
+    <string name="password_err_confirm_empty">Vui lòng nhập lại mật khẩu mới</string>
+    <string name="password_err_length">Mật khẩu phải từ 6 đến 72 ký tự</string>
+    <string name="password_err_mismatch">Mật khẩu nhập lại không khớp</string>
+    <string name="password_changed">Đã đổi mật khẩu</string>
 </resources>

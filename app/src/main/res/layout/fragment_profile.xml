@@ -179,12 +179,28 @@
                 android:textColor="@color/color_accent"
                 android:visibility="gone" />
 
+            <!-- Doi mat khau (4B-2) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/profile_btn_change_password"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="@dimen/spacing_large"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/password_button"
+                android:textAllCaps="false"
+                android:textColor="@color/color_accent"
+                android:textSize="16sp"
+                app:cornerRadius="@dimen/corner_radius_pill"
+                app:strokeColor="@color/color_accent" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/profile_btn_logout"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:layout_marginTop="@dimen/spacing_large"
+                android:layout_marginTop="@dimen/spacing_small"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="@string/profile_btn_logout"

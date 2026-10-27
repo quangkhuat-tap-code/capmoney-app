@@ -68,6 +68,8 @@ public class ProfileFragment extends Fragment {
 
         btnRetry.setOnClickListener(v -> viewModel.loadProfile());
         view.findViewById(R.id.profile_btn_logout).setOnClickListener(v -> confirmLogout());
+        view.findViewById(R.id.profile_btn_change_password).setOnClickListener(v ->
+                ChangePasswordDialog.newInstance().show(getChildFragmentManager(), "change_password"));
 
         viewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
         skipNextResumeLoad = savedInstanceState != null && viewModel.getProfile().getValue() != null;

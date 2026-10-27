@@ -8,6 +8,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 
 public interface AuthApi {
     @POST("auth/register")
@@ -18,4 +19,7 @@ public interface AuthApi {
 
     @GET("auth/profile")
     Call<ApiResponse<UserProfile>> getProfile();
+
+    @PUT("auth/password")
+    Call<ApiResponse<Object>> changePassword(@Body Map<String, Object> body);
 }

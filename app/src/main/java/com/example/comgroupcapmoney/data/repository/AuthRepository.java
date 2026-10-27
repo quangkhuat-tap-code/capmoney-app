@@ -46,6 +46,14 @@ public class AuthRepository {
         api.getProfile().enqueue(wrap(appContext, cb, true));
     }
 
+    // Sai mat khau hien tai server tra 400 nen khong bi coi la het phien
+    public void changePassword(String currentPassword, String newPassword, RepoCallback<Object> cb) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("current_password", currentPassword);
+        body.put("new_password", newPassword);
+        api.changePassword(body).enqueue(wrap(appContext, cb, true));
+    }
+
     // Dung chung cho AuthRepository va WalletRepository
     static <T> Callback<ApiResponse<T>> wrap(Context appContext, RepoCallback<T> cb, boolean needsToken) {
         return new Callback<ApiResponse<T>>() {
