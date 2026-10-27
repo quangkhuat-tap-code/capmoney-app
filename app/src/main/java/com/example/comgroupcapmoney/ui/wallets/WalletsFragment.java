@@ -72,6 +72,8 @@ public class WalletsFragment extends Fragment {
 
         view.findViewById(R.id.wallet_btn_add).setOnClickListener(v -> openAddWallet());
         view.findViewById(R.id.wallet_btn_transfer).setOnClickListener(v -> openTransfer());
+        view.findViewById(R.id.wallet_btn_history).setOnClickListener(v ->
+                TransferHistoryBottomSheet.newInstance().show(getChildFragmentManager(), "transfer_history"));
         view.findViewById(R.id.wallet_btn_retry).setOnClickListener(v -> viewModel.loadWallets());
 
         viewModel = new ViewModelProvider(requireActivity()).get(WalletsViewModel.class);

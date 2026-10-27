@@ -1,6 +1,7 @@
 package com.example.comgroupcapmoney.data.api;
 
 import com.example.comgroupcapmoney.model.ApiResponse;
+import com.example.comgroupcapmoney.model.Transfer;
 import com.example.comgroupcapmoney.model.TransferResult;
 import com.example.comgroupcapmoney.model.Wallet;
 import java.util.List;
@@ -11,6 +12,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface WalletApi {
     @GET("wallets")
@@ -24,4 +26,7 @@ public interface WalletApi {
 
     @POST("wallets/transfer")
     Call<ApiResponse<TransferResult>> transfer(@Body Map<String, Object> body);
+
+    @GET("wallets/transfers")
+    Call<ApiResponse<List<Transfer>>> getTransfers(@Query("month") int month, @Query("year") int year);
 }

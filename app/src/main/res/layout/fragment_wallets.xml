@@ -107,6 +107,19 @@
                         app:strokeColor="@color/color_accent" />
                 </LinearLayout>
 
+                <!-- Lich su chuyen tien (4B-1) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/wallet_btn_history"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/transfer_history_button"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color_accent"
+                    android:textSize="13sp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

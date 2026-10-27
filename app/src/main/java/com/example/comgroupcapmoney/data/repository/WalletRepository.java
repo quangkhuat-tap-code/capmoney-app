@@ -3,6 +3,7 @@ package com.example.comgroupcapmoney.data.repository;
 import android.content.Context;
 import com.example.comgroupcapmoney.data.api.ApiClient;
 import com.example.comgroupcapmoney.data.api.WalletApi;
+import com.example.comgroupcapmoney.model.Transfer;
 import com.example.comgroupcapmoney.model.TransferResult;
 import com.example.comgroupcapmoney.model.Wallet;
 import java.util.HashMap;
@@ -55,5 +56,9 @@ public class WalletRepository {
             body.put("note", note.trim());
         }
         api.transfer(body).enqueue(AuthRepository.wrap(appContext, cb, true));
+    }
+
+    public void getTransfers(int month, int year, RepoCallback<List<Transfer>> cb) {
+        api.getTransfers(month, year).enqueue(AuthRepository.wrap(appContext, cb, true));
     }
 }
