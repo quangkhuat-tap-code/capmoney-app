@@ -7,6 +7,7 @@ import com.example.comgroupcapmoney.data.api.TransactionApi;
 import com.example.comgroupcapmoney.model.ApiResponse;
 import com.example.comgroupcapmoney.model.Category;
 import com.example.comgroupcapmoney.model.DeleteTransactionResult;
+import com.example.comgroupcapmoney.model.SearchPage;
 import com.example.comgroupcapmoney.model.Transaction;
 import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.ui.capture.WalletOption;
@@ -124,6 +125,20 @@ public class TransactionRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<DeleteTransactionResult>> call, Throwable t) {
+                handleFailure(t, cb);
+            }
+        });
+    }
+
+    public void search(String q, int page, ResultCallback<SearchPage> cb) {
+        api.search(q, page).enqueue(new Callback<ApiResponse<SearchPage>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<SearchPage>> call, Response<ApiResponse<SearchPage>> response) {
+                handleResponse(response, cb);
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<SearchPage>> call, Throwable t) {
                 handleFailure(t, cb);
             }
         });

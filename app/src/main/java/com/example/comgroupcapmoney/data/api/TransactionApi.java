@@ -3,6 +3,7 @@ package com.example.comgroupcapmoney.data.api;
 import com.example.comgroupcapmoney.model.ApiResponse;
 import com.example.comgroupcapmoney.model.Category;
 import com.example.comgroupcapmoney.model.DeleteTransactionResult;
+import com.example.comgroupcapmoney.model.SearchPage;
 import com.example.comgroupcapmoney.model.Transaction;
 import com.example.comgroupcapmoney.ui.capture.WalletOption;
 import java.util.List;
@@ -46,6 +47,9 @@ public interface TransactionApi {
 
     @DELETE("transactions/{id}")
     Call<ApiResponse<DeleteTransactionResult>> deleteTransaction(@Path("id") int id);
+
+    @GET("transactions/search")
+    Call<ApiResponse<SearchPage>> search(@Query("q") String q, @Query("page") int page);
 
     @PUT("transactions/{id}")
     Call<ApiResponse<Transaction>> updateTransaction(@Path("id") int id, @Body Map<String, Object> body);

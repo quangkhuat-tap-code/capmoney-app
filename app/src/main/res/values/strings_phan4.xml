@@ -6,4 +6,12 @@
     <string name="edit_save">Cập nhật</string>
     <string name="edit_saved">Đã cập nhật giao dịch</string>
     <string name="edit_discard_title">Bỏ thay đổi?</string>
+
+    <!-- 4A-2 Tim kiem giao dich -->
+    <string name="search_hint">Tìm ghi chú hoặc danh mục…</string>
+    <string name="search_idle">Nhập từ khoá để tìm</string>
+    <string name="search_empty">Không tìm thấy giao dịch nào</string>
+    <string name="search_cd_open">Tìm kiếm giao dịch</string>
+    <string name="search_cd_back">Quay lại</string>
+    <string name="search_cd_clear">Xoá từ khoá</string>
 </resources>

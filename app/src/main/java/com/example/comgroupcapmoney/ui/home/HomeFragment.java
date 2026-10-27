@@ -1,5 +1,6 @@
 package com.example.comgroupcapmoney.ui.home;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.ui.auth.SessionManager;
+import com.example.comgroupcapmoney.ui.search.SearchActivity;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
 import com.google.android.material.button.MaterialButton;
@@ -161,6 +163,8 @@ public class HomeFragment extends Fragment {
         });
 
         btnRetry.setOnClickListener(v -> viewModel.load());
+        requireView().findViewById(R.id.btn_search).setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), SearchActivity.class)));
     }
 
     private void observeViewModel() {
