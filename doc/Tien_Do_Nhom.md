@@ -129,7 +129,6 @@ Màn Phần 3 gặp 401 chỉ báo lỗi (chưa gọi `SessionManager.logout`) �
 
 | Người | Việc | Ghi chú |
 |---|---|---|
-| **Lâm Anh** | Bổ sung ảnh chụp màn hình vào PR [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) (comment) | Tài liệu 99 yêu cầu ảnh; lúc tạo PR chưa đính kèm |
 | **Lâm Anh** | Thử C15 trên điện thoại thật (A-T2c) | Emulator không thay được |
 | **Trung, Quang** | Review [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) và [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2), merge **backend trước hoặc cùng lúc** với app. **Không** làm lại task Phần 2, 3 | App mới cần API mới của backend |
 | **Cả nhóm** | Sau khi merge: app mở vào màn Đăng nhập, đăng ký tài khoản để test (không cần dòng `DEV ONLY`) | Tài khoản seed `dev@example.test` không đăng nhập được; muốn dùng dữ liệu user 1 thì vẫn lấy token bằng `npm run dev:token` |
@@ -152,3 +151,4 @@ Màn Phần 3 gặp 401 chỉ báo lỗi (chưa gọi `SessionManager.logout`) �
 | 27/10/2026 | Lâm Anh | Backend: Phần 2 BE-4 (`12797e5`), Phần 3 BE-1 (`b791cc4`), BE-2 (`3d2225b`), đã push `lamanh` |
 | 27/10/2026 | Lâm Anh | App: Phần 2 AN-1→AN-6 và Phần 3 AN-1→AN-5 xong, test emulator đạt hết, 2 luồng nghiệm thu 99 đạt, unit test 12/12. Đã push `lamanh` (`b3d565f`). Còn mở PR #2 |
 | 27/10/2026 | Lâm Anh | Mở PR [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) và [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) (`lamanh` → `develop`), GitHub báo merge được |
+| 27/10/2026 | Lâm Anh | Đăng 8 ảnh chụp màn hình (Đăng nhập, Tài khoản, Thêm ví, Chuyển tiền, Cá nhân, Thống kê, offline, Ngân sách) vào comment PR app #2 |
