@@ -36,6 +36,7 @@ import com.bumptech.glide.Glide;
 import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.model.Category;
 import com.example.comgroupcapmoney.model.Transaction;
+import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
 import com.example.comgroupcapmoney.utils.ImageUtils;
@@ -95,6 +96,8 @@ public class CaptureExpenseActivity extends AppCompatActivity {
         Executors.newSingleThreadExecutor().execute(() -> ImageUtils.clearOldUploads(getApplicationContext()));
 
         viewModel = new ViewModelProvider(this).get(CaptureViewModel.class);
+        // API bao 401 (token het han) thi ve man dang nhap
+        SessionManager.observeExpired(this, this);
 
         initViews();
         setupActivityLaunchers();

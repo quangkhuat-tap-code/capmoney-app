@@ -8,6 +8,7 @@ import com.example.comgroupcapmoney.model.ApiResponse;
 import com.example.comgroupcapmoney.model.Category;
 import com.example.comgroupcapmoney.model.DeleteTransactionResult;
 import com.example.comgroupcapmoney.model.Transaction;
+import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.ui.capture.WalletOption;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -141,6 +142,7 @@ public class TransactionRepository {
             }
         } else {
             if (response.code() == 401) {
+                SessionManager.notifyExpired();
                 cb.onError(appContext.getString(R.string.capture_error_unauthorized));
                 return;
             }

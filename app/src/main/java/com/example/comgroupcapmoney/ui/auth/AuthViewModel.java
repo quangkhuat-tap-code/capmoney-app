@@ -54,6 +54,7 @@ public class AuthViewModel extends AndroidViewModel {
                 // Luu token ngay o day de man hinh bi tao lai van khong mat phien
                 SharedPrefManager.getInstance(getApplication())
                         .saveAuthData(data.getToken(), data.getUser().getId(), data.getUser().getFullName());
+                SessionManager.resetExpired();
                 loading.setValue(false);
                 success.setValue(data);
             }

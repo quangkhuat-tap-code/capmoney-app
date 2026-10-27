@@ -7,6 +7,7 @@ import com.example.comgroupcapmoney.data.api.BudgetApi;
 import com.example.comgroupcapmoney.model.ApiResponse;
 import com.example.comgroupcapmoney.model.Budget;
 import com.example.comgroupcapmoney.model.Category;
+import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.HashMap;
@@ -86,6 +87,7 @@ public class BudgetRepository {
         }
 
         if (response.code() == 401) {
+            SessionManager.notifyExpired();
             cb.onError(appContext.getString(R.string.stats_error_unauthorized), false);
             return;
         }
