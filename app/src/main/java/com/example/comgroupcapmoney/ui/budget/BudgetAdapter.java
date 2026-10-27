@@ -20,7 +20,20 @@ import java.util.List;
 
 public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder> {
 
+    public interface Listener {
+        /** Bam 1 dong: sua han muc. */
+        void onBudgetClick(Budget budget);
+
+        /** Nhan giu 1 dong: xoa. */
+        void onBudgetLongClick(Budget budget);
+    }
+
     private final List<Budget> items = new ArrayList<>();
+    private Listener listener;
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
 
     public void setItems(List<Budget> newItems) {
         items.clear();
@@ -39,7 +52,16 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(items.get(position));
+        Budget budget = items.get(position);
+        holder.bind(budget);
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onBudgetClick(budget);
+        });
+        holder.itemView.setOnLongClickListener(v -> {
+            if (listener == null) return false;
+            listener.onBudgetLongClick(budget);
+            return true;
+        });
     }
 
     @Override

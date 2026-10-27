@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -21,6 +22,7 @@ import com.example.comgroupcapmoney.model.Budget;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import java.util.List;
 
@@ -74,6 +76,10 @@ public class BudgetFragment extends Fragment {
         initViews(view);
         setupListeners();
         observeViewModel();
+
+        // Form luu thanh cong -> tai lai danh sach
+        getChildFragmentManager().setFragmentResultListener(BudgetFormDialog.RESULT_BUDGET_CHANGED,
+                getViewLifecycleOwner(), (key, bundle) -> viewModel.load());
     }
 
     @Override
@@ -108,6 +114,17 @@ public class BudgetFragment extends Fragment {
         btnAdd.setText("+ " + getString(R.string.budget_add));
 
         adapter = new BudgetAdapter();
+        adapter.setListener(new BudgetAdapter.Listener() {
+            @Override
+            public void onBudgetClick(Budget budget) {
+                openForm(budget);
+            }
+
+            @Override
+            public void onBudgetLongClick(Budget budget) {
+                confirmDelete(budget);
+            }
+        });
         rvList.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvList.setAdapter(adapter);
     }
@@ -116,9 +133,27 @@ public class BudgetFragment extends Fragment {
         btnPrevMonth.setOnClickListener(v -> viewModel.prevMonth());
         btnNextMonth.setOnClickListener(v -> viewModel.nextMonth());
         btnRetry.setOnClickListener(v -> viewModel.load());
-        // Form dat/sua ngan sach lam o AN-5
-        btnAdd.setOnClickListener(v -> { });
-        btnEmptyAction.setOnClickListener(v -> { });
+        btnAdd.setOnClickListener(v -> openForm(null));
+        btnEmptyAction.setOnClickListener(v -> openForm(null));
+    }
+
+    /** editing = null: che do Them; khac null: che do Sua. */
+    private void openForm(@Nullable Budget editing) {
+        if (getChildFragmentManager().findFragmentByTag(BudgetFormDialog.TAG) != null) return;
+        BudgetFormDialog.newInstance(viewModel.getMonthValue(), viewModel.getYearValue(),
+                viewModel.getBudgetedCategoryIds(), editing)
+                .show(getChildFragmentManager(), BudgetFormDialog.TAG);
+    }
+
+    private void confirmDelete(Budget budget) {
+        String message = getString(R.string.budget_delete_message,
+                CurrencyUtils.format(budget.getLimitAmount()), budget.getCategoryName());
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.budget_delete_title)
+                .setMessage(message)
+                .setNegativeButton(R.string.budget_cancel, null)
+                .setPositiveButton(R.string.budget_delete, (dialog, which) -> viewModel.deleteBudget(budget.getId()))
+                .show();
     }
 
     private void observeViewModel() {
@@ -136,6 +171,14 @@ public class BudgetFragment extends Fragment {
         });
         viewModel.getLoading().observe(getViewLifecycleOwner(), l -> render());
         viewModel.getError().observe(getViewLifecycleOwner(), e -> render());
+
+        viewModel.getEvent().observe(getViewLifecycleOwner(), singleEvent -> {
+            if (singleEvent == null) return;
+            String msg = singleEvent.getContentIfNotHandled();
+            if (msg != null && !msg.isEmpty()) {
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /** Ve lai man hinh tu trang thai hien tai cua ViewModel. */

@@ -5,8 +5,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.data.repository.BudgetRepository;
 import com.example.comgroupcapmoney.model.Budget;
+import com.example.comgroupcapmoney.utils.SingleEvent;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -28,6 +30,8 @@ public class BudgetViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Budget>> budgets = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>(null);
+    /** Thong bao 1 lan (Toast) sau khi xoa. */
+    private final MutableLiveData<SingleEvent<String>> event = new MutableLiveData<>();
 
     public BudgetViewModel(@NonNull Application application) {
         super(application);
@@ -43,9 +47,22 @@ public class BudgetViewModel extends AndroidViewModel {
     public LiveData<List<Budget>> getBudgets() { return budgets; }
     public LiveData<Boolean> getLoading() { return loading; }
     public LiveData<String> getError() { return error; }
+    public LiveData<SingleEvent<String>> getEvent() { return event; }
 
     public int getMonthValue() { return month; }
     public int getYearValue() { return year; }
+
+    /** category_id cac danh muc da co ngan sach trong thang dang xem (de form bao "da co"). */
+    public ArrayList<Integer> getBudgetedCategoryIds() {
+        ArrayList<Integer> ids = new ArrayList<>();
+        List<Budget> list = budgets.getValue();
+        if (list != null) {
+            for (Budget b : list) {
+                ids.add(b.getCategoryId());
+            }
+        }
+        return ids;
+    }
 
     /** Da tung goi load() chua (de Fragment biet co can tai lai sau khi xoay man hinh). */
     public boolean hasStarted() {
@@ -104,6 +121,21 @@ public class BudgetViewModel extends AndroidViewModel {
                 budgets.setValue(null);
                 error.setValue(message);
                 loading.setValue(false);
+            }
+        });
+    }
+
+    public void deleteBudget(int id) {
+        repository.deleteBudget(id, new BudgetRepository.Callback<Object>() {
+            @Override
+            public void onSuccess(Object data) {
+                event.setValue(new SingleEvent<>(getApplication().getString(R.string.budget_deleted)));
+                load();
+            }
+
+            @Override
+            public void onError(String message, boolean isNetworkError) {
+                event.setValue(new SingleEvent<>(message));
             }
         });
     }
