@@ -19,8 +19,8 @@ Ký hiệu trạng thái:
 | Phần | Người | Nội dung | Nhánh (cả 2 repo) | BE | FE | Ghi chú |
 |---|---|---|---|---|---|---|
 | Phần 1 | **Lâm Anh** | Chụp ảnh ghi chi tiêu, Tab Home (lưới + lịch), API giao dịch, API danh mục | `lamanh` | ✅ 5/5 | ✅ 7/7, nghiệm thu xong với API ví thật | Còn: C15 trên điện thoại thật |
-| Phần 2 | **Trung** (Lâm Anh làm thay) | Đăng nhập/đăng ký, Tab Tài khoản (ví, chuyển tiền), Tab Cá nhân | **`lamanh`** | ✅ 4/4 | ✅ 6/6, nghiệm thu đạt | PR [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) đang chờ review |
-| Phần 3 | **Quang** (Lâm Anh làm thay) | Tab Thống kê (donut), Tab Ngân sách, cache offline Room | **`lamanh`** | ✅ 2/2 | ✅ 5/5, nghiệm thu đạt | Cùng PR [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) |
+| Phần 2 | **Trung** (Lâm Anh làm thay) | Đăng nhập/đăng ký, Tab Tài khoản (ví, chuyển tiền), Tab Cá nhân | **`lamanh`** | ✅ 4/4 | ✅ 6/6, nghiệm thu đạt | Đã merge [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) vào `develop` (27/10) |
+| Phần 3 | **Quang** (Lâm Anh làm thay) | Tab Thống kê (donut), Tab Ngân sách, cache offline Room | **`lamanh`** | ✅ 2/2 | ✅ 5/5, nghiệm thu đạt | Đã merge cùng [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) |
 
 27/10/2026: toàn bộ Phần 2 và Phần 3 đã làm xong trên nhánh **`lamanh`** (không dùng `feature/wallets-auth`, `feature/stats-budget`). Trung, Quang **không** làm lại; kéo `lamanh` về để review.
 
@@ -29,7 +29,7 @@ Ký hiệu trạng thái:
 ```text
 ✅ Lâm Anh: PR #1 app + backend lamanh → develop (đã merge 24/10)
 ✅ Phần 2 + Phần 3 + sửa insets Phần 1 trên lamanh (27/10, đã push)
-🔄 PR #2 lamanh → develop ở cả 2 repo (đã mở 27/10, chờ review) ──► merge xong cả nhóm kéo develop: app mở vào màn Đăng nhập, bỏ dòng DEV ONLY
+✅ PR #2 lamanh → develop ở cả 2 repo (merge 27/10) ──► cả nhóm kéo develop: app mở vào màn Đăng nhập, bỏ dòng DEV ONLY
 ```
 
 ---
@@ -68,7 +68,7 @@ Ký hiệu trạng thái:
 | A-T2c | Thử C15 (ảnh camera 12MP) trên **điện thoại thật** | ⬜ | — | Emulator chỉ ra ảnh 14KB, không xoay. Cần điện thoại thật (đổi IP LAN tạm, không commit) |
 | A-T3 | Nghiệm thu toàn luồng (7 bước, file 06 mục 4) | ✅ | — | 27/10/2026, đạt 7/7. Bước 4: `GET /api/wallets` thật trả ví 1 = 10.000.000 đ, file ảnh đã xoá. DB có sẵn giao dịch cũ nên thẻ Chi tiêu so theo chênh lệch (+50.000) |
 | A-8 | Sửa Tab Home + màn chụp bị đè lên status bar (Android 15+) | ✅ | — | Commit `c026a0f`, đã push `lamanh`. `targetSdk 37` bắt buộc edge-to-edge; thêm padding theo insets trong `HomeFragment`, `CaptureExpenseActivity` |
-| A-PR2 | PR #2 `lamanh` → `develop` ở cả 2 repo (Phần 1 A-8 + toàn bộ Phần 2, 3) | 🔄 | — | Đã mở 27/10/2026: [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2). GitHub báo merge được, chờ review |
+| A-PR2 | PR #2 `lamanh` → `develop` ở cả 2 repo (Phần 1 A-8 + toàn bộ Phần 2, 3) | ✅ | — | Merge 27/10/2026: [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2). App `35a1465`, backend `3bce232` |
 
 ---
 
@@ -95,7 +95,7 @@ Lưu ý khi test bằng Git Bash trên Windows: `curl -d '{"name":"Tiết kiệm
 | AN-4 | Tab Tài khoản: tổng tài sản, danh sách ví | ✅ | — | [AN-4](phan-2/AN-4_Tab_Tai_Khoan.md) · `ccebc52`. Đạt W1, W1b, W7, W8, X1 |
 | AN-5 | Thêm/sửa ví, chuyển tiền | ✅ | — | [AN-5](phan-2/AN-5_Them_Sua_Vi_Chuyen_Tien.md) · `534a27b`. Đạt W2→W6, T1→T5, X2 |
 | AN-6 | Tab Cá nhân, đăng xuất | ✅ | — | [AN-6](phan-2/AN-6_Tab_Ca_Nhan.md) · `b3d565f`. Đạt P1→P6, X1. P5 test bằng cách làm hỏng token trong app (không sửa `JWT_SECRET`) |
-| 99 | Nghiệm thu, PR app | 🔄 | — | [99](phan-2/99_Nghiem_Thu_Va_PR.md) · Luồng 6 bước đạt. PR [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) chờ review |
+| 99 | Nghiệm thu, PR app | ✅ | — | [99](phan-2/99_Nghiem_Thu_Va_PR.md) · Luồng 6 bước đạt. Đã merge [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) |
 
 ---
 
@@ -119,7 +119,7 @@ Test backend Phần 3 chạy trên user test riêng (không xoá giao dịch c�
 | AN-3 | Cache offline bằng Room | ✅ | — | [AN-3](phan-3/AN-3_Cache_Offline_Room.md) · `82b43a8`. Đạt OF1→OF5, unit test U1→U4 |
 | AN-4 | Tab Ngân sách: danh sách, thanh 3 màu | ✅ | — | [AN-4](phan-3/AN-4_Tab_Ngan_Sach.md) · `36361c8`. Đạt BU1, BU1b, BU8→BU11 |
 | AN-5 | Thêm/sửa/xoá ngân sách | ✅ | — | [AN-5](phan-3/AN-5_Them_Sua_Xoa_Ngan_Sach.md) · `a7e8b79`. Đạt BU2→BU7, BU12 |
-| 99 | Nghiệm thu, PR app | 🔄 | — | [99](phan-3/99_Nghiem_Thu_Va_PR.md) · Luồng 5 bước đạt. PR [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) chờ review |
+| 99 | Nghiệm thu, PR app | ✅ | — | [99](phan-3/99_Nghiem_Thu_Va_PR.md) · Luồng 5 bước đạt. Đã merge [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) |
 
 Màn Phần 3 gặp 401 chỉ báo lỗi (chưa gọi `SessionManager.logout`) — đúng như tài liệu Phần 3, có thể đổi sau.
 
@@ -130,7 +130,7 @@ Màn Phần 3 gặp 401 chỉ báo lỗi (chưa gọi `SessionManager.logout`) �
 | Người | Việc | Ghi chú |
 |---|---|---|
 | **Lâm Anh** | Thử C15 trên điện thoại thật (A-T2c) | Emulator không thay được |
-| **Trung, Quang** | Review [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) và [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2), merge **backend trước hoặc cùng lúc** với app. **Không** làm lại task Phần 2, 3 | App mới cần API mới của backend |
+| **Trung, Quang** | Kéo `develop` mới về **cả 2 repo** (Hướng dẫn mục 4.1). **Không** làm lại task Phần 2, 3 | Phần 2, 3 đã merge 27/10 |
 | **Cả nhóm** | Sau khi merge: app mở vào màn Đăng nhập, đăng ký tài khoản để test (không cần dòng `DEV ONLY`) | Tài khoản seed `dev@example.test` không đăng nhập được; muốn dùng dữ liệu user 1 thì vẫn lấy token bằng `npm run dev:token` |
 | **Cả nhóm** | Màn mới thêm vào `MainActivity` phải tự xử lý insets status bar (Android 15+) | Làm giống `HomeFragment.onViewCreated`; activity riêng làm giống `CaptureExpenseActivity.applyWindowInsets()` |
 
@@ -152,3 +152,4 @@ Màn Phần 3 gặp 401 chỉ báo lỗi (chưa gọi `SessionManager.logout`) �
 | 27/10/2026 | Lâm Anh | App: Phần 2 AN-1→AN-6 và Phần 3 AN-1→AN-5 xong, test emulator đạt hết, 2 luồng nghiệm thu 99 đạt, unit test 12/12. Đã push `lamanh` (`b3d565f`). Còn mở PR #2 |
 | 27/10/2026 | Lâm Anh | Mở PR [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) và [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) (`lamanh` → `develop`), GitHub báo merge được |
 | 27/10/2026 | Lâm Anh | Đăng 8 ảnh chụp màn hình (Đăng nhập, Tài khoản, Thêm ví, Chuyển tiền, Cá nhân, Thống kê, offline, Ngân sách) vào comment PR app #2 |
+| 27/10/2026 | Lâm Anh | Merge PR [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) (`35a1465`) và [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) (`3bce232`) vào `develop`, chưa qua review của Trung, Quang (theo quyết định của Lâm Anh) |
