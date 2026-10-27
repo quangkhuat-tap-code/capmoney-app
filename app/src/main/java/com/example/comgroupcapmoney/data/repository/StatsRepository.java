@@ -2,11 +2,13 @@ package com.example.comgroupcapmoney.data.repository;
 
 import android.content.Context;
 import com.example.comgroupcapmoney.R;
+import com.example.comgroupcapmoney.data.api.AnalyticsTrendApi;
 import com.example.comgroupcapmoney.data.api.ApiClient;
 import com.example.comgroupcapmoney.data.api.StatsApi;
 import com.example.comgroupcapmoney.model.ApiResponse;
 import com.example.comgroupcapmoney.model.StatsSummary;
 import com.example.comgroupcapmoney.model.Transaction;
+import com.example.comgroupcapmoney.model.TrendPoint;
 import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -25,11 +27,18 @@ public class StatsRepository {
 
     private final Context appContext;
     private final StatsApi api;
+    private final AnalyticsTrendApi trendApi;
     private final Gson gson = new Gson();
 
     public StatsRepository(Context context) {
         this.appContext = context.getApplicationContext();
         this.api = ApiClient.getClient(appContext).create(StatsApi.class);
+        this.trendApi = ApiClient.getClient(appContext).create(AnalyticsTrendApi.class);
+    }
+
+    // months thang ket thuc o thang/nam truyen vao, cu nhat truoc (4C-1)
+    public void getTrend(int month, int year, int months, Callback<List<TrendPoint>> cb) {
+        enqueue(trendApi.getTrend(month, year, months), cb);
     }
 
     public void getSummary(int month, int year, String type, Callback<StatsSummary> cb) {

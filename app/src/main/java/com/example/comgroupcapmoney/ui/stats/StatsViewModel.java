@@ -10,6 +10,7 @@ import com.example.comgroupcapmoney.data.local.TransactionCache;
 import com.example.comgroupcapmoney.data.repository.StatsRepository;
 import com.example.comgroupcapmoney.model.StatsSummary;
 import com.example.comgroupcapmoney.model.Transaction;
+import com.example.comgroupcapmoney.model.TrendPoint;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -36,6 +37,17 @@ public class StatsViewModel extends AndroidViewModel {
     /** null = so lieu online; khac null = dang xem cache, gia tri la thoi diem luu (millis). */
     private final MutableLiveData<Long> offlineCachedAt = new MutableLiveData<>(null);
 
+    // Bieu do 6 thang (4C-1)
+    public static final int TREND_MONTHS = 6;
+    public static final int TREND_LOADING = 0;
+    public static final int TREND_OK = 1;
+    public static final int TREND_EMPTY = 2;
+    public static final int TREND_OFFLINE = 3;
+    public static final int TREND_ERROR = 4;
+    private final MutableLiveData<List<TrendPoint>> trend = new MutableLiveData<>(null);
+    private final MutableLiveData<Integer> trendState = new MutableLiveData<>(TREND_LOADING);
+    private int trendRequestId = 0;
+
     public StatsViewModel(@NonNull Application application) {
         super(application);
         repository = new StatsRepository(application);
@@ -53,6 +65,8 @@ public class StatsViewModel extends AndroidViewModel {
     public LiveData<Boolean> getLoading() { return loading; }
     public LiveData<String> getError() { return error; }
     public LiveData<Long> getOfflineCachedAt() { return offlineCachedAt; }
+    public LiveData<List<TrendPoint>> getTrend() { return trend; }
+    public LiveData<Integer> getTrendState() { return trendState; }
 
     /** Da tung goi load() chua (de Fragment biet co can tai lai sau khi xoay man hinh). */
     public boolean hasStarted() {
@@ -70,7 +84,7 @@ public class StatsViewModel extends AndroidViewModel {
             month = 12;
             year--;
         }
-        onSelectionChanged();
+        onSelectionChanged(true);
     }
 
     public void nextMonth() {
@@ -80,25 +94,33 @@ public class StatsViewModel extends AndroidViewModel {
             month = 1;
             year++;
         }
-        onSelectionChanged();
+        onSelectionChanged(true);
     }
 
     public void setType(String newType) {
         if (newType == null || newType.equals(type)) return;
         type = newType;
         typeLiveData.setValue(newType);
-        onSelectionChanged();
+        // Bieu do 6 thang luon co ca Chi va Thu: doi tab khong can tai lai
+        onSelectionChanged(false);
     }
 
-    private void onSelectionChanged() {
+    private void onSelectionChanged(boolean monthChanged) {
         period.setValue(new int[]{month, year});
         // Bo so lieu cua thang/tab cu de khong hien nham trong luc tai
         summary.setValue(null);
         offlineCachedAt.setValue(null);
-        load();
+        load(monthChanged);
     }
 
     public void load() {
+        load(true);
+    }
+
+    private void load(boolean withTrend) {
+        if (withTrend) {
+            loadTrend(month, year);
+        }
         started = true;
         final int id = ++requestId;
         final int m = month;
@@ -125,6 +147,36 @@ public class StatsViewModel extends AndroidViewModel {
                     // 401, 400, 500...: bao loi, khong dung cache
                     showError(message);
                 }
+            }
+        });
+    }
+
+    // 6 thang ket thuc o thang dang chon; mat mang thi khong co (Room chi luu thang da mo)
+    private void loadTrend(int m, int y) {
+        final int id = ++trendRequestId;
+        trendState.setValue(TREND_LOADING);
+        repository.getTrend(m, y, TREND_MONTHS, new StatsRepository.Callback<List<TrendPoint>>() {
+            @Override
+            public void onSuccess(List<TrendPoint> data) {
+                if (id != trendRequestId) return;
+                boolean allZero = true;
+                if (data != null) {
+                    for (TrendPoint p : data) {
+                        if (p.getTotalExpense() > 0 || p.getTotalIncome() > 0) {
+                            allZero = false;
+                            break;
+                        }
+                    }
+                }
+                trend.setValue(data);
+                trendState.setValue(allZero ? TREND_EMPTY : TREND_OK);
+            }
+
+            @Override
+            public void onError(String message, boolean isNetworkError) {
+                if (id != trendRequestId) return;
+                trend.setValue(null);
+                trendState.setValue(isNetworkError ? TREND_OFFLINE : TREND_ERROR);
             }
         });
     }

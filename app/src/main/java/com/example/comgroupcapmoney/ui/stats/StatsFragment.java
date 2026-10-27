@@ -21,8 +21,10 @@ import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.model.CategoryStat;
 import com.example.comgroupcapmoney.model.StatsSummary;
+import com.example.comgroupcapmoney.model.TrendPoint;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
@@ -62,6 +64,12 @@ public class StatsFragment extends Fragment {
     private MaterialButton btnRetry;
 
     private CategoryStatAdapter adapter;
+
+    // Bieu do 6 thang (4C-1)
+    private BarChart trendChart;
+    private TextView tvTrendState;
+    private TextView tvTrendSelected;
+    private List<TrendPoint> boundTrend;
 
     /** Summary dang ve tren bieu do/danh sach, de khong ve lai (va chay lai animation) khi chi doi loading. */
     private StatsSummary boundSummary;
@@ -110,6 +118,7 @@ public class StatsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         boundSummary = null;
+        boundTrend = null;
     }
 
     private void initViews(View view) {
@@ -130,6 +139,9 @@ public class StatsFragment extends Fragment {
         layoutError = view.findViewById(R.id.stats_layout_error);
         tvError = view.findViewById(R.id.stats_tv_error);
         btnRetry = view.findViewById(R.id.stats_btn_retry);
+        trendChart = view.findViewById(R.id.trend_bar_chart);
+        tvTrendState = view.findViewById(R.id.trend_tv_state);
+        tvTrendSelected = view.findViewById(R.id.trend_tv_selected);
 
         adapter = new CategoryStatAdapter();
         rvCategories.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -166,6 +178,25 @@ public class StatsFragment extends Fragment {
                 pieChart.setCenterText(defaultCenterText(boundSummary));
             }
         });
+
+        TrendChartHelper.setup(trendChart, requireContext());
+        // Bam vao cot: hien so day du cua thang do duoi bieu do
+        trendChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                if (e != null && e.getData() instanceof TrendPoint) {
+                    TrendPoint p = (TrendPoint) e.getData();
+                    tvTrendSelected.setText(getString(R.string.trend_selected, p.getMonth(), p.getYear(),
+                            CurrencyUtils.format(p.getTotalExpense()), CurrencyUtils.format(p.getTotalIncome())));
+                    tvTrendSelected.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
+                tvTrendSelected.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void setupListeners() {
@@ -198,6 +229,43 @@ public class StatsFragment extends Fragment {
         viewModel.getLoading().observe(getViewLifecycleOwner(), l -> render());
         viewModel.getError().observe(getViewLifecycleOwner(), e -> render());
         viewModel.getOfflineCachedAt().observe(getViewLifecycleOwner(), at -> render());
+        viewModel.getTrend().observe(getViewLifecycleOwner(), t -> renderTrend());
+        viewModel.getTrendState().observe(getViewLifecycleOwner(), s -> renderTrend());
+    }
+
+    private void renderTrend() {
+        Integer state = viewModel.getTrendState().getValue();
+        List<TrendPoint> points = viewModel.getTrend().getValue();
+        int s = state != null ? state : StatsViewModel.TREND_LOADING;
+
+        if (s == StatsViewModel.TREND_OK && points != null) {
+            tvTrendState.setVisibility(View.GONE);
+            trendChart.setVisibility(View.VISIBLE);
+            // Xoay man hinh / LiveData phat lai: khong ve lai, khong chay lai animation
+            if (points != boundTrend) {
+                boundTrend = points;
+                tvTrendSelected.setVisibility(View.GONE);
+                TrendChartHelper.bind(trendChart, points, requireContext());
+            }
+            return;
+        }
+
+        if (s == StatsViewModel.TREND_LOADING) {
+            // Dang tai lai: giu bieu do cu neu co de khong nhay
+            return;
+        }
+
+        boundTrend = null;
+        trendChart.setVisibility(View.GONE);
+        tvTrendSelected.setVisibility(View.GONE);
+        tvTrendState.setVisibility(View.VISIBLE);
+        if (s == StatsViewModel.TREND_EMPTY) {
+            tvTrendState.setText(R.string.trend_empty);
+        } else if (s == StatsViewModel.TREND_OFFLINE) {
+            tvTrendState.setText(R.string.trend_offline);
+        } else {
+            tvTrendState.setText(R.string.trend_error);
+        }
     }
 
     private void updateTypeToggle(String type) {

@@ -42,4 +42,13 @@
 
     <!-- 4B-3 Anh dai dien -->
     <string name="avatar_cd_change">Đổi ảnh đại diện</string>
+
+    <!-- 4C-1 Bieu do 6 thang -->
+    <string name="trend_title">6 tháng gần nhất</string>
+    <string name="trend_legend_expense">Chi</string>
+    <string name="trend_legend_income">Thu</string>
+    <string name="trend_empty">Chưa có dữ liệu 6 tháng gần nhất</string>
+    <string name="trend_offline">Cần kết nối mạng để xem xu hướng</string>
+    <string name="trend_error">Không tải được xu hướng</string>
+    <string name="trend_selected">Tháng %1$d/%2$d · Chi %3$s · Thu %4$s</string>
 </resources>

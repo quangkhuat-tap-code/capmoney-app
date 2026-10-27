@@ -226,6 +226,52 @@
                     app:cornerRadius="@dimen/corner_radius_pill"
                     app:strokeColor="@color/color_accent" />
             </LinearLayout>
+
+            <!-- Bieu do Chi/Thu 6 thang (4C-1) -->
+            <LinearLayout
+                android:id="@+id/trend_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:background="@drawable/bg_trend_card"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_medium">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/trend_title"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/text_size_body"
+                    android:textStyle="bold" />
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/trend_bar_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="@dimen/spacing_small" />
+
+                <TextView
+                    android:id="@+id/trend_tv_selected"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_small"
+                    android:gravity="center"
+                    android:textColor="@color/text_primary"
+                    android:textSize="@dimen/text_size_small"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/trend_tv_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_medium"
+                    android:layout_marginBottom="@dimen/spacing_medium"
+                    android:gravity="center"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="@dimen/text_size_body"
+                    android:visibility="gone" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>
