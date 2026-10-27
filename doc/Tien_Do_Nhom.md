@@ -70,6 +70,7 @@ Ký hiệu trạng thái:
 | A-8 | Sửa Tab Home + màn chụp bị đè lên status bar (Android 15+) | ✅ | — | Commit `c026a0f`, đã push `lamanh`. `targetSdk 37` bắt buộc edge-to-edge; thêm padding theo insets trong `HomeFragment`, `CaptureExpenseActivity` |
 | A-PR2 | PR #2 `lamanh` → `develop` ở cả 2 repo (Phần 1 A-8 + toàn bộ Phần 2, 3) | ✅ | — | Merge 27/10/2026: [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2). App `35a1465`, backend `3bce232` |
 | A-9 | Tab Home, Thống kê, Ngân sách, màn chụp tự về Đăng nhập khi token hết hạn (401) | ✅ | — | Commit `d78bb8f`, đã merge [app #3](https://github.com/quangkhuat-tap-code/capmoney-app/pull/3) vào `develop` (`6e3c2ee`). Test 5 ca trên emulator đạt |
+| A-10 | Tab Home xem được giao dịch đã lưu (Room) khi mất mạng, có banner offline | ✅ | — | Commit `eed6a90`, đã merge [app #4](https://github.com/quangkhuat-tap-code/capmoney-app/pull/4) vào `develop` (`010ae3f`). Test 4 ca trên emulator đạt |
 
 ---
 
@@ -155,3 +156,4 @@ Test backend Phần 3 chạy trên user test riêng (không xoá giao dịch c�
 | 27/10/2026 | Lâm Anh | Đăng 8 ảnh chụp màn hình (Đăng nhập, Tài khoản, Thêm ví, Chuyển tiền, Cá nhân, Thống kê, offline, Ngân sách) vào comment PR app #2 |
 | 27/10/2026 | Lâm Anh | Merge PR [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2) (`35a1465`) và [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) (`3bce232`) vào `develop`, chưa qua review của Trung, Quang (theo quyết định của Lâm Anh) |
 | 27/10/2026 | Lâm Anh | Sửa: Tab Home, Thống kê, Ngân sách, màn chụp tự về Đăng nhập khi token hết hạn. Merge [app #3](https://github.com/quangkhuat-tap-code/capmoney-app/pull/3) vào `develop` |
+| 27/10/2026 | Lâm Anh | Tab Home chạy offline bằng `TransactionCache`. Merge [app #4](https://github.com/quangkhuat-tap-code/capmoney-app/pull/4) vào `develop` |
