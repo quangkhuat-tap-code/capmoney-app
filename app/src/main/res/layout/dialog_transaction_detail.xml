@@ -140,29 +140,49 @@
             android:textSize="@dimen/text_size_body" />
     </LinearLayout>
 
-    <!-- Nút Xóa giao dịch -->
-    <FrameLayout
+    <!-- Nút Sửa + Xóa giao dịch -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_delete_tx"
+            android:id="@+id/btn_edit_tx"
             style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="48dp"
-            android:text="@string/home_delete"
-            android:textColor="@color/color_expense"
+            android:layout_marginEnd="@dimen/spacing_small"
+            android:layout_weight="1"
+            android:text="@string/edit_button"
+            android:textColor="@color/color_accent"
             app:cornerRadius="@dimen/corner_radius_pill"
-            app:strokeColor="@color/color_expense" />
+            app:strokeColor="@color/color_accent" />
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/progress_delete"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            android:visibility="gone"
-            app:indicatorColor="@color/color_expense"
-            app:trackColor="@color/transparent" />
-    </FrameLayout>
+            android:layout_weight="1">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_delete_tx"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/home_delete"
+                android:textColor="@color/color_expense"
+                app:cornerRadius="@dimen/corner_radius_pill"
+                app:strokeColor="@color/color_expense" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:indicatorColor="@color/color_expense"
+                app:trackColor="@color/transparent" />
+        </FrameLayout>
+    </LinearLayout>
 </LinearLayout>

@@ -3,16 +3,20 @@ package com.example.comgroupcapmoney.data.api;
 import com.example.comgroupcapmoney.model.ApiResponse;
 import com.example.comgroupcapmoney.model.Category;
 import com.example.comgroupcapmoney.model.DeleteTransactionResult;
+import com.example.comgroupcapmoney.model.SearchPage;
 import com.example.comgroupcapmoney.model.Transaction;
 import com.example.comgroupcapmoney.ui.capture.WalletOption;
 import java.util.List;
+import java.util.Map;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -43,4 +47,10 @@ public interface TransactionApi {
 
     @DELETE("transactions/{id}")
     Call<ApiResponse<DeleteTransactionResult>> deleteTransaction(@Path("id") int id);
+
+    @GET("transactions/search")
+    Call<ApiResponse<SearchPage>> search(@Query("q") String q, @Query("page") int page);
+
+    @PUT("transactions/{id}")
+    Call<ApiResponse<Transaction>> updateTransaction(@Path("id") int id, @Body Map<String, Object> body);
 }

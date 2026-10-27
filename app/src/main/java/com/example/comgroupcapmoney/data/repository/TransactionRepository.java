@@ -7,6 +7,7 @@ import com.example.comgroupcapmoney.data.api.TransactionApi;
 import com.example.comgroupcapmoney.model.ApiResponse;
 import com.example.comgroupcapmoney.model.Category;
 import com.example.comgroupcapmoney.model.DeleteTransactionResult;
+import com.example.comgroupcapmoney.model.SearchPage;
 import com.example.comgroupcapmoney.model.Transaction;
 import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.ui.capture.WalletOption;
@@ -15,7 +16,9 @@ import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -122,6 +125,44 @@ public class TransactionRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<DeleteTransactionResult>> call, Throwable t) {
+                handleFailure(t, cb);
+            }
+        });
+    }
+
+    public void search(String q, int page, ResultCallback<SearchPage> cb) {
+        api.search(q, page).enqueue(new Callback<ApiResponse<SearchPage>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<SearchPage>> call, Response<ApiResponse<SearchPage>> response) {
+                handleResponse(response, cb);
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<SearchPage>> call, Throwable t) {
+                handleFailure(t, cb);
+            }
+        });
+    }
+
+    // Sua giao dich (JSON): khong doi loai, khong doi anh
+    public void updateTransaction(int id, long amount, int walletId, int categoryId,
+                                  String note, String transactionDate,
+                                  ResultCallback<Transaction> cb) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("amount", amount);
+        body.put("wallet_id", walletId);
+        body.put("category_id", categoryId);
+        body.put("note", note != null ? note : "");
+        body.put("transaction_date", transactionDate);
+
+        api.updateTransaction(id, body).enqueue(new Callback<ApiResponse<Transaction>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Transaction>> call, Response<ApiResponse<Transaction>> response) {
+                handleResponse(response, cb);
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Transaction>> call, Throwable t) {
                 handleFailure(t, cb);
             }
         });

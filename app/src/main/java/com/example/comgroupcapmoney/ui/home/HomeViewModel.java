@@ -200,6 +200,11 @@ public class HomeViewModel extends AndroidViewModel {
                             updated.add(tx);
                         }
                     }
+                    // Xoa tu man tim kiem (4A-2): giao dich co the khong thuoc thang dang xem, khong ghi de cache
+                    if (updated.size() == current.size()) {
+                        event.setValue(new SingleEvent<>(getApplication().getString(R.string.home_deleted)));
+                        return;
+                    }
                     transactions.setValue(updated);
                     calculateTotalsAndCalendar(updated);
                     cache.saveMonth(month, year, updated);

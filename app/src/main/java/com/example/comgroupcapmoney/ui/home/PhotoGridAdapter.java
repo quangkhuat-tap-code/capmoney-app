@@ -36,6 +36,8 @@ public class PhotoGridAdapter extends ListAdapter<Transaction, PhotoGridAdapter.
                     && Objects.equals(oldItem.getImageUrl(), newItem.getImageUrl())
                     && Objects.equals(oldItem.getNote(), newItem.getNote())
                     && oldItem.getCategoryId() == newItem.getCategoryId()
+                    && oldItem.getWalletId() == newItem.getWalletId()
+                    && Objects.equals(oldItem.getWalletName(), newItem.getWalletName())
                     && Objects.equals(oldItem.getTransactionDate(), newItem.getTransactionDate());
         }
     };

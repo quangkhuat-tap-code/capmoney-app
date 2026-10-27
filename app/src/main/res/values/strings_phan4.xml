@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 4A-1 Sua giao dich -->
+    <string name="edit_button">Sửa</string>
+    <string name="edit_title">Sửa giao dịch</string>
+    <string name="edit_save">Cập nhật</string>
+    <string name="edit_saved">Đã cập nhật giao dịch</string>
+    <string name="edit_discard_title">Bỏ thay đổi?</string>
+
+    <!-- 4A-2 Tim kiem giao dich -->
+    <string name="search_hint">Tìm ghi chú hoặc danh mục…</string>
+    <string name="search_idle">Nhập từ khoá để tìm</string>
+    <string name="search_empty">Không tìm thấy giao dịch nào</string>
+    <string name="search_cd_open">Tìm kiếm giao dịch</string>
+    <string name="search_cd_back">Quay lại</string>
+    <string name="search_cd_clear">Xoá từ khoá</string>
+
+    <!-- 4A-3 Doc so tien tu anh hoa don -->
+    <string name="receipt_filled">Đã đọc %1$s từ hoá đơn · Hoàn tác</string>
+    <string name="receipt_suggest">Hoá đơn ghi %1$s · Dùng số này</string>
+</resources>
