@@ -27,6 +27,9 @@ import com.example.comgroupcapmoney.utils.DateUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
@@ -161,6 +164,18 @@ public class HomeFragment extends Fragment {
     }
 
     private void observeViewModel() {
+        // Mat mang va dang hien du lieu da luu: hien banner kem thoi diem luu
+        TextView tvOfflineBanner = requireView().findViewById(R.id.tv_offline_banner);
+        viewModel.getOfflineCachedAt().observe(getViewLifecycleOwner(), cachedAt -> {
+            if (cachedAt == null) {
+                tvOfflineBanner.setVisibility(View.GONE);
+                return;
+            }
+            String time = new SimpleDateFormat("HH:mm dd/MM", Locale.getDefault()).format(new Date(cachedAt));
+            tvOfflineBanner.setText(getString(R.string.home_offline_banner, time));
+            tvOfflineBanner.setVisibility(View.VISIBLE);
+        });
+
         viewModel.getMonth().observe(getViewLifecycleOwner(), m -> updateMonthTitle());
         viewModel.getYear().observe(getViewLifecycleOwner(), y -> updateMonthTitle());
 

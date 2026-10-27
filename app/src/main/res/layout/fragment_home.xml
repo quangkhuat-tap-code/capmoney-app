@@ -41,6 +41,26 @@
             android:src="@drawable/ic_chevron_right_24" />
     </LinearLayout>
 
+    <!-- Banner khi mat mang, dang xem du lieu luu trong Room -->
+    <TextView
+        android:id="@+id/tv_offline_banner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_medium"
+        android:layout_marginTop="@dimen/spacing_tiny"
+        android:layout_marginEnd="@dimen/spacing_medium"
+        android:background="@drawable/bg_home_offline_banner"
+        android:paddingStart="12dp"
+        android:paddingTop="@dimen/spacing_small"
+        android:paddingEnd="12dp"
+        android:paddingBottom="@dimen/spacing_small"
+        android:textColor="@color/color_warning"
+        android:textSize="13sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_month_selector" />
+
     <!-- Thẻ Tổng Chi và Thu -->
     <LinearLayout
         android:id="@+id/layout_totals"
@@ -50,7 +70,7 @@
         android:paddingStart="@dimen/spacing_medium"
         android:paddingEnd="@dimen/spacing_medium"
         android:layout_marginTop="4dp"
-        app:layout_constraintTop_toBottomOf="@id/layout_month_selector">
+        app:layout_constraintTop_toBottomOf="@id/tv_offline_banner">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_total_expense"

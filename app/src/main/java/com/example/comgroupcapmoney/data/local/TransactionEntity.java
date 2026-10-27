@@ -5,6 +5,8 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import com.example.comgroupcapmoney.model.Transaction;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /** 1 giao dich da tai ve, luu theo user + thang dang xem. */
 @Entity(tableName = "cached_transactions",
@@ -64,6 +66,24 @@ public class TransactionEntity {
     public long cachedAt;
 
     public TransactionEntity() {}
+
+    // Doi nguoc ve Transaction (model Phan 1 chi co getter) bang dung ten field JSON cua API
+    public Transaction toTransaction() {
+        JsonObject o = new JsonObject();
+        o.addProperty("id", id);
+        o.addProperty("amount", amount);
+        o.addProperty("type", type);
+        o.addProperty("note", note);
+        o.addProperty("image_url", imageUrl);
+        o.addProperty("transaction_date", transactionDate);
+        o.addProperty("wallet_id", walletId);
+        o.addProperty("wallet_name", walletName);
+        o.addProperty("category_id", categoryId);
+        o.addProperty("category_name", categoryName);
+        o.addProperty("category_icon", categoryIcon);
+        o.addProperty("category_color", categoryColor);
+        return new Gson().fromJson(o, Transaction.class);
+    }
 
     public static TransactionEntity from(Transaction t, int userId, int month, int year, long now) {
         TransactionEntity e = new TransactionEntity();
