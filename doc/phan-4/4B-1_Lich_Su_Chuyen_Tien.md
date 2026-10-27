@@ -50,9 +50,9 @@ const [rows] = await pool.query(
 | `model/Transfer.java` | Các trường như JSON mục 2.3 file 01 (`@SerializedName`) |
 | `data/api/WalletApi.java` | `@GET("wallets/transfers") Call<ApiResponse<List<Transfer>>> getTransfers(@Query("month") int month, @Query("year") int year);` |
 | `data/repository/WalletRepository.java` | `getTransfers(month, year, RepoCallback<List<Transfer>>)` |
-| `ui/wallets/TransferHistoryBottomSheet.java`, `TransferHistoryAdapter.java` | **Tạo mới** (BottomSheetDialogFragment, không cần khai báo manifest) |
+| `ui/wallets/TransferHistoryBottomSheet.java`, `TransferHistoryAdapter.java`, `TransferHistoryViewModel.java` | **Tạo mới** (BottomSheetDialogFragment, không cần khai báo manifest; ViewModel giữ tháng khi xoay màn hình) |
 | `res/layout/bottom_sheet_transfer_history.xml`, `item_transfer_history.xml` | **Tạo mới** |
-| `ui/wallets/WalletsFragment.java` + `fragment_wallets.xml` | Thêm nút `wallet_btn_history` "Lịch sử" cạnh nút Chuyển tiền (3 nút chia đều hàng) |
+| `ui/wallets/WalletsFragment.java` + `fragment_wallets.xml` | Thêm nút chữ `wallet_btn_history` "🕘 Lịch sử chuyển tiền" **dưới** hàng nút Thêm ví / Chuyển tiền (3 nút cùng hàng thì chữ "Chuyển tiền giữa các ví" bị xuống dòng) |
 
 ### Giao diện
 

@@ -42,7 +42,7 @@ Test xong đổi mật khẩu của `demo@example.test` về như cũ.
 |---|---|
 | `data/api/AuthApi.java` | `@PUT("auth/password") Call<ApiResponse<Object>> changePassword(@Body Map<String, String> body);` |
 | `data/repository/AuthRepository.java` | `changePassword(current, next, RepoCallback<Object>)` (dùng `wrap(..., needsToken = true)` có sẵn) |
-| `ui/profile/ChangePasswordDialog.java` | **Tạo mới**, `DialogFragment` (Material) |
+| `ui/profile/ChangePasswordDialog.java` | **Tạo mới**, `BottomSheetDialogFragment` (giống form thêm ví của Phần 2) |
 | `res/layout/dialog_change_password.xml` | 3 ô `TextInputLayout` kiểu filled như màn Đăng nhập, có nút con mắt |
 | `ui/profile/ProfileFragment.java` + `fragment_profile.xml` | Nút viền `profile_btn_change_password` "Đổi mật khẩu" **trên** nút Đăng xuất |
 
