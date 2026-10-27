@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tab Thong ke (Phan 3) -->
+    <string name="stats_title">Thống kê</string>
+    <string name="stats_tab_expense">Chi tiêu</string>
+    <string name="stats_tab_income">Thu nhập</string>
+    <string name="stats_total_expense">Tổng chi</string>
+    <string name="stats_total_income">Tổng thu</string>
+    <string name="stats_summary_line">Thu %1$s · Chi %2$s</string>
+    <string name="stats_count">%1$d giao dịch</string>
+    <string name="stats_empty_expense">Chưa có khoản chi nào trong tháng này</string>
+    <string name="stats_empty_income">Chưa có khoản thu nào trong tháng này</string>
+    <string name="stats_offline_banner">Đang xem dữ liệu đã lưu lúc %1$s (không có mạng)</string>
+    <string name="stats_offline_no_cache">Không có mạng và chưa có dữ liệu lưu sẵn cho tháng này</string>
+    <string name="stats_error_network">Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại</string>
+    <string name="stats_error_unknown">Có lỗi xảy ra, vui lòng thử lại</string>
+    <string name="stats_error_unauthorized">Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại</string>
+    <string name="stats_retry">Thử lại</string>
+
+    <!-- Tab Ngan sach (Phan 3) -->
+    <string name="budget_title">Ngân sách</string>
+    <string name="budget_add">Thêm</string>
+    <string name="budget_summary_limit">Tổng hạn mức</string>
+    <string name="budget_summary_spent">Đã chi</string>
+    <string name="budget_summary_remaining">Còn lại</string>
+    <string name="budget_item_spent">Đã tiêu %1$s / %2$s</string>
+    <string name="budget_item_remaining">Còn %1$s</string>
+    <string name="budget_item_over">Vượt %1$s</string>
+    <string name="budget_empty">Chưa đặt ngân sách cho tháng này</string>
+    <string name="budget_empty_action">Đặt ngân sách</string>
+    <string name="budget_form_add_title">Đặt ngân sách</string>
+    <string name="budget_form_edit_title">Sửa hạn mức</string>
+    <string name="budget_form_category">Danh mục chi tiêu</string>
+    <string name="budget_form_limit_hint">Hạn mức trong tháng</string>
+    <string name="budget_form_month">Áp dụng cho %1$s</string>
+    <string name="budget_form_existing_hint">Danh mục này đã có ngân sách tháng này, lưu sẽ cập nhật hạn mức</string>
+    <string name="budget_error_category">Vui lòng chọn danh mục</string>
+    <string name="budget_error_limit">Hạn mức phải lớn hơn 0</string>
+    <string name="budget_save">Lưu</string>
+    <string name="budget_cancel">Huỷ</string>
+    <string name="budget_saved">Đã lưu ngân sách</string>
+    <string name="budget_delete_title">Xoá ngân sách?</string>
+    <string name="budget_delete_message">Xoá hạn mức %1$s của %2$s?</string>
+    <string name="budget_delete">Xoá</string>
+    <string name="budget_deleted">Đã xoá ngân sách</string>
+</resources>
