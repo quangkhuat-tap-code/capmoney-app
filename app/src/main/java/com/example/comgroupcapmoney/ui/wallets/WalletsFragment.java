@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
@@ -75,6 +76,10 @@ public class WalletsFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(WalletsViewModel.class);
         skipNextResumeLoad = savedInstanceState != null && viewModel.getWallets().getValue() != null;
+
+        // Dialog them/sua vi, chuyen tien bao thanh cong thi tai lai danh sach
+        getChildFragmentManager().setFragmentResultListener(WalletFormDialog.RESULT_KEY, getViewLifecycleOwner(),
+                (key, bundle) -> viewModel.loadWallets());
 
         viewModel.getWallets().observe(getViewLifecycleOwner(), list -> render());
         viewModel.getLoading().observe(getViewLifecycleOwner(), loading -> render());
@@ -147,14 +152,19 @@ public class WalletsFragment extends Fragment {
     }
 
     private void onWalletClick(Wallet wallet) {
-        // AN-5: mo form sua vi
+        WalletFormDialog.newInstance(wallet).show(getChildFragmentManager(), "wallet_form");
     }
 
     private void openAddWallet() {
-        // AN-5: mo form them vi
+        WalletFormDialog.newInstance(null).show(getChildFragmentManager(), "wallet_form");
     }
 
     private void openTransfer() {
-        // AN-5: mo dialog chuyen tien
+        List<Wallet> wallets = viewModel.getWallets().getValue();
+        if (wallets == null || wallets.size() < 2) {
+            Toast.makeText(requireContext(), R.string.transfer_need_two_wallets, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        TransferMoneyDialog.newInstance(new ArrayList<>(wallets)).show(getChildFragmentManager(), "transfer");
     }
 }
