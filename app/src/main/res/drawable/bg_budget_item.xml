@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The ngan sach: nen bg_card bo goc, hieu ung bam nam gon trong goc bo -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/bg_card" />
+            <corners android:radius="@dimen/corner_radius_card" />
+        </shape>
+    </item>
+</ripple>
