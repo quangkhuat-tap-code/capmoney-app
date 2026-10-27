@@ -181,8 +181,9 @@ public class HomeFragment extends Fragment {
 
         viewModel.getTotals().observe(getViewLifecycleOwner(), totals -> {
             if (totals != null && totals.length == 2) {
-                tvTotalExpense.setText("-" + CurrencyUtils.format(totals[0]));
-                tvTotalIncome.setText("+" + CurrencyUtils.format(totals[1]));
+                // Bang 0 thi khong hien dau, tranh "-0 đ" / "+0 đ"
+                tvTotalExpense.setText((totals[0] > 0 ? "-" : "") + CurrencyUtils.format(totals[0]));
+                tvTotalIncome.setText((totals[1] > 0 ? "+" : "") + CurrencyUtils.format(totals[1]));
             }
         });
 
