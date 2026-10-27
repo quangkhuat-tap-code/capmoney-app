@@ -12,6 +12,9 @@ public class UserProfile {
     @SerializedName("email")
     private String email;
 
+    @SerializedName("avatar_url")
+    private String avatarUrl;
+
     @SerializedName("created_at")
     private String createdAt;
 
@@ -34,6 +37,15 @@ public class UserProfile {
 
     public String getEmail() {
         return email;
+    }
+
+    // Duong dan tuong doi "/uploads/...", null = chua co anh (4B-3)
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public String getCreatedAt() {

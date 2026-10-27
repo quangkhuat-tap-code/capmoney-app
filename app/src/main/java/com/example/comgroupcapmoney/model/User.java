@@ -12,6 +12,9 @@ public class User {
     @SerializedName("email")
     private String email;
 
+    @SerializedName("avatar_url")
+    private String avatarUrl;
+
     public int getId() {
         return id;
     }
@@ -22,5 +25,9 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 }

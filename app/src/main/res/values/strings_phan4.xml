@@ -39,4 +39,7 @@
     <string name="password_err_length">Mật khẩu phải từ 6 đến 72 ký tự</string>
     <string name="password_err_mismatch">Mật khẩu nhập lại không khớp</string>
     <string name="password_changed">Đã đổi mật khẩu</string>
+
+    <!-- 4B-3 Anh dai dien -->
+    <string name="avatar_cd_change">Đổi ảnh đại diện</string>
 </resources>

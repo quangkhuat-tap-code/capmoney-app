@@ -1,10 +1,16 @@
 package com.example.comgroupcapmoney.ui.profile;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -13,11 +19,18 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.comgroupcapmoney.R;
+import com.example.comgroupcapmoney.data.api.ApiClient;
 import com.example.comgroupcapmoney.model.UserProfile;
 import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.SharedPrefManager;
+import com.google.android.material.snackbar.Snackbar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,9 +49,26 @@ public class ProfileFragment extends Fragment {
     private TextView tvIncome;
     private TextView tvExpense;
     private View btnRetry;
+    private ImageView ivAvatar;
+    private View avatarContainer;
+    private View avatarProgress;
+    private String shownAvatarUrl;
 
     // Xoay man hinh: ViewModel da co du lieu thi lan onResume dau tien khong goi lai API
     private boolean skipNextResumeLoad;
+
+    // Chon anh dai dien tu thu vien, khong can xin quyen (4B-3)
+    private ActivityResultLauncher<PickVisualMediaRequest> pickAvatarLauncher;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        pickAvatarLauncher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+            if (uri != null) {
+                viewModel.uploadAvatar(uri);
+            }
+        });
+    }
 
     @Nullable
     @Override
@@ -65,6 +95,13 @@ public class ProfileFragment extends Fragment {
         tvIncome = view.findViewById(R.id.profile_tv_stat_income);
         tvExpense = view.findViewById(R.id.profile_tv_stat_expense);
         btnRetry = view.findViewById(R.id.profile_btn_retry);
+        ivAvatar = view.findViewById(R.id.profile_iv_avatar);
+        avatarContainer = view.findViewById(R.id.avatar_container);
+        avatarProgress = view.findViewById(R.id.avatar_progress);
+        avatarContainer.setOnClickListener(v -> pickAvatarLauncher.launch(
+                new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build()));
 
         btnRetry.setOnClickListener(v -> viewModel.loadProfile());
         view.findViewById(R.id.profile_btn_logout).setOnClickListener(v -> confirmLogout());
@@ -79,6 +116,23 @@ public class ProfileFragment extends Fragment {
         viewModel.getUnauthorized().observe(getViewLifecycleOwner(), event -> {
             if (event != null && event.getContentIfNotHandled() != null) {
                 SessionManager.logout(requireActivity(), true);
+            }
+        });
+        viewModel.getUploadingAvatar().observe(getViewLifecycleOwner(), uploading -> {
+            boolean busy = Boolean.TRUE.equals(uploading);
+            avatarProgress.setVisibility(busy ? View.VISIBLE : View.GONE);
+            avatarContainer.setEnabled(!busy);
+        });
+        viewModel.getAvatarUpdated().observe(getViewLifecycleOwner(), event -> {
+            String msg = event != null ? event.getContentIfNotHandled() : null;
+            if (msg != null) {
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+        viewModel.getAvatarError().observe(getViewLifecycleOwner(), event -> {
+            String msg = event != null ? event.getContentIfNotHandled() : null;
+            if (msg != null) {
+                Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -109,11 +163,14 @@ public class ProfileFragment extends Fragment {
             tvIncome.setText(NO_VALUE);
             tvExpense.setText(NO_VALUE);
             btnRetry.setVisibility(error != null ? View.VISIBLE : View.GONE);
+            // Mat mang nhung da tung tai: giu anh dang hien
+            showAvatar(profile != null ? profile.getAvatarUrl() : shownAvatarUrl);
             return;
         }
 
         btnRetry.setVisibility(View.GONE);
         tvAvatar.setText(avatarLetter(profile.getFullName()));
+        showAvatar(profile.getAvatarUrl());
         tvName.setText(profile.getFullName());
         tvEmail.setText(profile.getEmail());
         String date = toDisplayDate(profile.getCreatedAt());
@@ -121,6 +178,37 @@ public class ProfileFragment extends Fragment {
         tvTransactions.setText(String.valueOf(profile.getTotalTransactions()));
         tvIncome.setText(CurrencyUtils.format(profile.getTotalIncome()));
         tvExpense.setText(CurrencyUtils.format(profile.getTotalExpense()));
+    }
+
+    // Co anh thi chong anh tron len chu cai; khong co anh hoac tai anh loi thi hien chu cai
+    private void showAvatar(String avatarUrl) {
+        if (avatarUrl == null || avatarUrl.trim().isEmpty()) {
+            shownAvatarUrl = null;
+            ivAvatar.setVisibility(View.GONE);
+            return;
+        }
+        if (avatarUrl.equals(shownAvatarUrl) && ivAvatar.getVisibility() == View.VISIBLE) {
+            return;
+        }
+        shownAvatarUrl = avatarUrl;
+        ivAvatar.setVisibility(View.VISIBLE);
+        Glide.with(this)
+                .load(ApiClient.IMAGE_BASE_URL + avatarUrl)
+                .circleCrop()
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
+                        ivAvatar.setVisibility(View.GONE);
+                        shownAvatarUrl = null;
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
+                .into(ivAvatar);
     }
 
     private void confirmLogout() {
