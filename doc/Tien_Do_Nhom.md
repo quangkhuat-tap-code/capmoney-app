@@ -1,7 +1,7 @@
 # Tiến độ nhóm CapMoney
 
 > Cập nhật: **27/10/2026**. Ai xong task nào thì sửa cột "Trạng thái" của task đó và ghi ngày cập nhật ở dòng này.
-> Chi tiết từng task: Phần 1 ở `doc/phan-1/`, Phần 2 ở `doc/phan-2/`, Phần 3 ở `doc/phan-3/`. Quy trình chung: [Huong_Dan_Lam_Viec_Nhom.md](Huong_Dan_Lam_Viec_Nhom.md).
+> Chi tiết từng task: Phần 1 ở `doc/phan-1/`, Phần 2 ở `doc/phan-2/`, Phần 3 ở `doc/phan-3/`, Phần 4 (mở rộng) ở `doc/phan-4/`. Chia phần bảo vệ: [Bao_Ve_Do_An.md](Bao_Ve_Do_An.md). Quy trình chung: [Huong_Dan_Lam_Viec_Nhom.md](Huong_Dan_Lam_Viec_Nhom.md).
 
 Ký hiệu trạng thái:
 
@@ -21,6 +21,7 @@ Ký hiệu trạng thái:
 | Phần 1 | **Lâm Anh** | Chụp ảnh ghi chi tiêu, Tab Home (lưới + lịch), API giao dịch, API danh mục | `lamanh` | ✅ 5/5 | ✅ 7/7, nghiệm thu xong với API ví thật | Xong cả C15 trên điện thoại thật |
 | Phần 2 | **Trung** (Lâm Anh làm thay) | Đăng nhập/đăng ký, Tab Tài khoản (ví, chuyển tiền), Tab Cá nhân | **`lamanh`** | ✅ 4/4 | ✅ 6/6, nghiệm thu đạt | Đã merge [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) vào `develop` (27/10) |
 | Phần 3 | **Quang** (Lâm Anh làm thay) | Tab Thống kê (donut), Tab Ngân sách, cache offline Room | **`lamanh`** | ✅ 2/2 | ✅ 5/5, nghiệm thu đạt | Đã merge cùng [app #2](https://github.com/quangkhuat-tap-code/capmoney-app/pull/2), [backend #2](https://github.com/quangkhuat-tap-code/backend-cap-money/pull/2) |
+| Phần 4 | **Lâm Anh** code + test · trình bày: 4A Lâm Anh, 4B Trung, 4C Quang | 9 tính năng mở rộng (mục 5) | **`lamanh`** | ⬜ 0/6 | ⬜ 0/9 | Tài liệu viết 27/10, chưa code |
 
 27/10/2026: toàn bộ Phần 2 và Phần 3 đã làm xong trên nhánh **`lamanh`** (không dùng `feature/wallets-auth`, `feature/stats-budget`). Trung, Quang **không** làm lại; kéo `lamanh` về để review.
 
@@ -128,17 +129,38 @@ Test backend Phần 3 chạy trên user test riêng (không xoá giao dịch c�
 
 ---
 
-## 5. Việc còn lại
+## 5. Phần 4 · Mở rộng (Lâm Anh code + test trên `lamanh`)
+
+Chi tiết: [phan-4/00_Tong_Quan_Phan_4.md](phan-4/00_Tong_Quan_Phan_4.md). Mỗi file gồm cả backend và Android của 1 tính năng. Người trình bày khi bảo vệ ghi ở cột "Trình bày".
+
+| Mã | Tính năng | Trình bày | BE | FE | Ghi chú |
+|---|---|---|---|---|---|
+| 4A-1 | Sửa giao dịch (`PUT /api/transactions/:id`) | Lâm Anh | ⬜ | ⬜ | [4A-1](phan-4/4A-1_Sua_Giao_Dich.md) |
+| 4A-2 | Tìm kiếm giao dịch | Lâm Anh | ⬜ | ⬜ | [4A-2](phan-4/4A-2_Tim_Kiem_Giao_Dich.md) · sửa `AndroidManifest.xml` (commit riêng) |
+| 4A-3 | Đọc số tiền từ ảnh hoá đơn (ML Kit) | Lâm Anh | — | ⬜ | [4A-3](phan-4/4A-3_Doc_So_Tien_Hoa_Don.md) · sửa `app/build.gradle` (commit riêng) |
+| 4B-1 | Lịch sử chuyển tiền | Trung | ⬜ | ⬜ | [4B-1](phan-4/4B-1_Lich_Su_Chuyen_Tien.md) |
+| 4B-2 | Đổi mật khẩu | Trung | ⬜ | ⬜ | [4B-2](phan-4/4B-2_Doi_Mat_Khau.md) |
+| 4B-3 | Ảnh đại diện | Trung | ⬜ | ⬜ | [4B-3](phan-4/4B-3_Anh_Dai_Dien.md) · thêm cột `users.avatar_url` (migration + `database_init.sql`) |
+| 4C-1 | Biểu đồ Chi/Thu 6 tháng | Quang | ⬜ | ⬜ | [4C-1](phan-4/4C-1_Bieu_Do_6_Thang.md) |
+| 4C-2 | Thông báo vượt ngân sách | Quang | — | ⬜ | [4C-2](phan-4/4C-2_Thong_Bao_Vuot_Ngan_Sach.md) · quyền `POST_NOTIFICATIONS` |
+| 4C-3 | Tab Tài khoản xem được khi mất mạng | Quang | — | ⬜ | [4C-3](phan-4/4C-3_Tab_Tai_Khoan_Offline.md) · Room lên `version = 2` |
+| 99 | Nghiệm thu, 3 cặp PR (4A, 4B, 4C) | — | ⬜ | ⬜ | [99](phan-4/99_Nghiem_Thu_Va_PR.md) |
+
+---
+
+## 6. Việc còn lại
 
 | Người | Việc | Ghi chú |
 |---|---|---|
+| **Lâm Anh** | Code + test Phần 4 (mục 5), mở PR 4A, 4B, 4C | Theo thứ tự trong [phan-4/00](phan-4/00_Tong_Quan_Phan_4.md) |
+| **Trung, Quang** | Đọc phần mình trong [Bao_Ve_Do_An.md](Bao_Ve_Do_An.md) (Trung mục 4, Quang mục 5), tự chạy demo ít nhất 1 lần | Không cần code |
 | **Trung, Quang** | Kéo `develop` mới về **cả 2 repo** (Hướng dẫn mục 4.1). **Không** làm lại task Phần 2, 3 | Phần 2, 3 đã merge 27/10 |
 | **Cả nhóm** | Sau khi merge: app mở vào màn Đăng nhập, đăng ký tài khoản để test (không cần dòng `DEV ONLY`) | Tài khoản seed `dev@example.test` không đăng nhập được; muốn dùng dữ liệu user 1 thì vẫn lấy token bằng `npm run dev:token` |
 | **Cả nhóm** | Màn mới thêm vào `MainActivity` phải tự xử lý insets status bar (Android 15+) | Làm giống `HomeFragment.onViewCreated`; activity riêng làm giống `CaptureExpenseActivity.applyWindowInsets()` |
 
 ---
 
-## 6. Lịch sử cập nhật
+## 7. Lịch sử cập nhật
 
 | Ngày | Người | Thay đổi |
 |---|---|---|
@@ -159,3 +181,4 @@ Test backend Phần 3 chạy trên user test riêng (không xoá giao dịch c�
 | 27/10/2026 | Lâm Anh | Tab Home chạy offline bằng `TransactionCache`. Merge [app #4](https://github.com/quangkhuat-tap-code/capmoney-app/pull/4) vào `develop` |
 | 27/10/2026 | Lâm Anh | A-T2c: C15 đạt trên điện thoại thật (ảnh 12MP 2,5MB → 98KB, không bị xoay). Phần 1 xong hết |
 | 27/10/2026 | Lâm Anh | Sửa thẻ tổng ở Tab Home hiện "-0 đ". Merge [app #5](https://github.com/quangkhuat-tap-code/capmoney-app/pull/5) vào `develop` |
+| 27/10/2026 | Lâm Anh | Viết tài liệu Phần 4 (9 tính năng mở rộng, `doc/phan-4/`) và chia phần bảo vệ ([Bao_Ve_Do_An.md](Bao_Ve_Do_An.md)): Lâm Anh code + test, mỗi người trình bày 1 phần |
