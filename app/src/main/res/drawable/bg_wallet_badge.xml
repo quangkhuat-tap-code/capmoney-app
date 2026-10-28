@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- color_accent #5E7CE2 mo 20% -->
+    <solid android:color="#335E7CE2" />
+    <corners android:radius="@dimen/corner_radius_pill" />
+</shape>

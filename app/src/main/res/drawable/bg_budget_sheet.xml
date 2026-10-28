@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nen bottom sheet form ngan sach: bg_card, bo 2 goc tren -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/bg_card" />
+    <corners
+        android:topLeftRadius="@dimen/corner_radius_card"
+        android:topRightRadius="@dimen/corner_radius_card" />
+</shape>

@@ -2,87 +2,44 @@ package com.example.comgroupcapmoney.ui.stats;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.model.CategoryStat;
-
-import java.text.NumberFormat;
+import com.example.comgroupcapmoney.utils.CurrencyUtils;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * RecyclerView Adapter hiển thị danh sách % từng danh mục
- * ở phần dưới biểu đồ Donut Chart (Tab 2 StatsFragment).
- */
 public class CategoryStatAdapter extends RecyclerView.Adapter<CategoryStatAdapter.ViewHolder> {
 
-    private final Context context;
-    private List<CategoryStat> items = new ArrayList<>();
-    private static final NumberFormat VND_FORMAT;
+    private final List<CategoryStat> items = new ArrayList<>();
 
-    static {
-        VND_FORMAT = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-        VND_FORMAT.setMaximumFractionDigits(0);
-    }
-
-    public CategoryStatAdapter(Context context) {
-        this.context = context;
-    }
-
-    /** Cập nhật dữ liệu — gọi sau khi nhận response từ API */
     public void setItems(List<CategoryStat> newItems) {
-        items = newItems != null ? newItems : new ArrayList<>();
+        items.clear();
+        if (newItems != null) {
+            items.addAll(newItems);
+        }
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_category_stat, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stats_category, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        CategoryStat stat = items.get(position);
-
-        // Tên danh mục
-        holder.tvName.setText(stat.getName());
-
-        // Icon danh mục (emoji)
-        holder.tvIcon.setText(stat.getIcon() != null ? stat.getIcon() : "");
-
-        // Phần trăm (ví dụ: "35.2%")
-        holder.tvPercentage.setText(String.format(Locale.getDefault(), "%.1f%%", stat.getPercentage()));
-
-        // Số tiền định dạng VND
-        holder.tvAmount.setText(VND_FORMAT.format(stat.getTotal()) + " đ");
-
-        // Chấm màu — đặt màu từ color_hex của danh mục
-        try {
-            int color = Color.parseColor(stat.getColorHex());
-            holder.viewColorDot.setBackgroundTintList(
-                    android.content.res.ColorStateList.valueOf(color));
-            holder.progressCategory.setProgressTintList(
-                    android.content.res.ColorStateList.valueOf(color));
-        } catch (IllegalArgumentException e) {
-            // Màu hex không hợp lệ → dùng màu mặc định accent
-            holder.viewColorDot.setBackgroundTintList(null);
-        }
-
-        // Thanh tiến độ (0–100)
-        int progress = (int) Math.min(stat.getPercentage(), 100);
-        holder.progressCategory.setProgress(progress);
+        holder.bind(items.get(position));
     }
 
     @Override
@@ -90,22 +47,62 @@ public class CategoryStatAdapter extends RecyclerView.Adapter<CategoryStatAdapte
         return items.size();
     }
 
+    /** "#FF9F0A" -> mau; sai/thieu -> fallback. */
+    static int parseColor(String hex, int fallback) {
+        if (hex == null || hex.trim().isEmpty()) {
+            return fallback;
+        }
+        try {
+            return Color.parseColor(hex.trim());
+        } catch (IllegalArgumentException e) {
+            return fallback;
+        }
+    }
+
+    /** 1 chu so thap phan kieu Viet Nam, bo ",0": 63.0 -> "63%", 36.5 -> "36,5%". */
+    static String formatPercent(double percent) {
+        double rounded = Math.round(percent * 10) / 10.0;
+        if (rounded == Math.floor(rounded)) {
+            return ((long) rounded) + "%";
+        }
+        return String.format(Locale.US, "%.1f", rounded).replace('.', ',') + "%";
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
-        View viewColorDot;
-        TextView tvIcon;
-        TextView tvName;
-        TextView tvPercentage;
-        TextView tvAmount;
-        ProgressBar progressCategory;
+        private final TextView tvIcon;
+        private final TextView tvName;
+        private final TextView tvAmount;
+        private final TextView tvCount;
+        private final LinearProgressIndicator progress;
+        private final TextView tvPercent;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            viewColorDot      = itemView.findViewById(R.id.view_color_dot);
-            tvIcon            = itemView.findViewById(R.id.tv_category_icon);
-            tvName            = itemView.findViewById(R.id.tv_category_name);
-            tvPercentage      = itemView.findViewById(R.id.tv_percentage);
-            tvAmount          = itemView.findViewById(R.id.tv_amount);
-            progressCategory  = itemView.findViewById(R.id.progress_category);
+            tvIcon = itemView.findViewById(R.id.stats_item_icon);
+            tvName = itemView.findViewById(R.id.stats_item_name);
+            tvAmount = itemView.findViewById(R.id.stats_item_amount);
+            tvCount = itemView.findViewById(R.id.stats_item_count);
+            progress = itemView.findViewById(R.id.stats_item_progress);
+            tvPercent = itemView.findViewById(R.id.stats_item_percent);
+        }
+
+        void bind(CategoryStat item) {
+            Context ctx = itemView.getContext();
+            int color = parseColor(item.getCategoryColor(), ContextCompat.getColor(ctx, R.color.color_accent));
+
+            GradientDrawable circle = new GradientDrawable();
+            circle.setShape(GradientDrawable.OVAL);
+            circle.setColor(Color.argb(0x33, Color.red(color), Color.green(color), Color.blue(color)));
+            tvIcon.setBackground(circle);
+            tvIcon.setText(item.getCategoryIcon() != null ? item.getCategoryIcon() : "");
+
+            tvName.setText(item.getCategoryName());
+            tvAmount.setText(CurrencyUtils.format(item.getAmount()));
+            tvCount.setText(ctx.getString(R.string.stats_count, item.getCount()));
+
+            progress.setIndicatorColor(color);
+            progress.setProgressCompat((int) Math.round(item.getPercent()), false);
+            tvPercent.setText(formatPercent(item.getPercent()));
         }
     }
 }

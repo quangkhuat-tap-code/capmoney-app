@@ -2,42 +2,66 @@ package com.example.comgroupcapmoney.model;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * POJO phần trăm từng danh mục — parse từ mảng "categories"
- * trong response GET /api/analytics/summary.
- * Dùng để vẽ từng lát Donut Chart và hiển thị danh sách bên dưới.
- */
 public class CategoryStat {
-
     @SerializedName("category_id")
     private int categoryId;
 
-    @SerializedName("name")
-    private String name;
+    @SerializedName("category_name")
+    private String categoryName;
 
-    @SerializedName("icon")
-    private String icon;
+    @SerializedName("category_icon")
+    private String categoryIcon;
 
-    @SerializedName("color_hex")
-    private String colorHex;
+    @SerializedName("category_color")
+    private String categoryColor;
 
-    @SerializedName("total")
-    private double total;
+    @SerializedName("amount")
+    private double amount;
 
-    @SerializedName("percentage")
-    private double percentage;
+    @SerializedName("count")
+    private int count;
 
-    // ─── Getters ───────────────────────────────────────────
+    @SerializedName("percent")
+    private double percent;
 
-    public int getCategoryId() { return categoryId; }
+    public CategoryStat() {}
 
-    public String getName() { return name; }
+    public CategoryStat(int categoryId, String categoryName, String categoryIcon, String categoryColor,
+                        double amount, int count, double percent) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.categoryIcon = categoryIcon;
+        this.categoryColor = categoryColor;
+        this.amount = amount;
+        this.count = count;
+        this.percent = percent;
+    }
 
-    public String getIcon() { return icon; }
+    public int getCategoryId() {
+        return categoryId;
+    }
 
-    public String getColorHex() { return colorHex; }
+    public String getCategoryName() {
+        return categoryName;
+    }
 
-    public double getTotal() { return total; }
+    public String getCategoryIcon() {
+        return categoryIcon;
+    }
 
-    public double getPercentage() { return percentage; }
+    public String getCategoryColor() {
+        return categoryColor;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public double getPercent() {
+        return percent;
+    }
 }

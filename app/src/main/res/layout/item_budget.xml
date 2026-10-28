@@ -1,115 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/budget_item_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/spacing_small"
-    app:cardBackgroundColor="@color/bg_card"
-    app:cardCornerRadius="@dimen/corner_radius_card"
-    app:cardElevation="0dp">
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_budget_item"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_medium">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/spacing_medium">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-        <!-- Hàng trên: icon + tên danh mục + số tiền đã tiêu / hạn mức + nút xóa -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="@dimen/spacing_small">
-
-            <!-- Icon danh mục -->
-            <TextView
-                android:id="@+id/tv_category_icon"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:gravity="center"
-                android:textSize="20sp"
-                android:background="@color/bg_card_secondary"
-                android:layout_marginEnd="@dimen/spacing_small" />
-
-            <!-- Tên danh mục -->
-            <TextView
-                android:id="@+id/tv_category_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_size_body"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:ellipsize="end" />
-
-            <!-- Nút xóa -->
-            <ImageButton
-                android:id="@+id/btn_delete"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@android:color/transparent"
-                android:src="@android:drawable/ic_menu_delete"
-                android:tint="@color/text_secondary"
-                android:contentDescription="Xóa ngân sách" />
-
-        </LinearLayout>
-
-        <!-- Đã tiêu / Hạn mức -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="@dimen/spacing_tiny">
-
-            <TextView
-                android:id="@+id/tv_spent"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/color_expense"
-                android:textSize="@dimen/text_size_body"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" / "
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_size_body" />
-
-            <TextView
-                android:id="@+id/tv_limit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_size_body" />
-
-        </LinearLayout>
-
-        <!-- ProgressBar 3 màu -->
-        <ProgressBar
-            android:id="@+id/progress_budget"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:max="100"
-            android:progress="0"
-            android:progressBackgroundTint="@color/bg_card_secondary" />
-
-        <!-- Phần trăm đã tiêu -->
+        <!-- Emoji trong o tron, nen mau danh muc do mo 20% (dat trong code) -->
         <TextView
-            android:id="@+id/tv_progress_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:textColor="@color/text_secondary"
-            android:textSize="@dimen/text_size_small"
-            android:paddingTop="2dp" />
+            android:id="@+id/budget_item_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textSize="20sp" />
 
+        <TextView
+            android:id="@+id/budget_item_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/budget_item_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_small"
+            android:textSize="15sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+    <TextView
+        android:id="@+id/budget_item_spent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/budget_item_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:max="100"
+        app:indicatorTrackGapSize="0dp"
+        app:trackColor="@color/bg_card_secondary"
+        app:trackCornerRadius="4dp"
+        app:trackStopIndicatorSize="0dp"
+        app:trackThickness="8dp" />
+
+    <TextView
+        android:id="@+id/budget_item_remaining"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp" />
+</LinearLayout>

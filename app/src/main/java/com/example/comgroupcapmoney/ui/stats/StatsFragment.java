@@ -1,89 +1,84 @@
 package com.example.comgroupcapmoney.ui.stats;
 
-import android.graphics.Color;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.comgroupcapmoney.R;
-import com.example.comgroupcapmoney.data.api.ApiClient;
-import com.example.comgroupcapmoney.data.api.ApiService;
-import com.example.comgroupcapmoney.model.AnalyticsSummary;
-import com.example.comgroupcapmoney.model.ApiResponse;
+import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.model.CategoryStat;
+import com.example.comgroupcapmoney.model.StatsSummary;
+import com.example.comgroupcapmoney.model.TrendPoint;
+import com.example.comgroupcapmoney.utils.CurrencyUtils;
+import com.example.comgroupcapmoney.utils.DateUtils;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
-
-import java.text.NumberFormat;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-/**
- * Tab 2 — Thống kê Donut Chart
- *
- * Chức năng:
- *   - Chọn tháng / năm qua nút < và >
- *   - Toggle Chi tiêu / Thu nhập
- *   - Vẽ PieChart rỗng ruột (Donut) bằng MPAndroidChart
- *   - Hiển thị RecyclerView danh sách % từng danh mục phía dưới
- *
- * Phụ trách: Thành viên 3
- */
 public class StatsFragment extends Fragment {
 
-    // ─── Views ─────────────────────────────────────────────────────────────
-    private PieChart pieChart;
-    private TextView tvMonthYear;
-    private TextView tvTotalAmount;
-    private TextView tvEmpty;
-    private ProgressBar progressBar;
+    private StatsViewModel viewModel;
+
     private ImageButton btnPrevMonth;
     private ImageButton btnNextMonth;
+    private TextView tvMonth;
     private MaterialButtonToggleGroup toggleType;
+    private MaterialButton btnExpense;
+    private MaterialButton btnIncome;
+    private TextView tvSummaryLine;
+    private View layoutOfflineBanner;
+    private TextView tvOfflineBanner;
+    private LinearProgressIndicator progress;
+    private PieChart pieChart;
     private RecyclerView rvCategories;
+    private View layoutEmpty;
+    private TextView tvEmpty;
+    private View layoutError;
+    private TextView tvError;
+    private MaterialButton btnRetry;
 
-    // ─── Data ──────────────────────────────────────────────────────────────
     private CategoryStatAdapter adapter;
-    private ApiService apiService;
 
-    private int currentMonth;
-    private int currentYear;
-    private String currentType = "expense";   // "expense" | "income"
+    // Bieu do 6 thang (4C-1)
+    private BarChart trendChart;
+    private TextView tvTrendState;
+    private TextView tvTrendSelected;
+    private List<TrendPoint> boundTrend;
 
-    private static final NumberFormat VND_FORMAT;
-    static {
-        VND_FORMAT = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-        VND_FORMAT.setMaximumFractionDigits(0);
-    }
+    /** Summary dang ve tren bieu do/danh sach, de khong ve lai (va chay lai animation) khi chi doi loading. */
+    private StatsSummary boundSummary;
+    /** Xoay man hinh: ViewModel da co du lieu nen bo qua lan onResume dau tien. */
+    private boolean skipNextResumeLoad;
 
-    // ─── Lifecycle ─────────────────────────────────────────────────────────
-
+    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_stats, container, false);
     }
 
@@ -91,229 +86,298 @@ public class StatsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Xử lý insets status bar (Android 15+ edge-to-edge)
-        View root = view.findViewById(R.id.fragment_stats_root);
-        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
-            int top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-            v.setPadding(0, top, 0, 0);
+        // targetSdk 35+ bat buoc edge-to-edge: day noi dung xuong duoi status bar
+        ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(bars.left, bars.top, bars.right, v.getPaddingBottom());
             return insets;
         });
 
-        bindViews(view);
-        setupDefaultDate();
+        viewModel = new ViewModelProvider(requireActivity()).get(StatsViewModel.class);
+        // API bao 401 (token het han) thi ve man dang nhap
+        SessionManager.observeExpired(getViewLifecycleOwner(), requireActivity());
+        skipNextResumeLoad = savedInstanceState != null && viewModel.hasStarted();
+
+        initViews(view);
         setupChart();
-        setupRecyclerView();
         setupListeners();
-
-        apiService = ApiClient.getClient(requireContext()).create(ApiService.class);
-
-        loadStats();
+        observeViewModel();
     }
 
-    // ─── Setup ─────────────────────────────────────────────────────────────
-
-    private void bindViews(View view) {
-        pieChart       = view.findViewById(R.id.pie_chart);
-        tvMonthYear    = view.findViewById(R.id.tv_month_year);
-        tvTotalAmount  = view.findViewById(R.id.tv_total_amount);
-        tvEmpty        = view.findViewById(R.id.tv_empty);
-        progressBar    = view.findViewById(R.id.progress_bar);
-        btnPrevMonth   = view.findViewById(R.id.btn_prev_month);
-        btnNextMonth   = view.findViewById(R.id.btn_next_month);
-        toggleType     = view.findViewById(R.id.toggle_type);
-        rvCategories   = view.findViewById(R.id.rv_categories);
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (skipNextResumeLoad) {
+            skipNextResumeLoad = false;
+            return;
+        }
+        viewModel.load();
     }
 
-    private void setupDefaultDate() {
-        Calendar cal = Calendar.getInstance();
-        currentMonth = cal.get(Calendar.MONTH) + 1;  // Calendar.MONTH là 0-indexed
-        currentYear  = cal.get(Calendar.YEAR);
-        updateMonthYearLabel();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        boundSummary = null;
+        boundTrend = null;
+    }
+
+    private void initViews(View view) {
+        btnPrevMonth = view.findViewById(R.id.stats_btn_prev_month);
+        btnNextMonth = view.findViewById(R.id.stats_btn_next_month);
+        tvMonth = view.findViewById(R.id.stats_tv_month);
+        toggleType = view.findViewById(R.id.stats_toggle_type);
+        btnExpense = view.findViewById(R.id.stats_btn_expense);
+        btnIncome = view.findViewById(R.id.stats_btn_income);
+        tvSummaryLine = view.findViewById(R.id.stats_tv_summary_line);
+        layoutOfflineBanner = view.findViewById(R.id.stats_layout_offline_banner);
+        tvOfflineBanner = view.findViewById(R.id.stats_tv_offline_banner);
+        progress = view.findViewById(R.id.stats_progress);
+        pieChart = view.findViewById(R.id.stats_pie_chart);
+        rvCategories = view.findViewById(R.id.stats_rv_categories);
+        layoutEmpty = view.findViewById(R.id.stats_layout_empty);
+        tvEmpty = view.findViewById(R.id.stats_tv_empty);
+        layoutError = view.findViewById(R.id.stats_layout_error);
+        tvError = view.findViewById(R.id.stats_tv_error);
+        btnRetry = view.findViewById(R.id.stats_btn_retry);
+        trendChart = view.findViewById(R.id.trend_bar_chart);
+        tvTrendState = view.findViewById(R.id.trend_tv_state);
+        tvTrendSelected = view.findViewById(R.id.trend_tv_selected);
+
+        adapter = new CategoryStatAdapter();
+        rvCategories.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvCategories.setAdapter(adapter);
     }
 
     private void setupChart() {
-        // Cấu hình PieChart dạng Donut rỗng ruột
-        pieChart.setUsePercentValues(false);
         pieChart.setDrawHoleEnabled(true);
-        pieChart.setHoleRadius(58f);
-        pieChart.setTransparentCircleRadius(63f);
-        pieChart.setHoleColor(Color.parseColor("#0E0F12"));    // khớp @color/bg_main
-        pieChart.setTransparentCircleColor(Color.parseColor("#0E0F12"));
-
-        // Tắt mô tả, legend mặc định
+        pieChart.setHoleColor(ContextCompat.getColor(requireContext(), R.color.bg_main));
+        pieChart.setHoleRadius(72f);
+        pieChart.setTransparentCircleRadius(0f);
+        pieChart.setDrawEntryLabels(false);
         pieChart.getDescription().setEnabled(false);
         pieChart.getLegend().setEnabled(false);
-
-        // Tắt nhãn % trong lát bánh
-        pieChart.setDrawEntryLabels(false);
-
-        // Animation khi load data
-        pieChart.animateY(600);
-
-        // Không cho xoay biểu đồ khi chạm
         pieChart.setRotationEnabled(false);
-    }
+        pieChart.setCenterTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary));
+        pieChart.setCenterTextSize(16f);
+        pieChart.setNoDataText("");
 
-    private void setupRecyclerView() {
-        adapter = new CategoryStatAdapter(requireContext());
-        rvCategories.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvCategories.setAdapter(adapter);
-        rvCategories.setNestedScrollingEnabled(false);
+        pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                if (e != null && e.getData() instanceof CategoryStat) {
+                    CategoryStat c = (CategoryStat) e.getData();
+                    String icon = c.getCategoryIcon() != null ? c.getCategoryIcon() + " " : "";
+                    pieChart.setCenterText(icon + c.getCategoryName() + "\n"
+                            + CurrencyUtils.format(c.getAmount()) + "\n"
+                            + CategoryStatAdapter.formatPercent(c.getPercent()));
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
+                pieChart.setCenterText(defaultCenterText(boundSummary));
+            }
+        });
+
+        TrendChartHelper.setup(trendChart, requireContext());
+        // Bam vao cot: hien so day du cua thang do duoi bieu do
+        trendChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                if (e != null && e.getData() instanceof TrendPoint) {
+                    TrendPoint p = (TrendPoint) e.getData();
+                    tvTrendSelected.setText(getString(R.string.trend_selected, p.getMonth(), p.getYear(),
+                            CurrencyUtils.format(p.getTotalExpense()), CurrencyUtils.format(p.getTotalIncome())));
+                    tvTrendSelected.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
+                tvTrendSelected.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void setupListeners() {
-        // Nút tháng trước
-        btnPrevMonth.setOnClickListener(v -> {
-            currentMonth--;
-            if (currentMonth < 1) {
-                currentMonth = 12;
-                currentYear--;
-            }
-            updateMonthYearLabel();
-            loadStats();
-        });
+        btnPrevMonth.setOnClickListener(v -> viewModel.prevMonth());
+        btnNextMonth.setOnClickListener(v -> viewModel.nextMonth());
+        btnRetry.setOnClickListener(v -> viewModel.load());
 
-        // Nút tháng sau
-        btnNextMonth.setOnClickListener(v -> {
-            currentMonth++;
-            if (currentMonth > 12) {
-                currentMonth = 1;
-                currentYear++;
-            }
-            updateMonthYearLabel();
-            loadStats();
-        });
-
-        // Toggle Chi / Thu
         toggleType.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (!isChecked) return;
-            if (checkedId == R.id.btn_expense) {
-                currentType = "expense";
-            } else if (checkedId == R.id.btn_income) {
-                currentType = "income";
+            if (checkedId == R.id.stats_btn_income) {
+                viewModel.setType(StatsSummary.TYPE_INCOME);
+            } else if (checkedId == R.id.stats_btn_expense) {
+                viewModel.setType(StatsSummary.TYPE_EXPENSE);
             }
-            loadStats();
+        });
+    }
+
+    private void observeViewModel() {
+        viewModel.getPeriod().observe(getViewLifecycleOwner(), p -> {
+            if (p == null || p.length < 2) return;
+            tvMonth.setText(DateUtils.monthTitle(p[0], p[1]));
+            boolean isCurrent = viewModel.isCurrentMonth();
+            btnNextMonth.setEnabled(!isCurrent);
+            btnNextMonth.setAlpha(isCurrent ? 0.3f : 1.0f);
         });
 
-        // Chọn "Chi" mặc định
-        toggleType.check(R.id.btn_expense);
+        viewModel.getType().observe(getViewLifecycleOwner(), this::updateTypeToggle);
+
+        viewModel.getSummary().observe(getViewLifecycleOwner(), s -> render());
+        viewModel.getLoading().observe(getViewLifecycleOwner(), l -> render());
+        viewModel.getError().observe(getViewLifecycleOwner(), e -> render());
+        viewModel.getOfflineCachedAt().observe(getViewLifecycleOwner(), at -> render());
+        viewModel.getTrend().observe(getViewLifecycleOwner(), t -> renderTrend());
+        viewModel.getTrendState().observe(getViewLifecycleOwner(), s -> renderTrend());
     }
 
-    // ─── API Call ──────────────────────────────────────────────────────────
+    private void renderTrend() {
+        Integer state = viewModel.getTrendState().getValue();
+        List<TrendPoint> points = viewModel.getTrend().getValue();
+        int s = state != null ? state : StatsViewModel.TREND_LOADING;
 
-    private void loadStats() {
-        showLoading(true);
-
-        apiService.getAnalyticsSummary(currentMonth, currentYear, currentType)
-                .enqueue(new Callback<ApiResponse<AnalyticsSummary>>() {
-
-                    @Override
-                    public void onResponse(@NonNull Call<ApiResponse<AnalyticsSummary>> call,
-                                           @NonNull Response<ApiResponse<AnalyticsSummary>> response) {
-                        if (!isAdded()) return;
-                        showLoading(false);
-
-                        if (response.isSuccessful() && response.body() != null
-                                && response.body().isSuccess()) {
-                            AnalyticsSummary summary = response.body().getData();
-                            updateUI(summary);
-                        } else {
-                            showEmptyState(true);
-                            Toast.makeText(requireContext(),
-                                    "Không tải được dữ liệu thống kê", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<ApiResponse<AnalyticsSummary>> call,
-                                          @NonNull Throwable t) {
-                        if (!isAdded()) return;
-                        showLoading(false);
-                        showEmptyState(true);
-                        Toast.makeText(requireContext(),
-                                "Mất kết nối mạng", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    // ─── UI Update ─────────────────────────────────────────────────────────
-
-    private void updateUI(AnalyticsSummary summary) {
-        List<CategoryStat> categories = summary.getCategories();
-
-        if (categories == null || categories.isEmpty()) {
-            showEmptyState(true);
-            updateDonutChart(new ArrayList<>());
-            tvTotalAmount.setText("0 đ");
-            adapter.setItems(new ArrayList<>());
-            return;
-        }
-
-        showEmptyState(false);
-
-        // Tổng tiền hiển thị
-        double grand = "income".equals(currentType)
-                ? summary.getTotalIncome()
-                : summary.getTotalExpense();
-        tvTotalAmount.setText(VND_FORMAT.format(grand) + " đ");
-
-        // Màu tổng tiền theo loại
-        int colorRes = "income".equals(currentType)
-                ? R.color.color_income
-                : R.color.color_expense;
-        tvTotalAmount.setTextColor(requireContext().getColor(colorRes));
-
-        // Cập nhật biểu đồ và danh sách
-        updateDonutChart(categories);
-        adapter.setItems(categories);
-    }
-
-    private void updateDonutChart(List<CategoryStat> categories) {
-        List<PieEntry> entries    = new ArrayList<>();
-        List<Integer>  colors     = new ArrayList<>();
-
-        for (CategoryStat stat : categories) {
-            if (stat.getTotal() > 0) {
-                entries.add(new PieEntry((float) stat.getTotal(), ""));
-                try {
-                    colors.add(Color.parseColor(stat.getColorHex()));
-                } catch (IllegalArgumentException e) {
-                    colors.add(Color.GRAY);
-                }
+        if (s == StatsViewModel.TREND_OK && points != null) {
+            tvTrendState.setVisibility(View.GONE);
+            trendChart.setVisibility(View.VISIBLE);
+            // Xoay man hinh / LiveData phat lai: khong ve lai, khong chay lai animation
+            if (points != boundTrend) {
+                boundTrend = points;
+                tvTrendSelected.setVisibility(View.GONE);
+                TrendChartHelper.bind(trendChart, points, requireContext());
             }
-        }
-
-        if (entries.isEmpty()) {
-            pieChart.clear();
-            pieChart.invalidate();
             return;
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setColors(colors);
-        dataSet.setSliceSpace(2f);           // khoảng cách giữa các lát
-        dataSet.setSelectionShift(5f);       // lát nổi lên khi chọn
-        dataSet.setDrawValues(false);        // tắt nhãn giá trị
+        if (s == StatsViewModel.TREND_LOADING) {
+            // Dang tai lai: giu bieu do cu neu co de khong nhay
+            return;
+        }
 
-        PieData pieData = new PieData(dataSet);
-        pieChart.setData(pieData);
-        pieChart.animateY(500);
+        boundTrend = null;
+        trendChart.setVisibility(View.GONE);
+        tvTrendSelected.setVisibility(View.GONE);
+        tvTrendState.setVisibility(View.VISIBLE);
+        if (s == StatsViewModel.TREND_EMPTY) {
+            tvTrendState.setText(R.string.trend_empty);
+        } else if (s == StatsViewModel.TREND_OFFLINE) {
+            tvTrendState.setText(R.string.trend_offline);
+        } else {
+            tvTrendState.setText(R.string.trend_error);
+        }
+    }
+
+    private void updateTypeToggle(String type) {
+        boolean isIncome = StatsSummary.TYPE_INCOME.equals(type);
+        int checkedId = isIncome ? R.id.stats_btn_income : R.id.stats_btn_expense;
+        if (toggleType.getCheckedButtonId() != checkedId) {
+            toggleType.check(checkedId);
+        }
+
+        int colorExpense = ContextCompat.getColor(requireContext(), R.color.color_expense);
+        int colorIncome = ContextCompat.getColor(requireContext(), R.color.color_income);
+        int colorBgCard = ContextCompat.getColor(requireContext(), R.color.bg_card);
+        int colorBgCardSec = ContextCompat.getColor(requireContext(), R.color.bg_card_secondary);
+        int colorWhite = ContextCompat.getColor(requireContext(), R.color.white);
+        int colorTextSec = ContextCompat.getColor(requireContext(), R.color.text_secondary);
+
+        styleToggleButton(btnExpense, !isIncome, colorExpense, colorBgCard, colorBgCardSec, colorWhite, colorTextSec);
+        styleToggleButton(btnIncome, isIncome, colorIncome, colorBgCard, colorBgCardSec, colorWhite, colorTextSec);
+    }
+
+    private void styleToggleButton(MaterialButton button, boolean selected, int selectedColor,
+                                   int bgCard, int bgCardSec, int white, int textSec) {
+        button.setBackgroundTintList(ColorStateList.valueOf(selected ? selectedColor : bgCard));
+        button.setStrokeColor(ColorStateList.valueOf(selected ? selectedColor : bgCardSec));
+        button.setTextColor(selected ? white : textSec);
+    }
+
+    /** Ve lai man hinh tu trang thai hien tai cua ViewModel. */
+    private void render() {
+        StatsSummary s = viewModel.getSummary().getValue();
+        String error = viewModel.getError().getValue();
+        boolean isLoading = Boolean.TRUE.equals(viewModel.getLoading().getValue());
+
+        progress.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+
+        if (error != null) {
+            layoutError.setVisibility(View.VISIBLE);
+            tvError.setText(error);
+            hideContent();
+            return;
+        }
+        layoutError.setVisibility(View.GONE);
+
+        if (s == null) {
+            hideContent();
+            return;
+        }
+
+        tvSummaryLine.setVisibility(View.VISIBLE);
+        tvSummaryLine.setText(getString(R.string.stats_summary_line,
+                CurrencyUtils.format(s.getTotalIncome()), CurrencyUtils.format(s.getTotalExpense())));
+
+        Long cachedAt = viewModel.getOfflineCachedAt().getValue();
+        if (cachedAt != null) {
+            String time = new SimpleDateFormat("HH:mm dd/MM", Locale.US).format(new Date(cachedAt));
+            tvOfflineBanner.setText(getString(R.string.stats_offline_banner, time));
+            layoutOfflineBanner.setVisibility(View.VISIBLE);
+        } else {
+            layoutOfflineBanner.setVisibility(View.GONE);
+        }
+
+        if (s != boundSummary) {
+            bindSummary(s);
+        }
+
+        boolean hasData = !s.getCategories().isEmpty();
+        pieChart.setVisibility(hasData ? View.VISIBLE : View.GONE);
+        rvCategories.setVisibility(hasData ? View.VISIBLE : View.GONE);
+        layoutEmpty.setVisibility(hasData ? View.GONE : View.VISIBLE);
+        tvEmpty.setText(s.isIncome() ? R.string.stats_empty_income : R.string.stats_empty_expense);
+    }
+
+    private void hideContent() {
+        tvSummaryLine.setVisibility(View.GONE);
+        layoutOfflineBanner.setVisibility(View.GONE);
+        pieChart.setVisibility(View.GONE);
+        rvCategories.setVisibility(View.GONE);
+        layoutEmpty.setVisibility(View.GONE);
+    }
+
+    private void bindSummary(StatsSummary s) {
+        boundSummary = s;
+        List<CategoryStat> categories = s.getCategories();
+        adapter.setItems(categories);
+
+        pieChart.highlightValues(null);
+        if (categories.isEmpty()) {
+            pieChart.clear();
+            return;
+        }
+
+        int fallback = ContextCompat.getColor(requireContext(), R.color.color_accent);
+        List<PieEntry> entries = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
+        for (CategoryStat c : categories) {
+            entries.add(new PieEntry((float) c.getAmount(), c));
+            colors.add(CategoryStatAdapter.parseColor(c.getCategoryColor(), fallback));
+        }
+
+        PieDataSet ds = new PieDataSet(entries, "");
+        ds.setColors(colors);
+        ds.setSliceSpace(2f);
+        ds.setDrawValues(false);
+        pieChart.setData(new PieData(ds));
+        pieChart.setCenterText(defaultCenterText(s));
+        pieChart.animateY(600);
         pieChart.invalidate();
     }
 
-    private void updateMonthYearLabel() {
-        tvMonthYear.setText(
-                String.format(Locale.getDefault(), "Tháng %d / %d", currentMonth, currentYear)
-        );
-    }
-
-    private void showLoading(boolean show) {
-        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        pieChart.setVisibility(show ? View.GONE : View.VISIBLE);
-    }
-
-    private void showEmptyState(boolean show) {
-        tvEmpty.setVisibility(show ? View.VISIBLE : View.GONE);
-        pieChart.setVisibility(show ? View.GONE : View.VISIBLE);
+    private String defaultCenterText(StatsSummary s) {
+        if (s == null) return "";
+        int label = s.isIncome() ? R.string.stats_total_income : R.string.stats_total_expense;
+        return getString(label) + "\n" + CurrencyUtils.format(s.getTotal());
     }
 }

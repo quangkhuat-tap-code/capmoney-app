@@ -57,4 +57,8 @@ dependencies {
 
     // MPAndroidChart (Vẽ biểu đồ Donut cho Member 3)
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    // ML Kit doc chu tren anh hoa don (Phan 4A-3). Ban qua Google Play services: chay tren may,
+    // mo hinh do Play services tai 1 lan; ban goi san lam APK tang ~44MB (4 kien truc CPU)
+    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:19.0.1'
 }

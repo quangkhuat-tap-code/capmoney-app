@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="capture_overlay">#99000000</color>
+    <color name="capture_text_hint">#636366</color>
+    <color name="capture_divider">#2C2C2E</color>
+</resources>

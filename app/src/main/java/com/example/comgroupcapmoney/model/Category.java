@@ -1,18 +1,12 @@
 package com.example.comgroupcapmoney.model;
 
+import android.graphics.Color;
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
-/**
- * POJO Danh mục thu/chi — parse từ GET /api/categories.
- * Dùng trong AddBudgetDialog (Spinner chọn danh mục).
- */
-public class Category {
-
+public class Category implements Serializable {
     @SerializedName("id")
     private int id;
-
-    @SerializedName("user_id")
-    private Integer userId;          // null nếu là danh mục hệ thống
 
     @SerializedName("name")
     private String name;
@@ -24,19 +18,54 @@ public class Category {
     private String colorHex;
 
     @SerializedName("type")
-    private String type;             // "expense" | "income"
+    private String type;
 
-    // ─── Getters ───────────────────────────────────────────
+    @SerializedName("is_system")
+    private boolean system;
 
-    public int getId() { return id; }
+    public Category() {}
 
-    public Integer getUserId() { return userId; }
+    public Category(int id, String name, String icon, String colorHex, String type, boolean system) {
+        this.id = id;
+        this.name = name;
+        this.icon = icon;
+        this.colorHex = colorHex;
+        this.type = type;
+        this.system = system;
+    }
 
-    public String getName() { return name; }
+    public int getId() {
+        return id;
+    }
 
-    public String getIcon() { return icon; }
+    public String getName() {
+        return name;
+    }
 
-    public String getColorHex() { return colorHex; }
+    public String getIcon() {
+        return icon;
+    }
 
-    public String getType() { return type; }
+    public String getColorHex() {
+        return colorHex;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public boolean isSystem() {
+        return system;
+    }
+
+    public int getColorInt() {
+        if (colorHex == null || colorHex.trim().isEmpty()) {
+            return Color.GRAY;
+        }
+        try {
+            return Color.parseColor(colorHex);
+        } catch (IllegalArgumentException e) {
+            return Color.GRAY;
+        }
+    }
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nen banner offline Tab Home: color_warning (#F5A623) mo 15%, giong Tab Thong ke -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#26F5A623" />
+    <corners android:radius="@dimen/corner_radius_small" />
+</shape>

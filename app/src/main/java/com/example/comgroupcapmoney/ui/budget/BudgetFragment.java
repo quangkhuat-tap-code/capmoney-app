@@ -5,83 +5,58 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.comgroupcapmoney.R;
-import com.example.comgroupcapmoney.data.api.ApiClient;
-import com.example.comgroupcapmoney.data.api.ApiService;
-import com.example.comgroupcapmoney.model.ApiResponse;
+import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.model.Budget;
-import com.example.comgroupcapmoney.model.Category;
+import com.example.comgroupcapmoney.utils.CurrencyUtils;
+import com.example.comgroupcapmoney.utils.DateUtils;
 import com.google.android.material.button.MaterialButton;
-
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import java.util.List;
-import java.util.Locale;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-/**
- * Tab 4 — Quản lý Ngân sách
- *
- * Chức năng:
- *   - Chọn tháng / năm qua nút < và >
- *   - Hiển thị thẻ tóm tắt Tổng hạn mức / Đã tiêu
- *   - Hiển thị RecyclerView danh sách ngân sách + ProgressBar 3 màu
- *   - Nút "+ Thêm" mở AddBudgetDialog (Spinner danh mục + nhập hạn mức)
- *   - Xóa ngân sách bằng nút xóa trên từng item
- *
- * Phụ trách: Thành viên 3
- */
 public class BudgetFragment extends Fragment {
 
-    // ─── Views ─────────────────────────────────────────────────────────────
-    private TextView tvMonthYear;
-    private TextView tvTotalBudget;
-    private TextView tvTotalSpent;
-    private RecyclerView rvBudgets;
-    private LinearLayout layoutEmpty;
-    private ProgressBar progressBar;
+    private BudgetViewModel viewModel;
+
+    private MaterialButton btnAdd;
     private ImageButton btnPrevMonth;
     private ImageButton btnNextMonth;
-    private MaterialButton btnAddBudget;
+    private TextView tvMonth;
+    private LinearProgressIndicator progress;
+    private View cardSummary;
+    private TextView tvTotalLimit;
+    private TextView tvTotalSpent;
+    private TextView tvTotalRemaining;
+    private LinearProgressIndicator progressTotal;
+    private TextView tvTotalPercent;
+    private RecyclerView rvList;
+    private View layoutEmpty;
+    private MaterialButton btnEmptyAction;
+    private View layoutError;
+    private TextView tvError;
+    private MaterialButton btnRetry;
 
-    // ─── Data ──────────────────────────────────────────────────────────────
     private BudgetAdapter adapter;
-    private ApiService apiService;
-    private List<Category> expenseCategories = new ArrayList<>();
 
-    private int currentMonth;
-    private int currentYear;
+    /** Xoay man hinh: ViewModel da co du lieu nen bo qua lan onResume dau tien. */
+    private boolean skipNextResumeLoad;
 
-    private static final NumberFormat VND_FORMAT;
-    static {
-        VND_FORMAT = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
-        VND_FORMAT.setMaximumFractionDigits(0);
-    }
-
-    // ─── Lifecycle ─────────────────────────────────────────────────────────
-
+    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_budget, container, false);
     }
 
@@ -89,233 +64,186 @@ public class BudgetFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Xử lý insets status bar (Android 15+ edge-to-edge)
-        View root = view.findViewById(R.id.fragment_budget_root);
-        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
-            int top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-            v.setPadding(0, top, 0, 0);
+        // targetSdk 35+ bat buoc edge-to-edge: day noi dung xuong duoi status bar
+        ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(bars.left, bars.top, bars.right, v.getPaddingBottom());
             return insets;
         });
 
-        bindViews(view);
-        setupDefaultDate();
-        setupRecyclerView();
+        viewModel = new ViewModelProvider(requireActivity()).get(BudgetViewModel.class);
+        // API bao 401 (token het han) thi ve man dang nhap
+        SessionManager.observeExpired(getViewLifecycleOwner(), requireActivity());
+        skipNextResumeLoad = savedInstanceState != null && viewModel.hasStarted();
+
+        initViews(view);
         setupListeners();
+        observeViewModel();
 
-        apiService = ApiClient.getClient(requireContext()).create(ApiService.class);
-
-        // Tải danh mục và ngân sách song song
-        loadCategories();
-        loadBudgets();
+        // Form luu thanh cong -> tai lai danh sach
+        getChildFragmentManager().setFragmentResultListener(BudgetFormDialog.RESULT_BUDGET_CHANGED,
+                getViewLifecycleOwner(), (key, bundle) -> viewModel.load());
     }
 
-    // ─── Setup ─────────────────────────────────────────────────────────────
-
-    private void bindViews(View view) {
-        tvMonthYear   = view.findViewById(R.id.tv_month_year);
-        tvTotalBudget = view.findViewById(R.id.tv_total_budget);
-        tvTotalSpent  = view.findViewById(R.id.tv_total_spent);
-        rvBudgets     = view.findViewById(R.id.rv_budgets);
-        layoutEmpty   = view.findViewById(R.id.layout_empty);
-        progressBar   = view.findViewById(R.id.progress_bar);
-        btnPrevMonth  = view.findViewById(R.id.btn_prev_month);
-        btnNextMonth  = view.findViewById(R.id.btn_next_month);
-        btnAddBudget  = view.findViewById(R.id.btn_add_budget);
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (skipNextResumeLoad) {
+            skipNextResumeLoad = false;
+            return;
+        }
+        viewModel.load();
     }
 
-    private void setupDefaultDate() {
-        Calendar cal = Calendar.getInstance();
-        currentMonth = cal.get(Calendar.MONTH) + 1;
-        currentYear  = cal.get(Calendar.YEAR);
-        updateMonthYearLabel();
-    }
+    private void initViews(View view) {
+        btnAdd = view.findViewById(R.id.budget_btn_add);
+        btnPrevMonth = view.findViewById(R.id.budget_btn_prev_month);
+        btnNextMonth = view.findViewById(R.id.budget_btn_next_month);
+        tvMonth = view.findViewById(R.id.budget_tv_month);
+        progress = view.findViewById(R.id.budget_progress);
+        cardSummary = view.findViewById(R.id.budget_card_summary);
+        tvTotalLimit = view.findViewById(R.id.budget_tv_total_limit);
+        tvTotalSpent = view.findViewById(R.id.budget_tv_total_spent);
+        tvTotalRemaining = view.findViewById(R.id.budget_tv_total_remaining);
+        progressTotal = view.findViewById(R.id.budget_progress_total);
+        tvTotalPercent = view.findViewById(R.id.budget_tv_total_percent);
+        rvList = view.findViewById(R.id.budget_rv_list);
+        layoutEmpty = view.findViewById(R.id.budget_layout_empty);
+        btnEmptyAction = view.findViewById(R.id.budget_btn_empty_action);
+        layoutError = view.findViewById(R.id.budget_layout_error);
+        tvError = view.findViewById(R.id.budget_tv_error);
+        btnRetry = view.findViewById(R.id.budget_btn_retry);
 
-    private void setupRecyclerView() {
-        adapter = new BudgetAdapter(requireContext());
-        rvBudgets.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvBudgets.setAdapter(adapter);
+        btnAdd.setText("+ " + getString(R.string.budget_add));
 
-        // Xóa ngân sách khi bấm nút xóa
-        adapter.setOnDeleteClickListener((budget, position) ->
-                showDeleteConfirmDialog(budget, position));
+        adapter = new BudgetAdapter();
+        adapter.setListener(new BudgetAdapter.Listener() {
+            @Override
+            public void onBudgetClick(Budget budget) {
+                openForm(budget);
+            }
+
+            @Override
+            public void onBudgetLongClick(Budget budget) {
+                confirmDelete(budget);
+            }
+        });
+        rvList.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvList.setAdapter(adapter);
     }
 
     private void setupListeners() {
-        btnPrevMonth.setOnClickListener(v -> {
-            currentMonth--;
-            if (currentMonth < 1) { currentMonth = 12; currentYear--; }
-            updateMonthYearLabel();
-            loadBudgets();
-        });
-
-        btnNextMonth.setOnClickListener(v -> {
-            currentMonth++;
-            if (currentMonth > 12) { currentMonth = 1; currentYear++; }
-            updateMonthYearLabel();
-            loadBudgets();
-        });
-
-        btnAddBudget.setOnClickListener(v -> {
-            if (expenseCategories.isEmpty()) {
-                Toast.makeText(requireContext(),
-                        "Đang tải danh mục, vui lòng thử lại", Toast.LENGTH_SHORT).show();
-                loadCategories();
-                return;
-            }
-            openAddBudgetDialog();
-        });
+        btnPrevMonth.setOnClickListener(v -> viewModel.prevMonth());
+        btnNextMonth.setOnClickListener(v -> viewModel.nextMonth());
+        btnRetry.setOnClickListener(v -> viewModel.load());
+        btnAdd.setOnClickListener(v -> openForm(null));
+        btnEmptyAction.setOnClickListener(v -> openForm(null));
     }
 
-    // ─── API Calls ─────────────────────────────────────────────────────────
-
-    /** Tải danh mục chi tiêu để điền vào Spinner trong AddBudgetDialog */
-    private void loadCategories() {
-        apiService.getCategories("expense")
-                .enqueue(new Callback<ApiResponse<List<Category>>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ApiResponse<List<Category>>> call,
-                                           @NonNull Response<ApiResponse<List<Category>>> response) {
-                        if (!isAdded()) return;
-                        if (response.isSuccessful() && response.body() != null
-                                && response.body().isSuccess()) {
-                            List<Category> data = response.body().getData();
-                            if (data != null) {
-                                expenseCategories = data;
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<ApiResponse<List<Category>>> call,
-                                          @NonNull Throwable t) {
-                        // Không báo lỗi — danh mục có thể đã có từ lần load trước
-                    }
-                });
+    /** editing = null: che do Them; khac null: che do Sua. */
+    private void openForm(@Nullable Budget editing) {
+        if (getChildFragmentManager().findFragmentByTag(BudgetFormDialog.TAG) != null) return;
+        BudgetFormDialog.newInstance(viewModel.getMonthValue(), viewModel.getYearValue(),
+                viewModel.getBudgetedCategoryIds(), editing)
+                .show(getChildFragmentManager(), BudgetFormDialog.TAG);
     }
 
-    /** Tải danh sách ngân sách tháng hiện tại */
-    private void loadBudgets() {
-        showLoading(true);
-
-        apiService.getBudgets(currentMonth, currentYear)
-                .enqueue(new Callback<ApiResponse<List<Budget>>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ApiResponse<List<Budget>>> call,
-                                           @NonNull Response<ApiResponse<List<Budget>>> response) {
-                        if (!isAdded()) return;
-                        showLoading(false);
-
-                        if (response.isSuccessful() && response.body() != null
-                                && response.body().isSuccess()) {
-                            List<Budget> budgets = response.body().getData();
-                            updateUI(budgets);
-                        } else {
-                            showEmptyState(true);
-                            Toast.makeText(requireContext(),
-                                    "Không tải được dữ liệu ngân sách", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<ApiResponse<List<Budget>>> call,
-                                          @NonNull Throwable t) {
-                        if (!isAdded()) return;
-                        showLoading(false);
-                        showEmptyState(true);
-                        Toast.makeText(requireContext(),
-                                "Mất kết nối mạng", Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private void confirmDelete(Budget budget) {
+        String message = getString(R.string.budget_delete_message,
+                CurrencyUtils.format(budget.getLimitAmount()), budget.getCategoryName());
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.budget_delete_title)
+                .setMessage(message)
+                .setNegativeButton(R.string.budget_cancel, null)
+                .setPositiveButton(R.string.budget_delete, (dialog, which) -> viewModel.deleteBudget(budget.getId()))
+                .show();
     }
 
-    private void deleteBudget(int budgetId, int position) {
-        apiService.deleteBudget(budgetId).enqueue(new Callback<ApiResponse<Void>>() {
-            @Override
-            public void onResponse(@NonNull Call<ApiResponse<Void>> call,
-                                   @NonNull Response<ApiResponse<Void>> response) {
-                if (!isAdded()) return;
-                if (response.isSuccessful() && response.body() != null
-                        && response.body().isSuccess()) {
-                    adapter.removeAt(position);
-                    Toast.makeText(requireContext(), "Đã xóa ngân sách", Toast.LENGTH_SHORT).show();
-                    // Reload để cập nhật thẻ tóm tắt
-                    loadBudgets();
-                } else {
-                    Toast.makeText(requireContext(), "Xóa thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
+    private void observeViewModel() {
+        viewModel.getPeriod().observe(getViewLifecycleOwner(), p -> {
+            if (p == null || p.length < 2) return;
+            tvMonth.setText(DateUtils.monthTitle(p[0], p[1]));
+            boolean isCurrent = viewModel.isCurrentMonth();
+            btnNextMonth.setEnabled(!isCurrent);
+            btnNextMonth.setAlpha(isCurrent ? 0.3f : 1.0f);
+        });
 
-            @Override
-            public void onFailure(@NonNull Call<ApiResponse<Void>> call, @NonNull Throwable t) {
-                if (!isAdded()) return;
-                Toast.makeText(requireContext(), "Mất kết nối mạng", Toast.LENGTH_SHORT).show();
+        viewModel.getBudgets().observe(getViewLifecycleOwner(), list -> {
+            adapter.setItems(list);
+            render();
+        });
+        viewModel.getLoading().observe(getViewLifecycleOwner(), l -> render());
+        viewModel.getError().observe(getViewLifecycleOwner(), e -> render());
+
+        viewModel.getEvent().observe(getViewLifecycleOwner(), singleEvent -> {
+            if (singleEvent == null) return;
+            String msg = singleEvent.getContentIfNotHandled();
+            if (msg != null && !msg.isEmpty()) {
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    // ─── UI Update ─────────────────────────────────────────────────────────
+    /** Ve lai man hinh tu trang thai hien tai cua ViewModel. */
+    private void render() {
+        List<Budget> list = viewModel.getBudgets().getValue();
+        String error = viewModel.getError().getValue();
+        boolean isLoading = Boolean.TRUE.equals(viewModel.getLoading().getValue());
 
-    private void updateUI(List<Budget> budgets) {
-        if (budgets == null || budgets.isEmpty()) {
-            showEmptyState(true);
-            adapter.setItems(new ArrayList<>());
-            tvTotalBudget.setText("0 đ");
-            tvTotalSpent.setText("0 đ");
+        progress.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+
+        if (error != null) {
+            layoutError.setVisibility(View.VISIBLE);
+            tvError.setText(error);
+            cardSummary.setVisibility(View.GONE);
+            rvList.setVisibility(View.GONE);
+            layoutEmpty.setVisibility(View.GONE);
+            return;
+        }
+        layoutError.setVisibility(View.GONE);
+
+        if (list == null) {
+            cardSummary.setVisibility(View.GONE);
+            rvList.setVisibility(View.GONE);
+            layoutEmpty.setVisibility(View.GONE);
             return;
         }
 
-        showEmptyState(false);
-        adapter.setItems(budgets);
+        if (list.isEmpty()) {
+            cardSummary.setVisibility(View.GONE);
+            rvList.setVisibility(View.GONE);
+            layoutEmpty.setVisibility(View.VISIBLE);
+            return;
+        }
 
-        // Tính tổng hạn mức và tổng đã tiêu
+        layoutEmpty.setVisibility(View.GONE);
+        rvList.setVisibility(View.VISIBLE);
+        cardSummary.setVisibility(View.VISIBLE);
+        bindTotals(list);
+    }
+
+    /** The tong: cong han muc va da chi cua moi dong, % tinh tai may, cung luat mau. */
+    private void bindTotals(List<Budget> list) {
         double totalLimit = 0;
         double totalSpent = 0;
-        for (Budget b : budgets) {
+        for (Budget b : list) {
             totalLimit += b.getLimitAmount();
             totalSpent += b.getSpentAmount();
         }
-        tvTotalBudget.setText(VND_FORMAT.format(totalLimit) + " đ");
-        tvTotalSpent.setText(VND_FORMAT.format(totalSpent) + " đ");
-    }
+        double remaining = totalLimit - totalSpent;
+        int percent = totalLimit > 0 ? (int) Math.round(totalSpent / totalLimit * 100) : 0;
+        int color = ContextCompat.getColor(requireContext(),
+                BudgetAdapter.statusColorRes(BudgetAdapter.resolveStatus(null, percent)));
 
-    private void updateMonthYearLabel() {
-        tvMonthYear.setText(
-                String.format(Locale.getDefault(), "Tháng %d / %d", currentMonth, currentYear)
-        );
-    }
+        tvTotalLimit.setText(CurrencyUtils.format(totalLimit));
+        tvTotalSpent.setText(CurrencyUtils.format(totalSpent));
+        tvTotalRemaining.setText(CurrencyUtils.format(remaining));
+        tvTotalRemaining.setTextColor(ContextCompat.getColor(requireContext(),
+                remaining < 0 ? R.color.color_expense : R.color.text_primary));
 
-    private void showLoading(boolean show) {
-        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
-
-    private void showEmptyState(boolean show) {
-        layoutEmpty.setVisibility(show ? View.VISIBLE : View.GONE);
-        rvBudgets.setVisibility(show ? View.GONE : View.VISIBLE);
-    }
-
-    // ─── Dialogs ───────────────────────────────────────────────────────────
-
-    private void openAddBudgetDialog() {
-        AddBudgetDialog dialog = new AddBudgetDialog(
-                requireContext(),
-                expenseCategories,
-                currentMonth,
-                currentYear,
-                savedBudget -> {
-                    // Reload sau khi lưu thành công
-                    loadBudgets();
-                    Toast.makeText(requireContext(), "Đã lưu ngân sách", Toast.LENGTH_SHORT).show();
-                }
-        );
-        dialog.show();
-    }
-
-    private void showDeleteConfirmDialog(Budget budget, int position) {
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Xóa ngân sách")
-                .setMessage("Bạn có chắc muốn xóa ngân sách \"" + budget.getCategoryName() + "\"?")
-                .setPositiveButton("Xóa", (dialog, which) -> deleteBudget(budget.getId(), position))
-                .setNegativeButton("Hủy", null)
-                .show();
+        progressTotal.setIndicatorColor(color);
+        progressTotal.setProgressCompat(Math.max(0, Math.min(percent, 100)), false);
+        tvTotalPercent.setText(percent + "%");
+        tvTotalPercent.setTextColor(color);
     }
 }
