@@ -93,4 +93,52 @@ public class Budget implements Serializable {
     public int getYear() {
         return year;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public void setCategoryIcon(String categoryIcon) {
+        this.categoryIcon = categoryIcon;
+    }
+
+    public void setCategoryColor(String categoryColor) {
+        this.categoryColor = categoryColor;
+    }
+
+    public void setLimitAmount(double limitAmount) {
+        this.limitAmount = limitAmount;
+    }
+
+    public void setSpentAmount(double spentAmount) {
+        this.spentAmount = spentAmount;
+    }
+
+    public void setRemaining(double remaining) {
+        this.remaining = remaining;
+    }
+
+    public void setPercent(int percent) {
+        this.percent = percent;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
 }
