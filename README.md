@@ -34,3 +34,7 @@ Máy ảo gọi backend qua `http://10.0.2.2:5000/api/` (`data/api/ApiClient.jav
 - **Nút Run mờ, sync báo `incompatible version (AGP x.y.z)`**: Android Studio cũ hơn AGP của project. Cập nhật Android Studio, đừng tự đổi AGP rồi commit.
 - **`jlink ... does not exist`**: Gradle đang chạy bằng JRE của extension Java trong VS Code. Đóng VS Code, chạy `./gradlew --stop`, rồi Sync lại.
 - **Backend báo `EADDRINUSE` cổng 5000**: đã có server khác chạy. `netstat -ano | findstr :5000` rồi `taskkill /PID <PID> /F`.
+
+## Dùng AI hỗ trợ chạy app
+
+Xem [Guide_ChayAppVoiAI_v1.0.md](Guide_ChayAppVoiAI_v1.0.md): các câu lệnh giao cho AI (Claude Code) để chạy backend, build app, xử lý lỗi sync, và quy tắc khi dùng AI với repo chung.
