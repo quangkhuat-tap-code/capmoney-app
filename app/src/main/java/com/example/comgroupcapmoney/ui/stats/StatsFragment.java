@@ -65,6 +65,13 @@ public class StatsFragment extends Fragment {
 
     private CategoryStatAdapter adapter;
 
+    // The Thu nhap / Chi tieu & So du
+    private View cardExpense;
+    private View cardIncome;
+    private TextView tvExpenseAmount;
+    private TextView tvIncomeAmount;
+    private TextView tvBalance;
+
     // Bieu do 6 thang (4C-1)
     private BarChart trendChart;
     private TextView tvTrendState;
@@ -143,6 +150,12 @@ public class StatsFragment extends Fragment {
         tvTrendState = view.findViewById(R.id.trend_tv_state);
         tvTrendSelected = view.findViewById(R.id.trend_tv_selected);
 
+        cardExpense = view.findViewById(R.id.stats_card_expense);
+        cardIncome = view.findViewById(R.id.stats_card_income);
+        tvExpenseAmount = view.findViewById(R.id.stats_tv_expense_amount);
+        tvIncomeAmount = view.findViewById(R.id.stats_tv_income_amount);
+        tvBalance = view.findViewById(R.id.stats_tv_balance);
+
         adapter = new CategoryStatAdapter();
         rvCategories.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvCategories.setAdapter(adapter);
@@ -150,7 +163,7 @@ public class StatsFragment extends Fragment {
 
     private void setupChart() {
         pieChart.setDrawHoleEnabled(true);
-        pieChart.setHoleColor(ContextCompat.getColor(requireContext(), R.color.bg_main));
+        pieChart.setHoleColor(ContextCompat.getColor(requireContext(), R.color.bg_card));
         pieChart.setHoleRadius(72f);
         pieChart.setTransparentCircleRadius(0f);
         pieChart.setDrawEntryLabels(false);
@@ -204,14 +217,23 @@ public class StatsFragment extends Fragment {
         btnNextMonth.setOnClickListener(v -> viewModel.nextMonth());
         btnRetry.setOnClickListener(v -> viewModel.load());
 
-        toggleType.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (!isChecked) return;
-            if (checkedId == R.id.stats_btn_income) {
-                viewModel.setType(StatsSummary.TYPE_INCOME);
-            } else if (checkedId == R.id.stats_btn_expense) {
-                viewModel.setType(StatsSummary.TYPE_EXPENSE);
-            }
-        });
+        if (cardExpense != null) {
+            cardExpense.setOnClickListener(v -> viewModel.setType(StatsSummary.TYPE_EXPENSE));
+        }
+        if (cardIncome != null) {
+            cardIncome.setOnClickListener(v -> viewModel.setType(StatsSummary.TYPE_INCOME));
+        }
+
+        if (toggleType != null) {
+            toggleType.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+                if (!isChecked) return;
+                if (checkedId == R.id.stats_btn_income) {
+                    viewModel.setType(StatsSummary.TYPE_INCOME);
+                } else if (checkedId == R.id.stats_btn_expense) {
+                    viewModel.setType(StatsSummary.TYPE_EXPENSE);
+                }
+            });
+        }
     }
 
     private void observeViewModel() {
@@ -270,20 +292,22 @@ public class StatsFragment extends Fragment {
 
     private void updateTypeToggle(String type) {
         boolean isIncome = StatsSummary.TYPE_INCOME.equals(type);
-        int checkedId = isIncome ? R.id.stats_btn_income : R.id.stats_btn_expense;
-        if (toggleType.getCheckedButtonId() != checkedId) {
-            toggleType.check(checkedId);
+        if (cardIncome != null && cardExpense != null) {
+            if (isIncome) {
+                cardIncome.setBackgroundResource(R.drawable.bg_card_income_selected);
+                cardExpense.setBackgroundResource(R.drawable.bg_card_surface_20);
+            } else {
+                cardExpense.setBackgroundResource(R.drawable.bg_card_expense_selected);
+                cardIncome.setBackgroundResource(R.drawable.bg_card_surface_20);
+            }
         }
 
-        int colorExpense = ContextCompat.getColor(requireContext(), R.color.color_expense);
-        int colorIncome = ContextCompat.getColor(requireContext(), R.color.color_income);
-        int colorBgCard = ContextCompat.getColor(requireContext(), R.color.bg_card);
-        int colorBgCardSec = ContextCompat.getColor(requireContext(), R.color.bg_card_secondary);
-        int colorWhite = ContextCompat.getColor(requireContext(), R.color.white);
-        int colorTextSec = ContextCompat.getColor(requireContext(), R.color.text_secondary);
-
-        styleToggleButton(btnExpense, !isIncome, colorExpense, colorBgCard, colorBgCardSec, colorWhite, colorTextSec);
-        styleToggleButton(btnIncome, isIncome, colorIncome, colorBgCard, colorBgCardSec, colorWhite, colorTextSec);
+        if (toggleType != null) {
+            int checkedId = isIncome ? R.id.stats_btn_income : R.id.stats_btn_expense;
+            if (toggleType.getCheckedButtonId() != checkedId) {
+                toggleType.check(checkedId);
+            }
+        }
     }
 
     private void styleToggleButton(MaterialButton button, boolean selected, int selectedColor,
@@ -314,9 +338,27 @@ public class StatsFragment extends Fragment {
             return;
         }
 
-        tvSummaryLine.setVisibility(View.VISIBLE);
-        tvSummaryLine.setText(getString(R.string.stats_summary_line,
-                CurrencyUtils.format(s.getTotalIncome()), CurrencyUtils.format(s.getTotalExpense())));
+        if (tvSummaryLine != null) {
+            tvSummaryLine.setVisibility(View.VISIBLE);
+            tvSummaryLine.setText(getString(R.string.stats_summary_line,
+                    CurrencyUtils.format(s.getTotalIncome()), CurrencyUtils.format(s.getTotalExpense())));
+        }
+
+        if (tvIncomeAmount != null) {
+            tvIncomeAmount.setText(CurrencyUtils.format(s.getTotalIncome()));
+        }
+        if (tvExpenseAmount != null) {
+            tvExpenseAmount.setText(CurrencyUtils.format(s.getTotalExpense()));
+        }
+        if (tvBalance != null) {
+            double bal = s.getTotalIncome() - s.getTotalExpense();
+            tvBalance.setText(CurrencyUtils.format(bal));
+            if (bal < 0) {
+                tvBalance.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_expense));
+            } else {
+                tvBalance.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_income));
+            }
+        }
 
         Long cachedAt = viewModel.getOfflineCachedAt().getValue();
         if (cachedAt != null) {
@@ -377,7 +419,8 @@ public class StatsFragment extends Fragment {
 
     private String defaultCenterText(StatsSummary s) {
         if (s == null) return "";
-        int label = s.isIncome() ? R.string.stats_total_income : R.string.stats_total_expense;
-        return getString(label) + "\n" + CurrencyUtils.format(s.getTotal());
+        String title = s.isIncome() ? "Thu nhập" : "Chi tiêu";
+        int count = s.getCategories() != null ? s.getCategories().size() : 0;
+        return title + "\n" + CurrencyUtils.format(s.getTotal()) + "\n" + count + " Danh mục";
     }
 }

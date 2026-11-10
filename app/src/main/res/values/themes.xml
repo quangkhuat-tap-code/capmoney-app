@@ -1,9 +1,42 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Comgroupcapmoney" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Brand Colors -->
+        <item name="colorPrimary">@color/color_accent</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/bg_main</item>
+        <item name="android:statusBarColor">@color/bg_main</item>
+        <item name="android:navigationBarColor">@color/bg_main</item>
     </style>
 
     <style name="Theme.Comgroupcapmoney" parent="Base.Theme.Comgroupcapmoney" />
+
+    <!-- Calculator Button Styles (CapMoney Numpad) -->
+    <style name="CalcButtonOperator">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:background">@drawable/bg_calc_btn_operator</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/color_calc_operator_text</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="CalcButtonNum">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:background">@drawable/bg_calc_btn_num</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/calc_btn_num_text</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
 </resources>

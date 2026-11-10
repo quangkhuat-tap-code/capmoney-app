@@ -47,6 +47,13 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.ViewHolder
         holder.tvName.setText(wallet.getName());
         holder.tvBadge.setVisibility(wallet.isDefault() ? View.VISIBLE : View.GONE);
         holder.tvBalance.setText(CurrencyUtils.format(wallet.getBalance()));
+        if (wallet.getBalance() < 0) {
+            holder.tvBalance.setTextColor(holder.itemView.getContext().getColor(R.color.color_expense));
+        } else if (wallet.getBalance() > 0) {
+            holder.tvBalance.setTextColor(holder.itemView.getContext().getColor(R.color.color_income));
+        } else {
+            holder.tvBalance.setTextColor(holder.itemView.getContext().getColor(R.color.white));
+        }
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onWalletClick(wallet);
         });

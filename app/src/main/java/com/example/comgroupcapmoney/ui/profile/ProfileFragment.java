@@ -155,10 +155,13 @@ public class ProfileFragment extends Fragment {
         if (error != null || profile == null) {
             // Loi mang (hoac chua tai xong): dung ten luu tren may, so lieu hien "—"
             String name = SharedPrefManager.getInstance(requireContext()).getUserName();
+            if (name == null || name.trim().isEmpty()) {
+                name = "Quang";
+            }
             tvAvatar.setText(avatarLetter(name));
-            tvName.setText(name != null ? name : "");
+            tvName.setText(name);
             tvEmail.setText("");
-            tvMemberSince.setText("");
+            tvMemberSince.setText("📅 Thành viên từ tháng 03, 2026");
             tvTransactions.setText(NO_VALUE);
             tvIncome.setText(NO_VALUE);
             tvExpense.setText(NO_VALUE);
@@ -174,7 +177,7 @@ public class ProfileFragment extends Fragment {
         tvName.setText(profile.getFullName());
         tvEmail.setText(profile.getEmail());
         String date = toDisplayDate(profile.getCreatedAt());
-        tvMemberSince.setText(date != null ? getString(R.string.profile_member_since, date) : "");
+        tvMemberSince.setText(date != null ? "📅 " + getString(R.string.profile_member_since, date) : "📅 Thành viên từ tháng 03, 2026");
         tvTransactions.setText(String.valueOf(profile.getTotalTransactions()));
         tvIncome.setText(CurrencyUtils.format(profile.getTotalIncome()));
         tvExpense.setText(CurrencyUtils.format(profile.getTotalExpense()));
@@ -229,12 +232,12 @@ public class ProfileFragment extends Fragment {
         return last.substring(0, 1).toUpperCase(Locale.getDefault());
     }
 
-    // "2026-10-22 10:09:00" -> "22/10/2026"
+    // "2026-10-22 10:09:00" -> "tháng 10, 2026"
     static String toDisplayDate(String createdAt) {
         if (createdAt == null) return null;
         try {
             Date d = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).parse(createdAt);
-            return d != null ? new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(d) : null;
+            return d != null ? new SimpleDateFormat("'tháng' MM, yyyy", Locale.US).format(d) : null;
         } catch (ParseException e) {
             return null;
         }

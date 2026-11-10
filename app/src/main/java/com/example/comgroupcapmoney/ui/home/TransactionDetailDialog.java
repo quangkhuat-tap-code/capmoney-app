@@ -80,6 +80,11 @@ public class TransactionDetailDialog extends BottomSheetDialogFragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
+        View btnCloseDetail = view.findViewById(R.id.btn_close_detail);
+        if (btnCloseDetail != null) {
+            btnCloseDetail.setOnClickListener(v -> dismiss());
+        }
+
         View layoutPhotoContainer = view.findViewById(R.id.layout_photo_container);
         ImageView ivDetailPhoto = view.findViewById(R.id.iv_detail_photo);
         TextView tvDetailAmount = view.findViewById(R.id.tv_detail_amount);

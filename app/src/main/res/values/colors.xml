@@ -1,21 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Nền Dark Mode chuẩn CapMoney -->
-    <color name="bg_main">#0E0F12</color>
-    <color name="bg_card">#1B1C20</color>
-    <color name="bg_card_secondary">#26282E</color>
+    <!-- Backgrounds (Dark Mode OLED) -->
+    <color name="bg_main">#0B0B0E</color>
+    <color name="bg_card">#18181E</color>
+    <color name="bg_card_secondary">#1C1C24</color>
+    <color name="bg_card_elevated">#22222A</color>
 
-    <!-- Màu chữ -->
+    <!-- Subtle Borders (1px 6-10% white) -->
+    <color name="border_subtle">#10FFFFFF</color>
+    <color name="border_card">#14FFFFFF</color>
+    <color name="border_card_active">#33FFFFFF</color>
+
+    <!-- Primary Accent (Pastel Blue) -->
+    <color name="color_accent">#70A5EB</color>
+    <color name="color_accent_hover">#689EE6</color>
+    <color name="color_accent_tint">#2670A5EB</color>
+
+    <!-- Expense (Coral Red) -->
+    <color name="color_expense">#E06C65</color>
+    <color name="color_expense_tint">#26E06C65</color>
+    <color name="color_expense_soft">#D9655E</color>
+    <color name="color_calc_operator">#2C1A1D</color>
+    <color name="color_calc_operator_text">#E06C65</color>
+
+    <!-- Income (Pastel Green) -->
+    <color name="color_income">#72B87D</color>
+    <color name="color_income_tint">#2672B87D</color>
+    <color name="color_income_soft">#6AB075</color>
+
+    <!-- Warning / Education (Amber Orange) -->
+    <color name="color_warning">#F59E0B</color>
+    <color name="color_warning_tint">#26F59E0B</color>
+    <color name="color_warning_soft">#E59428</color>
+
+    <!-- Text Typography -->
     <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#8E8E93</color>
+    <color name="text_secondary">#8E8E9A</color>
+    <color name="text_tertiary">#585862</color>
 
-    <!-- Màu ngữ nghĩa (Thu / Chi / Điểm nhấn) -->
-    <color name="color_expense">#FF6464</color>
-    <color name="color_income">#4CD964</color>
-    <color name="color_accent">#5E7CE2</color>
-    <color name="color_warning">#F5A623</color>
+    <!-- Floating Bottom Navigation -->
+    <color name="bottom_nav_bg">#22222A</color>
+    <color name="bottom_nav_active_pill">#141419</color>
 
-    <!-- Màu cơ bản -->
+    <!-- Camera & Overlay -->
+    <color name="glass_amount_bg">#B3201418</color>
+    <color name="glass_amount_border">#4DE06C65</color>
+    <color name="camera_gallery_pill">#2D1830</color>
+    <color name="camera_gallery_text">#D177F8</color>
+    <color name="camera_circle_dark">#23232B</color>
+
+    <!-- Calculator Numpad -->
+    <color name="calc_btn_num_bg">#18181E</color>
+    <color name="calc_btn_num_text">#FFFFFF</color>
+
+    <!-- Basics -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>

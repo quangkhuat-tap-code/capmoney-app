@@ -31,7 +31,7 @@ public class BudgetFragment extends Fragment {
 
     private BudgetViewModel viewModel;
 
-    private MaterialButton btnAdd;
+    private View btnAdd;
     private ImageButton btnPrevMonth;
     private ImageButton btnNextMonth;
     private TextView tvMonth;
@@ -114,7 +114,18 @@ public class BudgetFragment extends Fragment {
         tvError = view.findViewById(R.id.budget_tv_error);
         btnRetry = view.findViewById(R.id.budget_btn_retry);
 
-        btnAdd.setText("+ " + getString(R.string.budget_add));
+        if (btnAdd instanceof TextView) {
+            ((TextView) btnAdd).setText("+ " + getString(R.string.budget_add));
+        }
+
+        View templateMonthly = view.findViewById(R.id.budget_template_monthly);
+        if (templateMonthly != null) {
+            templateMonthly.setOnClickListener(v -> openForm(null));
+        }
+        View templateCategory = view.findViewById(R.id.budget_template_category);
+        if (templateCategory != null) {
+            templateCategory.setOnClickListener(v -> openForm(null));
+        }
 
         adapter = new BudgetAdapter();
         adapter.setListener(new BudgetAdapter.Listener() {
@@ -138,6 +149,9 @@ public class BudgetFragment extends Fragment {
         btnRetry.setOnClickListener(v -> viewModel.load());
         btnAdd.setOnClickListener(v -> openForm(null));
         btnEmptyAction.setOnClickListener(v -> openForm(null));
+        if (layoutEmpty != null) {
+            layoutEmpty.setOnClickListener(v -> openForm(null));
+        }
     }
 
     /** editing = null: che do Them; khac null: che do Sua. */

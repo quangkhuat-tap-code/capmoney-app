@@ -1,57 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.comgroupcapmoney.ui.home.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="2dp">
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_day_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:cardCornerRadius="8dp"
-        app:strokeWidth="0dp"
-        app:cardBackgroundColor="@color/transparent">
+    <!-- Top Circle: Photo thumb, or Circle with (+) for past/today, or solid dark circle for future -->
+    <FrameLayout
+        android:id="@+id/layout_circle_container"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_gravity="center_horizontal">
 
-        <FrameLayout
+        <!-- Future day solid circle -->
+        <View
+            android:id="@+id/view_circle_future"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_calendar_day_circle_future"
+            android:visibility="gone" />
+
+        <!-- Past or current day thin ring with (+) -->
+        <FrameLayout
+            android:id="@+id/layout_circle_past"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_calendar_day_circle_past">
 
             <ImageView
-                android:id="@+id/iv_day_thumb"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:alpha="0.85"
-                android:scaleType="centerCrop"
-                android:visibility="gone" />
-
-            <View
-                android:id="@+id/view_today_border"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_calendar_today"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/tv_day_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|start"
-                android:layout_margin="4dp"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_size_small"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_day_total"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="4dp"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
+                android:id="@+id/iv_circle_plus"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_add_24"
+                app:tint="#66FFFFFF" />
         </FrameLayout>
-    </com.google.android.material.card.MaterialCardView>
-</com.example.comgroupcapmoney.ui.home.SquareFrameLayout>
+
+        <!-- If day has an expense photo thumbnail: Circular cropped photo -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_day_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+
+        <!-- Today Ring highlight -->
+        <View
+            android:id="@+id/view_today_border"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_calendar_today"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <!-- Day Number (e.g. 10) -->
+    <TextView
+        android:id="@+id/tv_day_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:text="10"
+        android:textColor="@color/text_primary"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <!-- Blue dot indicator below today's number -->
+    <View
+        android:id="@+id/view_today_dot"
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/bg_nav_active_pill"
+        android:backgroundTint="@color/color_accent"
+        android:visibility="gone" />
+
+    <!-- Total amount if any -->
+    <TextView
+        android:id="@+id/tv_day_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:gravity="center"
+        android:textSize="9sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <!-- Hidden compatibility container so existing adapter references don't crash -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_day_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+</LinearLayout>

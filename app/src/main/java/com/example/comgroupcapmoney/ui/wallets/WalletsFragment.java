@@ -160,7 +160,16 @@ public class WalletsFragment extends Fragment {
             }
         }
         tvTotal.setText(CurrencyUtils.format(total));
-        tvCount.setText(getString(R.string.wallet_count, wallets.size()));
+        if (total < 0) {
+            tvTotal.setTextColor(requireContext().getColor(R.color.color_expense));
+        } else if (total > 0) {
+            tvTotal.setTextColor(requireContext().getColor(R.color.color_income));
+        } else {
+            tvTotal.setTextColor(requireContext().getColor(R.color.white));
+        }
+        if (tvCount != null) {
+            tvCount.setText(getString(R.string.wallet_count, wallets.size()));
+        }
         paymentAdapter.submit(payment);
         savingAdapter.submit(saving);
         tvEmptySaving.setVisibility(saving.isEmpty() ? View.VISIBLE : View.GONE);
