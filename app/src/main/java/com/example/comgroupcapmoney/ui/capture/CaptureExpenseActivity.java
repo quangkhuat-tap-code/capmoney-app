@@ -5,21 +5,15 @@ import android.app.TimePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
@@ -49,14 +43,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 
 public class CaptureExpenseActivity extends AppCompatActivity {
 
     private static final String KEY_PENDING_CAPTURE_URI = "pending_capture_uri";
-
-    // Mo man nay o che do sua giao dich (4A-1)
     public static final String EXTRA_EDIT_TX = "edit_tx";
 
     public static Intent editIntent(Context context, Transaction tx) {
@@ -67,29 +61,41 @@ public class CaptureExpenseActivity extends AppCompatActivity {
 
     private CaptureViewModel viewModel;
     private boolean editing;
-    private TextView tvPhotoEmoji;
-    private Chip receiptChip;
     private Uri pendingCaptureUri;
 
-    private ImageButton btnClose;
-    private LinearProgressIndicator progressLoading;
+    // State Layouts
+    private View layoutPhotoEmpty;
+    private View layoutPhotoInput;
+    private View layoutCalculatorNumpad;
+    private View layoutConfirmedActions;
+
+    // Viewfinder views
+    private View btnTakePhoto;
+    private View btnPickPhoto;
+    private View btnSkipPhoto;
+
+    // Amount & Overlays
     private ImageView ivPhoto;
-    private LinearLayout layoutPhotoEmpty;
-    private MaterialButton btnTakePhoto;
-    private MaterialButton btnPickPhoto;
-    private MaterialButton btnChangePhoto;
-    private EditText etAmount;
+    private View btnChangePhoto;
+    private TextView tvPhotoEmoji;
+    private Chip receiptChip;
+    private TextView tvAmountPrefix;
+    private TextView tvAmountDisplay;
     private TextView tvAmountSuffix;
-    private MaterialButtonToggleGroup toggleType;
-    private MaterialButton btnTypeExpense;
-    private MaterialButton btnTypeIncome;
-    private MaterialCardView rowWalletCategory;
-    private TextView tvWalletCategory;
-    private MaterialCardView rowDate;
-    private TextView tvDate;
     private EditText etNote;
-    private MaterialButton btnSave;
+    private EditText etAmountHidden;
+
+    // Quick selection pills
+    private TextView btnSelectCategoryPill;
+    private TextView btnSelectWalletPill;
+    private FrameLayout btnToggleChi;
+    private FrameLayout btnToggleThu;
+    private TextView tvDate;
     private CircularProgressIndicator progressSave;
+    private LinearProgressIndicator progressLoading;
+
+    // Calculator buffer
+    private long currentAmount = 0;
 
     private ActivityResultLauncher<Uri> takePictureLauncher;
     private ActivityResultLauncher<PickVisualMediaRequest> pickImageLauncher;
@@ -110,24 +116,15 @@ public class CaptureExpenseActivity extends AppCompatActivity {
         Executors.newSingleThreadExecutor().execute(() -> ImageUtils.clearOldUploads(getApplicationContext()));
 
         viewModel = new ViewModelProvider(this).get(CaptureViewModel.class);
-        // API bao 401 (token het han) thi ve man dang nhap
         SessionManager.observeExpired(this, this);
 
         initViews();
+        setupCalculatorNumpad();
         setupEditMode(savedInstanceState);
         setupActivityLaunchers();
         setupListeners();
         setupBackPressed();
         observeViewModel();
-
-        // Focus etAmount and show soft keyboard
-        etAmount.requestFocus();
-        etAmount.post(() -> {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.showSoftInput(etAmount, InputMethodManager.SHOW_IMPLICIT);
-            }
-        });
     }
 
     @Override
@@ -138,42 +135,157 @@ public class CaptureExpenseActivity extends AppCompatActivity {
         }
     }
 
-    // targetSdk 35+ bat buoc edge-to-edge, adjustResize khong con tu day layout len tren ban phim
     private void applyWindowInsets() {
         View root = ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
-            Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
-            v.setPadding(bars.left, bars.top, bars.right, Math.max(bars.bottom, ime.bottom));
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
             return WindowInsetsCompat.CONSUMED;
         });
     }
 
     private void initViews() {
-        btnClose = findViewById(R.id.btn_close);
-        progressLoading = findViewById(R.id.progress_loading);
-        ivPhoto = findViewById(R.id.iv_photo);
         layoutPhotoEmpty = findViewById(R.id.layout_photo_empty);
+        layoutPhotoInput = findViewById(R.id.layout_photo_input);
+        layoutCalculatorNumpad = findViewById(R.id.layout_calculator_numpad);
+        layoutConfirmedActions = findViewById(R.id.layout_confirmed_actions);
+
         btnTakePhoto = findViewById(R.id.btn_take_photo);
         btnPickPhoto = findViewById(R.id.btn_pick_photo);
+        btnSkipPhoto = findViewById(R.id.btn_skip_photo);
+
+        ivPhoto = findViewById(R.id.iv_photo);
         btnChangePhoto = findViewById(R.id.btn_change_photo);
-        etAmount = findViewById(R.id.et_amount);
-        tvAmountSuffix = findViewById(R.id.tv_amount_suffix);
-        toggleType = findViewById(R.id.toggle_type);
-        btnTypeExpense = findViewById(R.id.btn_type_expense);
-        btnTypeIncome = findViewById(R.id.btn_type_income);
-        rowWalletCategory = findViewById(R.id.row_wallet_category);
-        tvWalletCategory = findViewById(R.id.tv_wallet_category);
-        rowDate = findViewById(R.id.row_date);
-        tvDate = findViewById(R.id.tv_date);
-        etNote = findViewById(R.id.et_note);
-        btnSave = findViewById(R.id.btn_save);
-        progressSave = findViewById(R.id.progress_save);
         tvPhotoEmoji = findViewById(R.id.edit_tv_photo_emoji);
         receiptChip = findViewById(R.id.receipt_chip);
+
+        tvAmountPrefix = findViewById(R.id.tv_amount_prefix);
+        tvAmountDisplay = findViewById(R.id.tv_amount_display);
+        tvAmountSuffix = findViewById(R.id.tv_amount_suffix);
+        etNote = findViewById(R.id.et_note);
+        etAmountHidden = findViewById(R.id.et_amount);
+
+        btnSelectCategoryPill = findViewById(R.id.btn_select_category_pill);
+        btnSelectWalletPill = findViewById(R.id.btn_select_wallet_pill);
+        btnToggleChi = findViewById(R.id.btn_toggle_chi);
+        btnToggleThu = findViewById(R.id.btn_toggle_thu);
+        tvDate = findViewById(R.id.tv_date);
+        progressSave = findViewById(R.id.progress_save);
+        progressLoading = findViewById(R.id.progress_loading);
     }
 
-    // Che do sua: anh lay tu server (khong doi duoc), khoa nut Chi/Thu, dien san du lieu
+    private void setupCalculatorNumpad() {
+        int[] numIds = {
+                R.id.btn_calc_0, R.id.btn_calc_1, R.id.btn_calc_2, R.id.btn_calc_3,
+                R.id.btn_calc_4, R.id.btn_calc_5, R.id.btn_calc_6, R.id.btn_calc_7,
+                R.id.btn_calc_8, R.id.btn_calc_9
+        };
+
+        for (int i = 0; i < numIds.length; i++) {
+            final int digit = i;
+            View v = findViewById(numIds[i]);
+            if (v != null) {
+                v.setOnClickListener(btn -> appendDigit(digit));
+            }
+        }
+
+        View btn000 = findViewById(R.id.btn_calc_000);
+        if (btn000 != null) {
+            btn000.setOnClickListener(v -> appendTripleZero());
+        }
+
+        View btnC = findViewById(R.id.btn_calc_c);
+        if (btnC != null) {
+            btnC.setOnClickListener(v -> {
+                currentAmount = 0;
+                updateAmountUI();
+            });
+        }
+
+        View btnBackspace = findViewById(R.id.btn_calc_backspace);
+        if (btnBackspace != null) {
+            btnBackspace.setOnClickListener(v -> {
+                currentAmount = currentAmount / 10;
+                updateAmountUI();
+            });
+        }
+
+        // Done button: Hide numpad, show confirmed preview actions (Image 7)
+        View btnDone = findViewById(R.id.btn_calc_done);
+        if (btnDone != null) {
+            btnDone.setOnClickListener(v -> {
+                if (currentAmount <= 0) {
+                    Toast.makeText(this, "Vui lòng nhập số tiền lớn hơn 0", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                layoutCalculatorNumpad.setVisibility(View.GONE);
+                layoutConfirmedActions.setVisibility(View.VISIBLE);
+            });
+        }
+
+        // Tap amount overlay or (+) Add button to reopen calculator
+        View amountOverlay = findViewById(R.id.layout_amount_pill);
+        if (amountOverlay != null) {
+            amountOverlay.setOnClickListener(v -> {
+                layoutCalculatorNumpad.setVisibility(View.VISIBLE);
+                layoutConfirmedActions.setVisibility(View.GONE);
+            });
+        }
+
+        View btnAddMore = findViewById(R.id.btn_action_add_more);
+        if (btnAddMore != null) {
+            btnAddMore.setOnClickListener(v -> {
+                layoutCalculatorNumpad.setVisibility(View.VISIBLE);
+                layoutConfirmedActions.setVisibility(View.GONE);
+            });
+        }
+
+        // Save checkmark button (Large coral button in Image 7)
+        View btnSaveCheck = findViewById(R.id.btn_action_save_check);
+        if (btnSaveCheck != null) {
+            btnSaveCheck.setOnClickListener(v -> viewModel.save(this));
+        }
+
+        // Share button
+        View btnShare = findViewById(R.id.btn_action_share);
+        if (btnShare != null) {
+            btnShare.setOnClickListener(v -> {
+                String shareText = "CapMoney: Giao dịch " + CurrencyUtils.format(currentAmount) +
+                        (etNote.getText() != null && !etNote.getText().toString().isEmpty() ? " (" + etNote.getText() + ")" : "");
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent, "Chia sẻ chi tiêu"));
+            });
+        }
+    }
+
+    private void appendDigit(int digit) {
+        if (currentAmount > 100_000_000_000L) return; // Prevent overflow
+        currentAmount = (currentAmount * 10) + digit;
+        updateAmountUI();
+    }
+
+    private void appendTripleZero() {
+        if (currentAmount == 0) return;
+        if (currentAmount > 100_000_000L) return;
+        currentAmount = currentAmount * 1000;
+        updateAmountUI();
+    }
+
+    private void updateAmountUI() {
+        if (currentAmount == 0) {
+            tvAmountDisplay.setText("0");
+        } else {
+            tvAmountDisplay.setText(CurrencyUtils.formatInput(currentAmount));
+        }
+        viewModel.setAmount(currentAmount);
+        if (etAmountHidden != null) {
+            etAmountHidden.setText(String.valueOf(currentAmount));
+        }
+    }
+
     private void setupEditMode(Bundle savedInstanceState) {
         Transaction tx = (Transaction) getIntent().getSerializableExtra(EXTRA_EDIT_TX);
         if (tx == null) {
@@ -182,10 +294,14 @@ public class CaptureExpenseActivity extends AppCompatActivity {
         editing = true;
         boolean firstInit = viewModel.initEdit(tx);
 
-        ((TextView) findViewById(R.id.tv_title)).setText(R.string.edit_title);
-        btnSave.setText(R.string.edit_save);
+        TextView tvTitle = findViewById(R.id.tv_title);
+        if (tvTitle != null) {
+            tvTitle.setVisibility(View.VISIBLE);
+            tvTitle.setText(R.string.edit_title);
+        }
+
         layoutPhotoEmpty.setVisibility(View.GONE);
-        btnChangePhoto.setVisibility(View.GONE);
+        layoutPhotoInput.setVisibility(View.VISIBLE);
 
         String imageUrl = tx.getFullImageUrl();
         if (imageUrl != null && !imageUrl.trim().isEmpty()) {
@@ -196,13 +312,9 @@ public class CaptureExpenseActivity extends AppCompatActivity {
             tvPhotoEmoji.setText(tx.getCategoryIcon() != null ? tx.getCategoryIcon() : "💰");
         }
 
-        boolean isExpense = tx.isExpense();
-        toggleType.check(isExpense ? R.id.btn_type_expense : R.id.btn_type_income);
-        toggleType.setEnabled(false);
-
-        // Xoay man hinh: EditText tu giu chu, chi dien lan dau
         if (firstInit && savedInstanceState == null) {
-            etAmount.setText(CurrencyUtils.formatInput(Math.round(tx.getAmount())));
+            currentAmount = Math.round(tx.getAmount());
+            updateAmountUI();
             etNote.setText(tx.getNote() != null ? tx.getNote() : "");
         }
     }
@@ -228,59 +340,38 @@ public class CaptureExpenseActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        btnClose.setOnClickListener(v -> handleExitAttempt());
+        View btnClose = findViewById(R.id.btn_close);
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> handleExitAttempt());
+        }
 
         btnTakePhoto.setOnClickListener(v -> launchCamera());
         btnPickPhoto.setOnClickListener(v -> launchGallery());
+        btnSkipPhoto.setOnClickListener(v -> {
+            layoutPhotoEmpty.setVisibility(View.GONE);
+            layoutPhotoInput.setVisibility(View.VISIBLE);
+        });
 
         btnChangePhoto.setOnClickListener(v -> showChangePhotoDialog());
 
-        etAmount.addTextChangedListener(new TextWatcher() {
-            private boolean isFormatting = false;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (isFormatting) return;
-                isFormatting = true;
-
-                long v = CurrencyUtils.parseDigits(s.toString());
-                String formatted = v == 0 ? "" : CurrencyUtils.formatInput(v);
-                if (!s.toString().equals(formatted)) {
-                    etAmount.setText(formatted);
-                    etAmount.setSelection(formatted.length());
-                }
-                // Nguoi dung tu sua so tien thi an chip doc hoa don (xoay man hinh khong doi so nen khong an)
-                Long old = viewModel.getAmount().getValue();
-                if (old == null || old != v) {
-                    viewModel.dismissReceiptChip();
-                }
-                viewModel.setAmount(v);
-
-                isFormatting = false;
-            }
-        });
-
-        toggleType.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (!isChecked) return;
-            if (checkedId == R.id.btn_type_expense) {
-                viewModel.setType(Transaction.TYPE_EXPENSE);
-            } else if (checkedId == R.id.btn_type_income) {
-                viewModel.setType(Transaction.TYPE_INCOME);
-            }
-        });
-
-        rowWalletCategory.setOnClickListener(v -> {
+        // Category pill click -> open SelectCategoryBottomSheet
+        btnSelectCategoryPill.setOnClickListener(v -> {
             SelectCategoryBottomSheet.newInstance().show(getSupportFragmentManager(), "category_sheet");
         });
 
-        rowDate.setOnClickListener(v -> showDateTimePicker());
+        // Wallet pill click -> cycle wallet selection or open sheet
+        btnSelectWalletPill.setOnClickListener(v -> {
+            SelectCategoryBottomSheet.newInstance().show(getSupportFragmentManager(), "category_sheet");
+        });
 
+        // Chi / Thu Toggle
+        btnToggleChi.setOnClickListener(v -> viewModel.setType(Transaction.TYPE_EXPENSE));
+        btnToggleThu.setOnClickListener(v -> viewModel.setType(Transaction.TYPE_INCOME));
+
+        // Date Picker
+        tvDate.setOnClickListener(v -> showDateTimePicker());
+
+        // Note watcher
         etNote.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -291,8 +382,6 @@ public class CaptureExpenseActivity extends AppCompatActivity {
                 viewModel.setNote(s.toString());
             }
         });
-
-        btnSave.setOnClickListener(v -> viewModel.save(this));
     }
 
     private void setupBackPressed() {
@@ -312,8 +401,8 @@ public class CaptureExpenseActivity extends AppCompatActivity {
         boolean hasData = editing
                 ? viewModel.hasEditChanges()
                 : viewModel.getPhotoUri().getValue() != null
-                || (viewModel.getAmount().getValue() != null && viewModel.getAmount().getValue() > 0)
-                || (viewModel.getNote().getValue() != null && !viewModel.getNote().getValue().trim().isEmpty());
+                || currentAmount > 0
+                || (etNote.getText() != null && !etNote.getText().toString().trim().isEmpty());
 
         if (hasData) {
             new MaterialAlertDialogBuilder(this)
@@ -358,6 +447,8 @@ public class CaptureExpenseActivity extends AppCompatActivity {
                         launchGallery();
                     } else if (which == 2) {
                         viewModel.setPhoto(null);
+                        layoutPhotoInput.setVisibility(View.GONE);
+                        layoutPhotoEmpty.setVisibility(View.VISIBLE);
                     }
                 })
                 .show();
@@ -403,14 +494,12 @@ public class CaptureExpenseActivity extends AppCompatActivity {
         viewModel.getPhotoUri().observe(this, uri -> {
             if (editing) return;
             if (uri != null) {
-                ivPhoto.setVisibility(View.VISIBLE);
                 layoutPhotoEmpty.setVisibility(View.GONE);
-                btnChangePhoto.setVisibility(View.VISIBLE);
+                layoutPhotoInput.setVisibility(View.VISIBLE);
+                ivPhoto.setVisibility(View.VISIBLE);
                 Glide.with(this).load(uri).centerCrop().into(ivPhoto);
             } else {
                 ivPhoto.setVisibility(View.GONE);
-                layoutPhotoEmpty.setVisibility(View.VISIBLE);
-                btnChangePhoto.setVisibility(View.GONE);
             }
         });
 
@@ -421,17 +510,20 @@ public class CaptureExpenseActivity extends AppCompatActivity {
             }
             String money = CurrencyUtils.format(chip.amount);
             if (chip.mode == CaptureViewModel.ReceiptChip.FILLED) {
-                setAmountText(chip.amount);
+                currentAmount = chip.amount;
+                updateAmountUI();
                 receiptChip.setText(getString(R.string.receipt_filled, money));
                 receiptChip.setOnClickListener(v -> {
                     viewModel.dismissReceiptChip();
-                    setAmountText(0);
+                    currentAmount = 0;
+                    updateAmountUI();
                 });
             } else {
                 receiptChip.setText(getString(R.string.receipt_suggest, money));
                 receiptChip.setOnClickListener(v -> {
                     viewModel.dismissReceiptChip();
-                    setAmountText(chip.amount);
+                    currentAmount = chip.amount;
+                    updateAmountUI();
                 });
             }
             receiptChip.setVisibility(View.VISIBLE);
@@ -439,69 +531,60 @@ public class CaptureExpenseActivity extends AppCompatActivity {
 
         viewModel.getType().observe(this, type -> {
             boolean isExpense = Transaction.TYPE_EXPENSE.equals(type);
-            int colorRes = isExpense ? R.color.color_expense : R.color.color_income;
-            int color = ContextCompat.getColor(this, colorRes);
-
-            etAmount.setTextColor(color);
-            tvAmountSuffix.setTextColor(color);
-
-            int bgCard = ContextCompat.getColor(this, R.color.bg_card);
-            int textSec = ContextCompat.getColor(this, R.color.text_secondary);
-            int white = ContextCompat.getColor(this, R.color.white);
+            tvAmountPrefix.setText(isExpense ? "-  " : "+  ");
+            int prefixColor = ContextCompat.getColor(this, isExpense ? R.color.color_expense : R.color.color_income);
+            tvAmountPrefix.setTextColor(prefixColor);
 
             if (isExpense) {
-                btnTypeExpense.setBackgroundTintList(ColorStateList.valueOf(color));
-                btnTypeExpense.setTextColor(white);
-                btnTypeExpense.setStrokeColor(ColorStateList.valueOf(color));
-
-                btnTypeIncome.setBackgroundTintList(ColorStateList.valueOf(bgCard));
-                btnTypeIncome.setTextColor(textSec);
-                btnTypeIncome.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.bg_card_secondary)));
+                btnToggleChi.setBackgroundResource(R.drawable.bg_circle_icon_expense);
+                btnToggleThu.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent));
+                ((ImageView) btnToggleChi.getChildAt(0)).setColorFilter(ContextCompat.getColor(this, R.color.color_expense));
+                ((ImageView) btnToggleThu.getChildAt(0)).setColorFilter(ContextCompat.getColor(this, R.color.text_tertiary));
             } else {
-                btnTypeIncome.setBackgroundTintList(ColorStateList.valueOf(color));
-                btnTypeIncome.setTextColor(white);
-                btnTypeIncome.setStrokeColor(ColorStateList.valueOf(color));
-
-                btnTypeExpense.setBackgroundTintList(ColorStateList.valueOf(bgCard));
-                btnTypeExpense.setTextColor(textSec);
-                btnTypeExpense.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.bg_card_secondary)));
+                btnToggleThu.setBackgroundResource(R.drawable.bg_circle_icon_income);
+                btnToggleChi.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent));
+                ((ImageView) btnToggleThu.getChildAt(0)).setColorFilter(ContextCompat.getColor(this, R.color.color_income));
+                ((ImageView) btnToggleChi.getChildAt(0)).setColorFilter(ContextCompat.getColor(this, R.color.text_tertiary));
             }
-
-            updateWalletCategoryRow(viewModel.getSelectedWallet().getValue(), viewModel.getSelectedCategory().getValue());
         });
 
         viewModel.getSelectedWallet().observe(this, wallet -> {
-            updateWalletCategoryRow(wallet, viewModel.getSelectedCategory().getValue());
+            if (wallet != null) {
+                btnSelectWalletPill.setText("🧾  " + wallet.getName() + " ⌄");
+            }
         });
 
         viewModel.getSelectedCategory().observe(this, category -> {
-            updateWalletCategoryRow(viewModel.getSelectedWallet().getValue(), category);
+            if (category != null) {
+                String icon = category.getIcon() != null ? category.getIcon() : "📖";
+                btnSelectCategoryPill.setText(icon + "  " + category.getName() + " ⌄");
+            }
         });
 
         viewModel.getDateTime().observe(this, cal -> {
             if (cal != null) {
-                tvDate.setText("📅 " + DateUtils.toDisplay(DateUtils.toServer(cal)));
+                Calendar today = Calendar.getInstance();
+                if (cal.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                        && cal.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
+                    tvDate.setText("📅  Hôm nay ⌄");
+                } else {
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                    tvDate.setText("📅  " + sdf.format(cal.getTime()) + " ⌄");
+                }
             }
         });
 
         viewModel.getLoadingOptions().observe(this, loading -> {
-            progressLoading.setVisibility(Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
+            if (progressLoading != null) {
+                progressLoading.setVisibility(Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
+            }
         });
 
         viewModel.getSaving().observe(this, saving -> {
             boolean isSaving = Boolean.TRUE.equals(saving);
-            progressSave.setVisibility(isSaving ? View.VISIBLE : View.GONE);
-            btnSave.setText(isSaving ? "" : getString(editing ? R.string.edit_save : R.string.capture_save));
-            btnSave.setEnabled(!isSaving);
-            btnClose.setEnabled(!isSaving);
-            etAmount.setEnabled(!isSaving);
-            etNote.setEnabled(!isSaving);
-            btnTakePhoto.setEnabled(!isSaving);
-            btnPickPhoto.setEnabled(!isSaving);
-            btnChangePhoto.setEnabled(!isSaving);
-            rowWalletCategory.setEnabled(!isSaving);
-            rowDate.setEnabled(!isSaving);
-            toggleType.setEnabled(!isSaving && !editing);
+            if (progressSave != null) {
+                progressSave.setVisibility(isSaving ? View.VISIBLE : View.GONE);
+            }
         });
 
         viewModel.getEvent().observe(this, singleEvent -> {
@@ -522,43 +605,5 @@ public class CaptureExpenseActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
-
-    // Dat so vao o tien tu chip hoa don; TextWatcher tu dinh dang va cap nhat ViewModel
-    private void setAmountText(long value) {
-        String text = value > 0 ? CurrencyUtils.formatInput(value) : "";
-        if (!text.equals(etAmount.getText().toString())) {
-            etAmount.setText(text);
-            etAmount.setSelection(text.length());
-        }
-    }
-
-    private void updateWalletCategoryRow(WalletOption wallet, Category category) {
-        String walletText = wallet != null ? (getWalletIcon(wallet.getType()) + " " + wallet.getName()) : "";
-
-        if (category != null) {
-            String full = walletText + " · " + category.getIcon() + " " + category.getName();
-            tvWalletCategory.setText(full);
-        } else {
-            String chooseCat = getString(R.string.capture_choose_category);
-            String full = (walletText.isEmpty() ? "" : walletText + " · ") + chooseCat;
-            SpannableString ss = new SpannableString(full);
-            int start = full.indexOf(chooseCat);
-            if (start >= 0) {
-                ss.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.capture_text_hint)),
-                        start, start + chooseCat.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            tvWalletCategory.setText(ss);
-        }
-    }
-
-    private String getWalletIcon(String type) {
-        if (type == null) return "👛";
-        switch (type.toLowerCase()) {
-            case "cash": return "💵";
-            case "bank": return "🏦";
-            case "saving": return "🐷";
-            default: return "👛";
-        }
     }
 }

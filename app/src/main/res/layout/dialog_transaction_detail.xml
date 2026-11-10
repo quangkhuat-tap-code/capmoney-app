@@ -10,179 +10,219 @@
     android:paddingTop="12dp"
     android:paddingBottom="24dp">
 
-    <!-- Drag handle -->
-    <View
-        android:layout_width="32dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:background="@color/text_secondary" />
+    <!-- Top Navigation Bar: Options/Actions (Left) & Close (Right) -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
 
-    <!-- Photo container 1:1 (ẩn nếu không có ảnh) -->
+        <!-- Left Actions Pill (More ••• & Gallery) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_filter_pill_inactive"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageButton
+                android:id="@+id/btn_edit_tx"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_search_24"
+                app:tint="@color/text_secondary"
+                android:contentDescription="Sửa giao dịch" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@color/border_subtle" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_gallery_24"
+                app:tint="@color/text_secondary" />
+        </LinearLayout>
+
+        <!-- Right Close Button (✕) -->
+        <FrameLayout
+            android:id="@+id/btn_close_detail"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_button">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_close_24"
+                app:tint="@color/white" />
+        </FrameLayout>
+    </RelativeLayout>
+
+    <!-- Center Date Badge: 📅 lúc 13:46 ngày 21 tháng 10, 2026 -->
+    <TextView
+        android:id="@+id/tv_detail_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_filter_pill_inactive"
+        android:paddingStart="16dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="6dp"
+        android:text="📅  lúc 13:46 ngày 21 tháng 10, 2026"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <!-- Main Photo Card with 28dp corners & Overlays -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_photo_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:visibility="gone">
+        android:layout_marginBottom="16dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_photo_detail"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:cardBackgroundColor="@color/bg_main"
-            app:cardCornerRadius="@dimen/corner_radius_card"
-            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/bg_card_secondary"
+            app:cardCornerRadius="@dimen/corner_radius_xlarge"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border_subtle"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintDimensionRatio="1:1">
 
-            <ImageView
-                android:id="@+id/iv_detail_photo"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter" />
+                android:layout_height="match_parent">
+
+                <!-- Photo ImageView -->
+                <ImageView
+                    android:id="@+id/iv_detail_photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+                <!-- Top Overlay: Category & Wallet Badges -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:layout_margin="16dp"
+                    android:orientation="horizontal">
+
+                    <!-- Category Badge -->
+                    <TextView
+                        android:id="@+id/tv_detail_category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_pill_category_amber"
+                        android:gravity="center"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="📖  Giáo dục ⌄"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <!-- Wallet Badge -->
+                    <TextView
+                        android:id="@+id/tv_detail_wallet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="34dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_pill_wallet_green"
+                        android:gravity="center"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="🧾  Wallet"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Bottom Gradient Scrim & Amount / Note -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:background="#B30B0B0E"
+                    android:orientation="vertical"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="20dp">
+
+                    <TextView
+                        android:id="@+id/tv_detail_amount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="- 10,000đ"
+                        android:textColor="@color/white"
+                        android:textSize="32sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_detail_note"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Thêm ghi chú..."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+            </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Amount & Category -->
-    <TextView
-        android:id="@+id/tv_detail_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:textSize="@dimen/text_size_money_large"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/tv_detail_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="20dp"
-        android:textColor="@color/text_secondary"
-        android:textSize="@dimen/text_size_body" />
-
-    <!-- Row Ví -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="12dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/home_detail_wallet"
-            android:textColor="@color/text_secondary"
-            android:textSize="@dimen/text_size_body" />
-
-        <TextView
-            android:id="@+id/tv_detail_wallet"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="end"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_body"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <!-- Row Thời gian -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="12dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/home_detail_time"
-            android:textColor="@color/text_secondary"
-            android:textSize="@dimen/text_size_body" />
-
-        <TextView
-            android:id="@+id/tv_detail_time"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="end"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_body" />
-    </LinearLayout>
-
-    <!-- Row Ghi chú -->
+    <!-- Compatibility hidden note row so existing bindings work without error -->
     <LinearLayout
         android:id="@+id/row_detail_note"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="24dp">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/home_detail_note"
-            android:textColor="@color/text_secondary"
-            android:textSize="@dimen/text_size_body" />
-
-        <TextView
-            android:id="@+id/tv_detail_note"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="end"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_body" />
-    </LinearLayout>
-
-    <!-- Nút Sửa + Xóa giao dịch -->
+    <!-- Action Buttons Row: Xóa & Sửa -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:baselineAligned="false"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_edit_tx"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:id="@+id/btn_delete_tx"
+            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="@dimen/spacing_small"
             android:layout_weight="1"
-            android:text="@string/edit_button"
-            android:textColor="@color/color_accent"
-            app:cornerRadius="@dimen/corner_radius_pill"
-            app:strokeColor="@color/color_accent" />
+            android:text="Xóa giao dịch"
+            android:textColor="@color/color_expense"
+            app:cornerRadius="@dimen/corner_radius_pill" />
 
-        <FrameLayout
-            android:layout_width="0dp"
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress_delete"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_delete_tx"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="@string/home_delete"
-                android:textColor="@color/color_expense"
-                app:cornerRadius="@dimen/corner_radius_pill"
-                app:strokeColor="@color/color_expense" />
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/progress_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:indeterminate="true"
-                android:visibility="gone"
-                app:indicatorColor="@color/color_expense"
-                app:trackColor="@color/transparent" />
-        </FrameLayout>
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:indicatorColor="@color/color_expense" />
     </LinearLayout>
+
 </LinearLayout>

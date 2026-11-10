@@ -2,26 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_card_surface_18"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/spacing_medium"
-    android:paddingTop="12dp"
-    android:paddingEnd="@dimen/spacing_medium"
-    android:paddingBottom="12dp">
+    android:paddingStart="16dp"
+    android:paddingTop="14dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="14dp">
 
+    <!-- Icon tròn: ví / ngân hàng -->
     <TextView
         android:id="@+id/wallet_item_icon"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:background="@drawable/bg_wallet_icon_circle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_circle_icon_income"
         android:gravity="center"
-        android:textSize="24sp" />
+        android:textSize="20sp" />
 
+    <!-- Tên ví + sao + badge -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="14dp"
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="horizontal">
@@ -32,31 +38,37 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp" />
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/wallet_item_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_small"
-            android:background="@drawable/bg_wallet_badge"
-            android:paddingStart="@dimen/spacing_small"
-            android:paddingTop="2dp"
-            android:paddingEnd="@dimen/spacing_small"
-            android:paddingBottom="2dp"
-            android:text="@string/wallet_badge_default"
-            android:textColor="@color/color_accent"
-            android:textSize="11sp"
+            android:layout_marginStart="6dp"
+            android:text="⭐ đ"
+            android:textColor="@color/color_warning"
+            android:textSize="12sp"
             android:visibility="gone" />
     </LinearLayout>
 
+    <!-- Số dư -->
     <TextView
         android:id="@+id/wallet_item_balance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_small"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
         android:textStyle="bold" />
+
+    <!-- Mũi tên > -->
+    <ImageView
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/ic_chevron_right_24"
+        app:tint="@color/text_secondary"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
 </LinearLayout>

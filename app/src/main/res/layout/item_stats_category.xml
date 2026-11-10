@@ -5,87 +5,63 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingStart="4dp"
+    android:paddingTop="12dp"
+    android:paddingEnd="4dp"
+    android:paddingBottom="12dp">
 
-    <!-- Emoji trong o tron, nen mau danh muc do mo 20% (dat trong code) -->
+    <!-- Icon tròn với màu nền danh mục -->
     <TextView
         android:id="@+id/stats_item_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:gravity="center"
         android:includeFontPadding="false"
-        android:textSize="24sp" />
+        android:textSize="22sp" />
 
-    <LinearLayout
+    <!-- Tên danh mục -->
+    <TextView
+        android:id="@+id/stats_item_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="14dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+    <!-- Số tiền -->
+    <TextView
+        android:id="@+id/stats_item_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/stats_item_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@color/text_primary"
-                android:textSize="15sp" />
+    <!-- Phần trăm + mũi tên > -->
+    <TextView
+        android:id="@+id/stats_item_percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/color_warning"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/stats_item_amount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/spacing_small"
-                android:textColor="@color/text_primary"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+    <!-- Giữ lại progress và count ẩn (để ViewHolder không bị null) -->
+    <TextView
+        android:id="@+id/stats_item_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/stats_item_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_size_small" />
-
-            <com.google.android.material.progressindicator.LinearProgressIndicator
-                android:id="@+id/stats_item_progress"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:layout_weight="1"
-                android:max="100"
-                app:indicatorTrackGapSize="0dp"
-                app:trackColor="@color/bg_card_secondary"
-                app:trackCornerRadius="3dp"
-                app:trackStopIndicatorSize="0dp"
-                app:trackThickness="6dp" />
-
-            <TextView
-                android:id="@+id/stats_item_percent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:minWidth="40dp"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_size_small" />
-        </LinearLayout>
-    </LinearLayout>
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/stats_item_progress"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 </LinearLayout>

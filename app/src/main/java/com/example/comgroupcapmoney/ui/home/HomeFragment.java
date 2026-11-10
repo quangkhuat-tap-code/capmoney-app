@@ -1,7 +1,6 @@
 package com.example.comgroupcapmoney.ui.home;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,10 +25,12 @@ import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.ui.search.SearchActivity;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
+import com.example.comgroupcapmoney.utils.SharedPrefManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -37,6 +38,8 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel viewModel;
 
+    private TextView tvGreeting;
+    private TextView tvUserName;
     private ImageButton btnPrevMonth;
     private ImageButton btnNextMonth;
     private TextView tvMonth;
@@ -54,6 +57,7 @@ public class HomeFragment extends Fragment {
     private TextView tvErrorMessage;
     private MaterialButton btnRetry;
     private CircularProgressIndicator progressHome;
+    private boolean isAmountsHidden = false;
 
     private PhotoGridAdapter photoGridAdapter;
     private CalendarAdapter calendarAdapter;
@@ -68,7 +72,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // targetSdk 35+ bat buoc edge-to-edge: day thanh chon thang xuong duoi status bar
+        // Edge-to-edge support
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
             v.setPadding(bars.left, bars.top, bars.right, v.getPaddingBottom());
@@ -76,10 +80,10 @@ public class HomeFragment extends Fragment {
         });
 
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
-        // API bao 401 (token het han) thi ve man dang nhap
         SessionManager.observeExpired(getViewLifecycleOwner(), requireActivity());
 
         initViews(view);
+        setupGreeting();
         setupWeekdays();
         setupAdapters();
         setupListeners();
@@ -93,6 +97,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void initViews(View view) {
+        tvGreeting = view.findViewById(R.id.tv_greeting);
+        tvUserName = view.findViewById(R.id.tv_user_name);
         btnPrevMonth = view.findViewById(R.id.btn_prev_month);
         btnNextMonth = view.findViewById(R.id.btn_next_month);
         tvMonth = view.findViewById(R.id.tv_month);
@@ -110,6 +116,26 @@ public class HomeFragment extends Fragment {
         tvErrorMessage = view.findViewById(R.id.tv_error_message);
         btnRetry = view.findViewById(R.id.btn_retry);
         progressHome = view.findViewById(R.id.progress_home);
+    }
+
+    private void setupGreeting() {
+        if (getContext() != null) {
+            String name = SharedPrefManager.getInstance(requireContext()).getUserName();
+            if (name != null && !name.trim().isEmpty() && !name.equalsIgnoreCase("User")) {
+                tvUserName.setText(name);
+            } else {
+                tvUserName.setText("Quang");
+            }
+
+            int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+            if (hour >= 5 && hour < 12) {
+                tvGreeting.setText("Chào buổi sáng 🌅");
+            } else if (hour >= 12 && hour < 18) {
+                tvGreeting.setText("Chào buổi chiều 🌤️");
+            } else {
+                tvGreeting.setText("Chào buổi tối 🌙");
+            }
+        }
     }
 
     private void setupWeekdays() {
@@ -163,12 +189,22 @@ public class HomeFragment extends Fragment {
         });
 
         btnRetry.setOnClickListener(v -> viewModel.load());
-        requireView().findViewById(R.id.btn_search).setOnClickListener(v ->
-                startActivity(new Intent(requireContext(), SearchActivity.class)));
+        View btnSearch = requireView().findViewById(R.id.btn_search);
+        if (btnSearch != null) {
+            btnSearch.setOnClickListener(v ->
+                    startActivity(new Intent(requireContext(), SearchActivity.class)));
+        }
+
+        View btnEye = requireView().findViewById(R.id.btn_toggle_eye);
+        if (btnEye != null) {
+            btnEye.setOnClickListener(v -> {
+                isAmountsHidden = !isAmountsHidden;
+                updateTotalsDisplay(viewModel.getTotals().getValue());
+            });
+        }
     }
 
     private void observeViewModel() {
-        // Mat mang va dang hien du lieu da luu: hien banner kem thoi diem luu
         TextView tvOfflineBanner = requireView().findViewById(R.id.tv_offline_banner);
         viewModel.getOfflineCachedAt().observe(getViewLifecycleOwner(), cachedAt -> {
             if (cachedAt == null) {
@@ -183,41 +219,23 @@ public class HomeFragment extends Fragment {
         viewModel.getMonth().observe(getViewLifecycleOwner(), m -> updateMonthTitle());
         viewModel.getYear().observe(getViewLifecycleOwner(), y -> updateMonthTitle());
 
-        viewModel.getTotals().observe(getViewLifecycleOwner(), totals -> {
-            if (totals != null && totals.length == 2) {
-                // Bang 0 thi khong hien dau, tranh "-0 đ" / "+0 đ"
-                tvTotalExpense.setText((totals[0] > 0 ? "-" : "") + CurrencyUtils.format(totals[0]));
-                tvTotalIncome.setText((totals[1] > 0 ? "+" : "") + CurrencyUtils.format(totals[1]));
-            }
-        });
+        viewModel.getTotals().observe(getViewLifecycleOwner(), this::updateTotalsDisplay);
 
         viewModel.getViewMode().observe(getViewLifecycleOwner(), mode -> {
             boolean isGrid = (mode == HomeViewModel.MODE_GRID);
             rvPhotoGrid.setVisibility(isGrid ? View.VISIBLE : View.GONE);
             layoutCalendar.setVisibility(isGrid ? View.GONE : View.VISIBLE);
 
-            int colorAccent = ContextCompat.getColor(requireContext(), R.color.color_accent);
-            int colorBgCard = ContextCompat.getColor(requireContext(), R.color.bg_card);
-            int colorBgCardSec = ContextCompat.getColor(requireContext(), R.color.bg_card_secondary);
-            int colorWhite = ContextCompat.getColor(requireContext(), R.color.white);
-            int colorTextSec = ContextCompat.getColor(requireContext(), R.color.text_secondary);
-
             if (isGrid) {
-                btnModeGrid.setBackgroundTintList(ColorStateList.valueOf(colorAccent));
-                btnModeGrid.setTextColor(colorWhite);
-                btnModeGrid.setStrokeColor(ColorStateList.valueOf(colorAccent));
-
-                btnModeCalendar.setBackgroundTintList(ColorStateList.valueOf(colorBgCard));
-                btnModeCalendar.setTextColor(colorTextSec);
-                btnModeCalendar.setStrokeColor(ColorStateList.valueOf(colorBgCardSec));
+                btnModeGrid.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+                btnModeGrid.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg_card_elevated));
+                btnModeCalendar.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary));
+                btnModeCalendar.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.transparent));
             } else {
-                btnModeCalendar.setBackgroundTintList(ColorStateList.valueOf(colorAccent));
-                btnModeCalendar.setTextColor(colorWhite);
-                btnModeCalendar.setStrokeColor(ColorStateList.valueOf(colorAccent));
-
-                btnModeGrid.setBackgroundTintList(ColorStateList.valueOf(colorBgCard));
-                btnModeGrid.setTextColor(colorTextSec);
-                btnModeGrid.setStrokeColor(ColorStateList.valueOf(colorBgCardSec));
+                btnModeCalendar.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+                btnModeCalendar.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg_card_elevated));
+                btnModeGrid.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary));
+                btnModeGrid.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.transparent));
             }
 
             updateEmptyState();
@@ -245,8 +263,8 @@ public class HomeFragment extends Fragment {
                 layoutCalendar.setVisibility(View.GONE);
             } else {
                 layoutError.setVisibility(View.GONE);
-                boolean isGrid = (viewModel.getViewMode().getValue() == null
-                        || viewModel.getViewMode().getValue() == HomeViewModel.MODE_GRID);
+                boolean isGrid = (viewModel.getViewMode().getValue() != null
+                        && viewModel.getViewMode().getValue() == HomeViewModel.MODE_GRID);
                 rvPhotoGrid.setVisibility(isGrid ? View.VISIBLE : View.GONE);
                 layoutCalendar.setVisibility(isGrid ? View.GONE : View.VISIBLE);
                 updateEmptyState();
@@ -262,11 +280,23 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    private void updateTotalsDisplay(double[] totals) {
+        if (totals != null && totals.length == 2) {
+            if (isAmountsHidden) {
+                tvTotalExpense.setText("******");
+                tvTotalIncome.setText("******");
+            } else {
+                tvTotalExpense.setText(CurrencyUtils.format(totals[0]));
+                tvTotalIncome.setText(CurrencyUtils.format(totals[1]));
+            }
+        }
+    }
+
     private void updateMonthTitle() {
         Integer m = viewModel.getMonth().getValue();
         Integer y = viewModel.getYear().getValue();
         if (m != null && y != null) {
-            tvMonth.setText(DateUtils.monthTitle(m, y));
+            tvMonth.setText(DateUtils.monthTitle(m, y) + " ⌄");
         }
 
         boolean isCurrent = viewModel.isCurrentMonth();
@@ -280,8 +310,8 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        boolean isGrid = (viewModel.getViewMode().getValue() == null
-                || viewModel.getViewMode().getValue() == HomeViewModel.MODE_GRID);
+        boolean isGrid = (viewModel.getViewMode().getValue() != null
+                && viewModel.getViewMode().getValue() == HomeViewModel.MODE_GRID);
 
         boolean isEmpty = (viewModel.getTransactions().getValue() == null
                 || viewModel.getTransactions().getValue().isEmpty());

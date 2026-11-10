@@ -98,11 +98,16 @@ public class CategoryStatAdapter extends RecyclerView.Adapter<CategoryStatAdapte
 
             tvName.setText(item.getCategoryName());
             tvAmount.setText(CurrencyUtils.format(item.getAmount()));
-            tvCount.setText(ctx.getString(R.string.stats_count, item.getCount()));
+            if (tvCount != null) {
+                tvCount.setText(ctx.getString(R.string.stats_count, item.getCount()));
+            }
 
-            progress.setIndicatorColor(color);
-            progress.setProgressCompat((int) Math.round(item.getPercent()), false);
-            tvPercent.setText(formatPercent(item.getPercent()));
+            if (progress != null) {
+                progress.setIndicatorColor(color);
+                progress.setProgressCompat((int) Math.round(item.getPercent()), false);
+            }
+            tvPercent.setText(formatPercent(item.getPercent()) + " >");
+            tvPercent.setTextColor(color);
         }
     }
 }

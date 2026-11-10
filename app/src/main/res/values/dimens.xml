@@ -1,19 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Khoảng cách lề Spacing / Padding -->
+    <!-- Spacing Scale (8-dp grid) -->
     <dimen name="spacing_tiny">4dp</dimen>
     <dimen name="spacing_small">8dp</dimen>
     <dimen name="spacing_medium">16dp</dimen>
     <dimen name="spacing_large">24dp</dimen>
+    <dimen name="spacing_xlarge">32dp</dimen>
 
-    <!-- Độ bo góc Card & Nút -->
+    <!-- Corner Radii -->
+    <dimen name="corner_radius_cell">8dp</dimen>
     <dimen name="corner_radius_small">12dp</dimen>
+    <dimen name="corner_radius_medium">16dp</dimen>
     <dimen name="corner_radius_card">20dp</dimen>
-    <dimen name="corner_radius_pill">50dp</dimen>
+    <dimen name="corner_radius_large">24dp</dimen>
+    <dimen name="corner_radius_xlarge">28dp</dimen>
+    <dimen name="corner_radius_camera">32dp</dimen>
+    <dimen name="corner_radius_pill">999dp</dimen>
 
-    <!-- Cỡ chữ Font size -->
+    <!-- Typography (sp units) -->
+    <dimen name="text_size_micro">10sp</dimen>
     <dimen name="text_size_small">12sp</dimen>
     <dimen name="text_size_body">14sp</dimen>
     <dimen name="text_size_title">18sp</dimen>
+    <dimen name="text_size_header">22sp</dimen>
     <dimen name="text_size_money_large">32sp</dimen>
+
+    <!-- Bottom Nav & FAB -->
+    <dimen name="bottom_nav_height">64dp</dimen>
+    <dimen name="bottom_nav_margin_bottom">16dp</dimen>
+    <dimen name="bottom_nav_margin_horizontal">20dp</dimen>
+    <dimen name="fab_size">56dp</dimen>
 </resources>

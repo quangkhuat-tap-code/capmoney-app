@@ -6,42 +6,204 @@
     android:layout_height="match_parent"
     android:background="@color/bg_main">
 
-    <!-- Khung chứa 5 Fragment của 3 thành viên -->
+    <!-- Container for Fragments (Full height so content scrolls behind floating nav) -->
     <FrameLayout
         android:id="@+id/fragment_container"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Nút (+) nổi để mở màn hình Chụp ảnh chi tiêu (Member 1) -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_capture_expense"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/spacing_medium"
-        android:layout_marginBottom="@dimen/spacing_medium"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/color_accent"
-        app:tint="@color/white"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="Chụp chi tiêu" />
-
-    <!-- Thanh điều hướng 5 Tab -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/bg_card"
-        app:itemIconTint="@color/text_primary"
-        app:itemTextColor="@color/text_secondary"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Floating Action Button (+) for Capture Expense -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_capture_expense"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="92dp"
+        android:src="@drawable/ic_add_24"
+        app:fabCustomSize="56dp"
+        app:maxImageSize="28dp"
+        app:backgroundTint="@color/color_accent"
+        app:tint="@color/white"
+        app:elevation="8dp"
+        app:borderWidth="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="Chụp chi tiêu" />
+
+    <!-- Backward compatibility hidden BottomNavigationView so existing tests/references don't break -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:menu="@menu/bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Floating Pill Bottom Navigation Bar (Pixel-perfect to mockups) -->
+    <FrameLayout
+        android:id="@+id/floating_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_nav_height"
+        android:layout_marginStart="@dimen/bottom_nav_margin_horizontal"
+        android:layout_marginEnd="@dimen/bottom_nav_margin_horizontal"
+        android:layout_marginBottom="@dimen/bottom_nav_margin_bottom"
+        android:background="@drawable/bg_floating_bottom_nav"
+        android:elevation="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- Tab 1: Home -->
+            <FrameLayout
+                android:id="@+id/tab_home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
+
+                <View
+                    android:id="@+id/indicator_home"
+                    android:layout_width="48dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_nav_active_pill" />
+
+                <ImageView
+                    android:id="@+id/icon_home"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_nav_home"
+                    app:tint="@color/color_accent"
+                    android:contentDescription="Trang chủ" />
+            </FrameLayout>
+
+            <!-- Tab 2: Stats -->
+            <FrameLayout
+                android:id="@+id/tab_stats"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
+
+                <View
+                    android:id="@+id/indicator_stats"
+                    android:layout_width="48dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_nav_active_pill"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/icon_stats"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_nav_stats"
+                    app:tint="@color/white"
+                    android:contentDescription="Thống kê" />
+            </FrameLayout>
+
+            <!-- Tab 3: Wallets / Accounts -->
+            <FrameLayout
+                android:id="@+id/tab_wallets"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
+
+                <View
+                    android:id="@+id/indicator_wallets"
+                    android:layout_width="48dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_nav_active_pill"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/icon_wallets"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_nav_wallets"
+                    app:tint="@color/white"
+                    android:contentDescription="Tài khoản" />
+            </FrameLayout>
+
+            <!-- Tab 4: Budget -->
+            <FrameLayout
+                android:id="@+id/tab_budget"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
+
+                <View
+                    android:id="@+id/indicator_budget"
+                    android:layout_width="48dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_nav_active_pill"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/icon_budget"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_nav_budget"
+                    app:tint="@color/white"
+                    android:contentDescription="Ngân sách" />
+            </FrameLayout>
+
+            <!-- Tab 5: Profile -->
+            <FrameLayout
+                android:id="@+id/tab_profile"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless">
+
+                <View
+                    android:id="@+id/indicator_profile"
+                    android:layout_width="48dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_nav_active_pill"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/icon_profile"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_nav_profile"
+                    app:tint="@color/white"
+                    android:contentDescription="Cá nhân" />
+            </FrameLayout>
+
+        </LinearLayout>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
