@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -71,6 +72,17 @@ public class StatsFragment extends Fragment {
     private TextView tvExpenseAmount;
     private TextView tvIncomeAmount;
     private TextView tvBalance;
+
+    // Filter Vi: Tat ca, Wallet, Bank
+    private View statsFilterAll;
+    private View statsFilterWallet;
+    private View statsFilterBank;
+    private TextView statsTvFilterAll;
+    private TextView statsTvFilterWallet;
+    private TextView statsTvFilterBank;
+    private ImageView statsIvFilterAll;
+    private ImageView statsIvFilterWallet;
+    private ImageView statsIvFilterBank;
 
     // Bieu do 6 thang (4C-1)
     private BarChart trendChart;
@@ -156,6 +168,16 @@ public class StatsFragment extends Fragment {
         tvIncomeAmount = view.findViewById(R.id.stats_tv_income_amount);
         tvBalance = view.findViewById(R.id.stats_tv_balance);
 
+        statsFilterAll = view.findViewById(R.id.stats_filter_all);
+        statsFilterWallet = view.findViewById(R.id.stats_filter_wallet);
+        statsFilterBank = view.findViewById(R.id.stats_filter_bank);
+        statsTvFilterAll = view.findViewById(R.id.stats_tv_filter_all);
+        statsTvFilterWallet = view.findViewById(R.id.stats_tv_filter_wallet);
+        statsTvFilterBank = view.findViewById(R.id.stats_tv_filter_bank);
+        statsIvFilterAll = view.findViewById(R.id.stats_iv_filter_all);
+        statsIvFilterWallet = view.findViewById(R.id.stats_iv_filter_wallet);
+        statsIvFilterBank = view.findViewById(R.id.stats_iv_filter_bank);
+
         adapter = new CategoryStatAdapter();
         rvCategories.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvCategories.setAdapter(adapter);
@@ -224,6 +246,16 @@ public class StatsFragment extends Fragment {
             cardIncome.setOnClickListener(v -> viewModel.setType(StatsSummary.TYPE_INCOME));
         }
 
+        if (statsFilterAll != null) {
+            statsFilterAll.setOnClickListener(v -> viewModel.setWalletFilter(StatsViewModel.FILTER_ALL));
+        }
+        if (statsFilterWallet != null) {
+            statsFilterWallet.setOnClickListener(v -> viewModel.setWalletFilter(StatsViewModel.FILTER_WALLET));
+        }
+        if (statsFilterBank != null) {
+            statsFilterBank.setOnClickListener(v -> viewModel.setWalletFilter(StatsViewModel.FILTER_BANK));
+        }
+
         if (toggleType != null) {
             toggleType.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
                 if (!isChecked) return;
@@ -246,6 +278,11 @@ public class StatsFragment extends Fragment {
         });
 
         viewModel.getType().observe(getViewLifecycleOwner(), this::updateTypeToggle);
+
+        viewModel.getWalletFilter().observe(getViewLifecycleOwner(), filter -> {
+            int f = filter != null ? filter : StatsViewModel.FILTER_ALL;
+            updateFilterPills(f);
+        });
 
         viewModel.getSummary().observe(getViewLifecycleOwner(), s -> render());
         viewModel.getLoading().observe(getViewLifecycleOwner(), l -> render());
@@ -308,6 +345,36 @@ public class StatsFragment extends Fragment {
                 toggleType.check(checkedId);
             }
         }
+    }
+
+    private void updateFilterPills(int filter) {
+        setFilterPillState(statsFilterAll, statsIvFilterAll, statsTvFilterAll, filter == StatsViewModel.FILTER_ALL);
+        setFilterPillState(statsFilterWallet, statsIvFilterWallet, statsTvFilterWallet, filter == StatsViewModel.FILTER_WALLET);
+        setFilterPillState(statsFilterBank, statsIvFilterBank, statsTvFilterBank, filter == StatsViewModel.FILTER_BANK);
+    }
+
+    private void setFilterPillState(View container, ImageView icon, TextView text, boolean isActive) {
+        if (container == null || text == null || !isAdded()) return;
+        int padH = (int) (14 * getResources().getDisplayMetrics().density + 0.5f);
+        int white = ContextCompat.getColor(requireContext(), R.color.white);
+        int textSec = ContextCompat.getColor(requireContext(), R.color.text_secondary);
+
+        if (isActive) {
+            container.setBackgroundResource(R.drawable.bg_filter_pill_active);
+            text.setTextColor(white);
+            text.setTypeface(null, android.graphics.Typeface.BOLD);
+            if (icon != null) {
+                icon.setImageTintList(ColorStateList.valueOf(white));
+            }
+        } else {
+            container.setBackgroundResource(R.drawable.bg_filter_pill_inactive);
+            text.setTextColor(textSec);
+            text.setTypeface(null, android.graphics.Typeface.NORMAL);
+            if (icon != null) {
+                icon.setImageTintList(ColorStateList.valueOf(textSec));
+            }
+        }
+        container.setPadding(padH, 0, padH, 0);
     }
 
     private void styleToggleButton(MaterialButton button, boolean selected, int selectedColor,

@@ -95,6 +95,9 @@
                 android:layout_height="44dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:background="@drawable/bg_circle_button">
 
                 <ImageView
@@ -114,49 +117,50 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp">
 
-            <!-- Segmented Toggle Group -->
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/toggle_view_mode"
+            <!-- Segmented Pill Toggle (Ngày | Tháng) - Matching Floating Nav Bar Style -->
+            <LinearLayout
+                android:id="@+id/toggle_view_mode_container"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                app:checkedButton="@id/btn_mode_calendar"
-                app:selectionRequired="true"
-                app:singleSelection="true">
+                android:background="@drawable/bg_floating_bottom_nav"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="3dp">
 
-                <com.google.android.material.button.MaterialButton
+                <TextView
                     android:id="@+id/btn_mode_grid"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:minWidth="64dp"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="18dp"
                     android:text="Ngày"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp"
-                    app:backgroundTint="@color/transparent"
-                    app:cornerRadius="@dimen/corner_radius_pill"
-                    app:strokeColor="@color/border_subtle"
-                    app:strokeWidth="1dp" />
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless" />
 
-                <com.google.android.material.button.MaterialButton
+                <TextView
                     android:id="@+id/btn_mode_calendar"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:minWidth="72dp"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_nav_active_pill"
+                    android:gravity="center"
+                    android:minWidth="76dp"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="18dp"
                     android:text="Tháng ⊞"
                     android:textColor="@color/white"
                     android:textSize="13sp"
-                    app:backgroundTint="@color/bg_card_elevated"
-                    app:cornerRadius="@dimen/corner_radius_pill"
-                    app:strokeColor="@color/border_subtle"
-                    app:strokeWidth="1dp" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless" />
+            </LinearLayout>
 
             <!-- Right Circular Action Buttons -->
             <LinearLayout
@@ -187,16 +191,6 @@
                     app:tint="@color/text_secondary"
                     android:contentDescription="Ẩn hiện số dư" />
 
-                <!-- Mode / Lightning button -->
-                <ImageButton
-                    android:id="@+id/btn_toggle_mode"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_circle_button"
-                    android:src="@drawable/ic_lightning_24"
-                    app:tint="@color/color_accent"
-                    android:contentDescription="Chế độ nhanh" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -237,15 +231,6 @@
                             android:layout_gravity="center"
                             android:src="@drawable/ic_arrow_up_right" />
                     </FrameLayout>
-
-                    <!-- Eye indicator on right -->
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignTop="@id/icon_circle_expense"
-                        android:src="@drawable/ic_eye_24"
-                        app:tint="@color/text_tertiary" />
 
                     <!-- Amount & Label -->
                     <LinearLayout
@@ -305,15 +290,6 @@
                             android:src="@drawable/ic_arrow_down_left" />
                     </FrameLayout>
 
-                    <!-- Eye indicator on right -->
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignTop="@id/icon_circle_income"
-                        android:src="@drawable/ic_eye_24"
-                        app:tint="@color/text_tertiary" />
-
                     <!-- Amount & Label -->
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -362,6 +338,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
                     android:background="@drawable/bg_filter_pill_active"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
                     android:gravity="center"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
@@ -377,6 +356,9 @@
                     android:layout_height="36dp"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/bg_filter_pill_inactive"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
                     android:gravity="center"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
@@ -391,6 +373,9 @@
                     android:layout_height="36dp"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/bg_filter_pill_inactive"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
                     android:gravity="center"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"

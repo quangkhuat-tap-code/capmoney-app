@@ -68,8 +68,12 @@ public class WalletCache {
             }
             final long cachedAt = at != null ? at : 0L;
             mainHandler.post(() -> {
-                cachedAtCb.onResult(cachedAt);
-                cb.onResult(result);
+                if (cachedAtCb != null) {
+                    cachedAtCb.onResult(cachedAt);
+                }
+                if (cb != null) {
+                    cb.onResult(result);
+                }
             });
         });
     }

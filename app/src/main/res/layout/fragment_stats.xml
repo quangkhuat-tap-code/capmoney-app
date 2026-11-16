@@ -21,52 +21,12 @@
             android:paddingStart="@dimen/spacing_medium"
             android:paddingEnd="@dimen/spacing_medium">
 
-            <!-- Top Segmented Control: Tuần | Tháng | Năm -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_segmented_container"
-                android:orientation="horizontal"
-                android:padding="3dp">
-
-                <TextView
-                    android:id="@+id/stats_tab_week"
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="Tuần"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/stats_tab_month"
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/bg_segmented_active"
-                    android:gravity="center"
-                    android:text="Tháng"
-                    android:textColor="@color/white"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/stats_tab_year"
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="Năm"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
             <!-- Thanh chọn tháng: < tháng 10 2026 > -->
             <LinearLayout
                 android:id="@+id/stats_layout_month_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -112,18 +72,23 @@
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
                     android:background="@drawable/bg_filter_pill_active"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp">
 
                     <ImageView
+                        android:id="@+id/stats_iv_filter_all"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@drawable/ic_receipt_24"
                         app:tint="@color/white" />
 
                     <TextView
+                        android:id="@+id/stats_tv_filter_all"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
@@ -139,23 +104,28 @@
                     android:layout_height="36dp"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/bg_filter_pill_inactive"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp">
 
                     <ImageView
+                        android:id="@+id/stats_iv_filter_wallet"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@drawable/ic_receipt_24"
-                        app:tint="@color/white" />
+                        app:tint="@color/text_secondary" />
 
                     <TextView
+                        android:id="@+id/stats_tv_filter_wallet"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:text="Wallet"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
                 </LinearLayout>
 
@@ -165,23 +135,28 @@
                     android:layout_height="36dp"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/bg_filter_pill_inactive"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp">
 
                     <ImageView
+                        android:id="@+id/stats_iv_filter_bank"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@drawable/ic_bank_24"
-                        app:tint="@color/white" />
+                        app:tint="@color/text_secondary" />
 
                     <TextView
+                        android:id="@+id/stats_tv_filter_bank"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:text="Bank"
-                        android:textColor="@color/white"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -348,50 +323,7 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Accordion Card: So sánh theo tháng -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_card_surface_18"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingTop="14dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="14dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="So sánh theo tháng"
-                        android:textColor="@color/white"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Trung bình chi tiêu • 3,333đ"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_chevron_down_24"
-                    app:tint="@color/text_secondary" />
-            </LinearLayout>
-
-            <!-- Sub-tabs: Danh mục | Bản đồ -->
+            <!-- Sub-tabs: Danh mục -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -412,18 +344,6 @@
                     android:textColor="@color/white"
                     android:textSize="13sp"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/stats_subtab_map"
-                    android:layout_width="wrap_content"
-                    android:layout_height="34dp"
-                    android:layout_marginStart="10dp"
-                    android:gravity="center"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp"
-                    android:text="Bản đồ"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
             </LinearLayout>
 
             <!-- Banner offline -->

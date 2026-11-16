@@ -1,6 +1,7 @@
 package com.example.comgroupcapmoney.ui.home;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,6 +86,18 @@ public class TransactionDetailDialog extends BottomSheetDialogFragment {
             btnCloseDetail.setOnClickListener(v -> dismiss());
         }
 
+        View btnDetailAdd = view.findViewById(R.id.btn_detail_add);
+        if (btnDetailAdd != null) {
+            btnDetailAdd.setOnClickListener(v -> {
+                dismiss();
+                Intent intent = new Intent(requireContext(), CaptureExpenseActivity.class);
+                if (tx != null && tx.getDayKey() != null) {
+                    intent.putExtra(CaptureExpenseActivity.EXTRA_PRESELECTED_DATE, tx.getDayKey());
+                }
+                startActivity(intent);
+            });
+        }
+
         View layoutPhotoContainer = view.findViewById(R.id.layout_photo_container);
         ImageView ivDetailPhoto = view.findViewById(R.id.iv_detail_photo);
         TextView tvDetailAmount = view.findViewById(R.id.tv_detail_amount);
@@ -139,6 +152,19 @@ public class TransactionDetailDialog extends BottomSheetDialogFragment {
             dismiss();
             startActivity(CaptureExpenseActivity.editIntent(requireContext(), tx));
         });
+
+        // Add transaction for same day button (bottom)
+        View btnAddTxSameDay = view.findViewById(R.id.btn_add_tx_same_day);
+        if (btnAddTxSameDay != null) {
+            btnAddTxSameDay.setOnClickListener(v -> {
+                dismiss();
+                Intent intent = new Intent(requireContext(), CaptureExpenseActivity.class);
+                if (tx != null && tx.getDayKey() != null) {
+                    intent.putExtra(CaptureExpenseActivity.EXTRA_PRESELECTED_DATE, tx.getDayKey());
+                }
+                startActivity(intent);
+            });
+        }
 
         // Delete button
         btnDeleteTx.setOnClickListener(v -> {

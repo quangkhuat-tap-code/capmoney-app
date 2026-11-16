@@ -68,6 +68,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /** Public overload so Fragments can switch tabs by index. */
+    public void selectTab(int index) {
+        Fragment fragment;
+        switch (index) {
+            case 1:  fragment = new StatsFragment();   break;
+            case 2:  fragment = new WalletsFragment(); break;
+            case 3:  fragment = new BudgetFragment();  break;
+            case 4:  fragment = new ProfileFragment(); break;
+            default: fragment = new HomeFragment();    break;
+        }
+        selectTab(index, fragment);
+    }
+
     private void selectTab(int index, Fragment fragment) {
         currentTab = index;
 

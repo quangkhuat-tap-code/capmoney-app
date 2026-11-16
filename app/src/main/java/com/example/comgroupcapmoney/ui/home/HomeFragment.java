@@ -23,11 +23,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.ui.search.SearchActivity;
+import com.example.comgroupcapmoney.ui.capture.CaptureExpenseActivity;
+import com.example.comgroupcapmoney.ui.main.MainActivity;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
 import com.example.comgroupcapmoney.utils.SharedPrefManager;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -45,9 +45,8 @@ public class HomeFragment extends Fragment {
     private TextView tvMonth;
     private TextView tvTotalExpense;
     private TextView tvTotalIncome;
-    private MaterialButtonToggleGroup toggleViewMode;
-    private MaterialButton btnModeGrid;
-    private MaterialButton btnModeCalendar;
+    private TextView btnModeGrid;
+    private TextView btnModeCalendar;
     private RecyclerView rvPhotoGrid;
     private View layoutCalendar;
     private LinearLayout layoutWeekdays;
@@ -55,8 +54,13 @@ public class HomeFragment extends Fragment {
     private View layoutEmpty;
     private View layoutError;
     private TextView tvErrorMessage;
-    private MaterialButton btnRetry;
+    private View btnRetry;
     private CircularProgressIndicator progressHome;
+    private View layoutAvatar;
+    private View ivAvatar;
+    private TextView pillWalletAll;
+    private TextView pillWalletDefault;
+    private TextView pillWalletBank;
     private boolean isAmountsHidden = false;
 
     private PhotoGridAdapter photoGridAdapter;
@@ -104,7 +108,6 @@ public class HomeFragment extends Fragment {
         tvMonth = view.findViewById(R.id.tv_month);
         tvTotalExpense = view.findViewById(R.id.tv_total_expense);
         tvTotalIncome = view.findViewById(R.id.tv_total_income);
-        toggleViewMode = view.findViewById(R.id.toggle_view_mode);
         btnModeGrid = view.findViewById(R.id.btn_mode_grid);
         btnModeCalendar = view.findViewById(R.id.btn_mode_calendar);
         rvPhotoGrid = view.findViewById(R.id.rv_photo_grid);
@@ -116,6 +119,11 @@ public class HomeFragment extends Fragment {
         tvErrorMessage = view.findViewById(R.id.tv_error_message);
         btnRetry = view.findViewById(R.id.btn_retry);
         progressHome = view.findViewById(R.id.progress_home);
+        layoutAvatar = view.findViewById(R.id.layout_avatar);
+        ivAvatar = view.findViewById(R.id.iv_avatar);
+        pillWalletAll = view.findViewById(R.id.pill_wallet_all);
+        pillWalletDefault = view.findViewById(R.id.pill_wallet_default);
+        pillWalletBank = view.findViewById(R.id.pill_wallet_bank);
     }
 
     private void setupGreeting() {
@@ -163,13 +171,12 @@ public class HomeFragment extends Fragment {
         rvCalendar.setLayoutManager(new GridLayoutManager(requireContext(), 7));
         calendarAdapter = new CalendarAdapter(day -> {
             if (day.getItems().isEmpty()) {
+                Intent intent = new Intent(requireContext(), CaptureExpenseActivity.class);
+                intent.putExtra(CaptureExpenseActivity.EXTRA_PRESELECTED_DATE, day.getDayKey());
+                startActivity(intent);
                 return;
             }
-            if (day.getItems().size() == 1) {
-                TransactionDetailDialog.newInstance(day.getItems().get(0)).show(getChildFragmentManager(), "detail_dialog");
-            } else {
-                DayTransactionsBottomSheet.newInstance(day.getDayKey()).show(getChildFragmentManager(), "day_sheet");
-            }
+            DayTransactionsBottomSheet.newInstance(day.getDayKey()).show(getChildFragmentManager(), "day_sheet");
         });
         rvCalendar.setAdapter(calendarAdapter);
     }
@@ -179,14 +186,20 @@ public class HomeFragment extends Fragment {
         btnNextMonth.setOnClickListener(v -> viewModel.nextMonth());
         tvMonth.setOnClickListener(v -> viewModel.goToCurrentMonth());
 
-        toggleViewMode.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (!isChecked) return;
-            if (checkedId == R.id.btn_mode_grid) {
-                viewModel.setViewMode(HomeViewModel.MODE_GRID);
-            } else if (checkedId == R.id.btn_mode_calendar) {
-                viewModel.setViewMode(HomeViewModel.MODE_CALENDAR);
-            }
-        });
+        // Segmented pill toggle - direct click listeners
+        btnModeGrid.setOnClickListener(v -> viewModel.setViewMode(HomeViewModel.MODE_GRID));
+        btnModeCalendar.setOnClickListener(v -> viewModel.setViewMode(HomeViewModel.MODE_CALENDAR));
+
+        // Wallet Filter pills
+        if (pillWalletAll != null) {
+            pillWalletAll.setOnClickListener(v -> viewModel.setWalletFilter(HomeViewModel.FILTER_ALL));
+        }
+        if (pillWalletDefault != null) {
+            pillWalletDefault.setOnClickListener(v -> viewModel.setWalletFilter(HomeViewModel.FILTER_WALLET));
+        }
+        if (pillWalletBank != null) {
+            pillWalletBank.setOnClickListener(v -> viewModel.setWalletFilter(HomeViewModel.FILTER_BANK));
+        }
 
         btnRetry.setOnClickListener(v -> viewModel.load());
         View btnSearch = requireView().findViewById(R.id.btn_search);
@@ -201,6 +214,23 @@ public class HomeFragment extends Fragment {
                 isAmountsHidden = !isAmountsHidden;
                 updateTotalsDisplay(viewModel.getTotals().getValue());
             });
+        }
+
+        // Avatar / Name click → navigate to Profile tab
+        View.OnClickListener openProfileListener = v -> {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).selectTab(4);
+            }
+        };
+
+        if (layoutAvatar != null) {
+            layoutAvatar.setOnClickListener(openProfileListener);
+        }
+        if (ivAvatar != null) {
+            ivAvatar.setOnClickListener(openProfileListener);
+        }
+        if (tvUserName != null) {
+            tvUserName.setOnClickListener(openProfileListener);
         }
     }
 
@@ -225,20 +255,13 @@ public class HomeFragment extends Fragment {
             boolean isGrid = (mode == HomeViewModel.MODE_GRID);
             rvPhotoGrid.setVisibility(isGrid ? View.VISIBLE : View.GONE);
             layoutCalendar.setVisibility(isGrid ? View.GONE : View.VISIBLE);
-
-            if (isGrid) {
-                btnModeGrid.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-                btnModeGrid.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg_card_elevated));
-                btnModeCalendar.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary));
-                btnModeCalendar.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.transparent));
-            } else {
-                btnModeCalendar.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-                btnModeCalendar.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.bg_card_elevated));
-                btnModeGrid.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary));
-                btnModeGrid.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.transparent));
-            }
-
+            updateModeToggle(isGrid);
             updateEmptyState();
+        });
+
+        viewModel.getWalletFilter().observe(getViewLifecycleOwner(), filter -> {
+            int f = filter != null ? filter : HomeViewModel.FILTER_ALL;
+            updateFilterPills(f);
         });
 
         viewModel.getTransactions().observe(getViewLifecycleOwner(), transactions -> {
@@ -278,6 +301,56 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void updateModeToggle(boolean isGrid) {
+        if (!isAdded()) return;
+
+        int padH = (int) (18 * getResources().getDisplayMetrics().density + 0.5f);
+        int padV = (int) (6 * getResources().getDisplayMetrics().density + 0.5f);
+
+        if (isGrid) {
+            btnModeGrid.setBackgroundResource(R.drawable.bg_nav_active_pill);
+            btnModeGrid.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+            btnModeGrid.setTypeface(null, android.graphics.Typeface.BOLD);
+            btnModeGrid.setPadding(padH, padV, padH, padV);
+
+            btnModeCalendar.setBackground(null);
+            btnModeCalendar.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary));
+            btnModeCalendar.setTypeface(null, android.graphics.Typeface.NORMAL);
+            btnModeCalendar.setPadding(padH, padV, padH, padV);
+        } else {
+            btnModeCalendar.setBackgroundResource(R.drawable.bg_nav_active_pill);
+            btnModeCalendar.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+            btnModeCalendar.setTypeface(null, android.graphics.Typeface.BOLD);
+            btnModeCalendar.setPadding(padH, padV, padH, padV);
+
+            btnModeGrid.setBackground(null);
+            btnModeGrid.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary));
+            btnModeGrid.setTypeface(null, android.graphics.Typeface.NORMAL);
+            btnModeGrid.setPadding(padH, padV, padH, padV);
+        }
+    }
+
+    private void updateFilterPills(int filter) {
+        setPillState(pillWalletAll, filter == HomeViewModel.FILTER_ALL);
+        setPillState(pillWalletDefault, filter == HomeViewModel.FILTER_WALLET);
+        setPillState(pillWalletBank, filter == HomeViewModel.FILTER_BANK);
+    }
+
+    private void setPillState(TextView pill, boolean isActive) {
+        if (pill == null || !isAdded()) return;
+        int padH = (int) (14 * getResources().getDisplayMetrics().density + 0.5f);
+        if (isActive) {
+            pill.setBackgroundResource(R.drawable.bg_filter_pill_active);
+            pill.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+            pill.setTypeface(null, android.graphics.Typeface.BOLD);
+        } else {
+            pill.setBackgroundResource(R.drawable.bg_filter_pill_inactive);
+            pill.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary));
+            pill.setTypeface(null, android.graphics.Typeface.NORMAL);
+        }
+        pill.setPadding(padH, 0, padH, 0);
     }
 
     private void updateTotalsDisplay(double[] totals) {

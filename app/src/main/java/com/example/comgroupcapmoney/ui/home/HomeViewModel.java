@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.data.local.TransactionCache;
+import com.example.comgroupcapmoney.data.local.WalletCache;
+import com.example.comgroupcapmoney.model.Wallet;
 import com.example.comgroupcapmoney.data.local.TransactionEntity;
 import com.example.comgroupcapmoney.data.repository.TransactionRepository;
 import com.example.comgroupcapmoney.model.DeleteTransactionResult;
@@ -16,12 +18,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class HomeViewModel extends AndroidViewModel {
 
     public static final int MODE_GRID = 0;
     public static final int MODE_CALENDAR = 1;
+
+    public static final int FILTER_ALL = 0;
+    public static final int FILTER_WALLET = 1;
+    public static final int FILTER_BANK = 2;
 
     private final TransactionRepository repository;
     private int requestSeq = 0;
@@ -32,6 +39,11 @@ public class HomeViewModel extends AndroidViewModel {
     private final MutableLiveData<Integer> monthLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> yearLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> viewMode = new MutableLiveData<>(MODE_GRID);
+    private final MutableLiveData<Integer> walletFilter = new MutableLiveData<>(FILTER_ALL);
+    private int currentFilter = FILTER_ALL;
+    private List<Transaction> allTransactions = new ArrayList<>();
+    private final Map<Integer, String> walletTypes = new HashMap<>();
+
     private final MutableLiveData<List<Transaction>> transactions = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<double[]> totals = new MutableLiveData<>(new double[]{0.0, 0.0});
     private final MutableLiveData<List<CalendarDay>> calendarDays = new MutableLiveData<>(new ArrayList<>());
@@ -54,12 +66,14 @@ public class HomeViewModel extends AndroidViewModel {
         monthLiveData.setValue(month);
         yearLiveData.setValue(year);
 
+        loadWalletTypes();
         load();
     }
 
     public LiveData<Integer> getMonth() { return monthLiveData; }
     public LiveData<Integer> getYear() { return yearLiveData; }
     public LiveData<Integer> getViewMode() { return viewMode; }
+    public LiveData<Integer> getWalletFilter() { return walletFilter; }
     public LiveData<List<Transaction>> getTransactions() { return transactions; }
     public LiveData<double[]> getTotals() { return totals; }
     public LiveData<List<CalendarDay>> getCalendarDays() { return calendarDays; }
@@ -70,6 +84,75 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void setViewMode(int mode) {
         viewMode.setValue(mode);
+    }
+
+    public void setWalletFilter(int filter) {
+        if (currentFilter == filter) return;
+        currentFilter = filter;
+        walletFilter.setValue(filter);
+        applyFilter();
+    }
+
+    public void loadWalletTypes() {
+        WalletCache walletCache = new WalletCache(getApplication());
+        walletCache.getWallets(wallets -> {
+            if (wallets != null) {
+                for (Wallet w : wallets) {
+                    if (w != null) {
+                        walletTypes.put(w.getId(), w.getType());
+                    }
+                }
+            }
+            applyFilter();
+        }, cachedAt -> {});
+    }
+
+    private void applyFilter() {
+        List<Transaction> filtered = new ArrayList<>();
+        for (Transaction tx : allTransactions) {
+            if (matchesFilter(tx, currentFilter)) {
+                filtered.add(tx);
+            }
+        }
+        transactions.setValue(filtered);
+        calculateTotalsAndCalendar(filtered);
+    }
+
+    private boolean matchesFilter(Transaction tx, int filter) {
+        if (filter == FILTER_ALL) {
+            return true;
+        }
+        String type = walletTypes.get(tx.getWalletId());
+        String name = tx.getWalletName();
+        String lowerName = name != null ? name.toLowerCase(Locale.getDefault()) : "";
+
+        if (filter == FILTER_WALLET) {
+            // Ví / Tiền mặt
+            if ("cash".equalsIgnoreCase(type)) {
+                return true;
+            }
+            if (lowerName.contains("wallet") || lowerName.contains("ví") || lowerName.contains("vi")
+                    || lowerName.contains("tiền mặt") || lowerName.contains("tien mat") || lowerName.contains("cash")) {
+                return true;
+            }
+            // Mặc định nếu không phải ngân hàng/chuyển khoản thì thuộc ví tiền mặt
+            if (!"bank".equalsIgnoreCase(type) && !lowerName.contains("bank")
+                    && !lowerName.contains("ngân hàng") && !lowerName.contains("chuyển khoản") && !lowerName.contains("ck")) {
+                return true;
+            }
+            return false;
+        } else if (filter == FILTER_BANK) {
+            // Ngân hàng / Chuyển khoản
+            if ("bank".equalsIgnoreCase(type)) {
+                return true;
+            }
+            if (lowerName.contains("bank") || lowerName.contains("ngân hàng") || lowerName.contains("ngan hang")
+                    || lowerName.contains("chuyển khoản") || lowerName.contains("chuyen khoan") || lowerName.contains("ck")) {
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 
     public boolean isCurrentMonth() {
@@ -130,10 +213,10 @@ public class HomeViewModel extends AndroidViewModel {
                 offlineCachedAt.setValue(null);
 
                 List<Transaction> list = data != null ? data : new ArrayList<>();
-                transactions.setValue(list);
+                allTransactions = list;
                 cache.saveMonth(m, y, list);
 
-                calculateTotalsAndCalendar(list);
+                applyFilter();
             }
 
             @Override
@@ -156,10 +239,10 @@ public class HomeViewModel extends AndroidViewModel {
             if (cachedAt == null || cachedAt == 0L) {
                 // Thang nay chua tung tai luc co mang: bo du lieu thang cu, hien loi + Thu lai
                 List<Transaction> empty = new ArrayList<>();
+                allTransactions = empty;
                 loading.setValue(false);
                 offlineCachedAt.setValue(null);
-                transactions.setValue(empty);
-                calculateTotalsAndCalendar(empty);
+                applyFilter();
                 error.setValue(networkMessage);
                 return;
             }
@@ -169,11 +252,11 @@ public class HomeViewModel extends AndroidViewModel {
                 for (TransactionEntity e : items) {
                     list.add(e.toTransaction());
                 }
+                allTransactions = list;
                 loading.setValue(false);
                 error.setValue(null);
                 offlineCachedAt.setValue(cachedAt);
-                transactions.setValue(list);
-                calculateTotalsAndCalendar(list);
+                applyFilter();
             });
         });
     }
@@ -192,21 +275,19 @@ public class HomeViewModel extends AndroidViewModel {
         repository.deleteTransaction(id, new TransactionRepository.ResultCallback<DeleteTransactionResult>() {
             @Override
             public void onSuccess(DeleteTransactionResult result) {
-                List<Transaction> current = transactions.getValue();
-                if (current != null) {
+                if (allTransactions != null) {
                     List<Transaction> updated = new ArrayList<>();
-                    for (Transaction tx : current) {
+                    for (Transaction tx : allTransactions) {
                         if (tx.getId() != id) {
                             updated.add(tx);
                         }
                     }
-                    // Xoa tu man tim kiem (4A-2): giao dich co the khong thuoc thang dang xem, khong ghi de cache
-                    if (updated.size() == current.size()) {
+                    if (updated.size() == allTransactions.size()) {
                         event.setValue(new SingleEvent<>(getApplication().getString(R.string.home_deleted)));
                         return;
                     }
-                    transactions.setValue(updated);
-                    calculateTotalsAndCalendar(updated);
+                    allTransactions = updated;
+                    applyFilter();
                     cache.saveMonth(month, year, updated);
                 }
                 event.setValue(new SingleEvent<>(getApplication().getString(R.string.home_deleted)));

@@ -19,74 +19,6 @@
             android:paddingStart="@dimen/spacing_medium"
             android:paddingEnd="@dimen/spacing_medium">
 
-            <!-- Top Segmented Tabs: 💳 Tài khoản | 💵 Khoản vay | 📈 Đầu tư -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_segmented_container"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="3dp">
-
-                <LinearLayout
-                    android:id="@+id/wallet_tab_accounts"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_segmented_active"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_nav_wallets"
-                        app:tint="@color/white" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:text="Tài khoản"
-                        android:textColor="@color/white"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/wallet_tab_loans"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="💵 Khoản vay"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/wallet_tab_investments"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📈 Đầu tư"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp" />
-                </LinearLayout>
-            </LinearLayout>
-
             <LinearLayout
                 android:id="@+id/wallet_layout_content"
                 android:layout_width="match_parent"
@@ -98,7 +30,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="12dp"
                     android:background="@drawable/bg_card_surface_24"
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
@@ -107,48 +39,22 @@
                     android:paddingEnd="16dp"
                     android:paddingBottom="16dp">
 
-                    <!-- Bộ lọc thời gian: Tháng này | Năm nay | Tất cả -->
-                    <LinearLayout
+                    <!-- Bộ lọc thời gian: Tháng này -->
+                    <TextView
+                        android:id="@+id/wallet_btn_current_month"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:background="@drawable/bg_filter_pill_active"
-                            android:gravity="center"
-                            android:paddingStart="14dp"
-                            android:paddingEnd="14dp"
-                            android:text="Tháng này"
-                            android:textColor="@color/white"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:layout_marginStart="8dp"
-                            android:background="@drawable/bg_filter_pill_inactive"
-                            android:gravity="center"
-                            android:paddingStart="14dp"
-                            android:paddingEnd="14dp"
-                            android:text="Năm nay"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:layout_marginStart="8dp"
-                            android:background="@drawable/bg_filter_pill_inactive"
-                            android:gravity="center"
-                            android:paddingStart="14dp"
-                            android:paddingEnd="14dp"
-                            android:text="Tất cả"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
-                    </LinearLayout>
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_filter_pill_active"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:gravity="center"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="Tháng này"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
                     <!-- Chọn tháng: < tháng 10 2026 > -->
                     <LinearLayout
@@ -159,6 +65,7 @@
                         android:orientation="horizontal">
 
                         <ImageButton
+                            android:id="@+id/wallet_btn_prev_month"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:background="@drawable/bg_circle_button"
@@ -172,12 +79,12 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginEnd="16dp"
-                            android:text="tháng 10 2026"
                             android:textColor="@color/white"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
                         <ImageButton
+                            android:id="@+id/wallet_btn_next_month"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:background="@drawable/bg_circle_button"
@@ -427,37 +334,11 @@
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
-                    <!-- Pill Sắp xếp -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:background="@drawable/bg_filter_pill_inactive"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp">
-
-                        <ImageView
-                            android:layout_width="14dp"
-                            android:layout_height="14dp"
-                            android:src="@drawable/ic_sort_16"
-                            app:tint="@color/color_accent" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:text="Sắp xếp"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
                     <!-- Pill Lịch sử chuyển tiền -->
                     <LinearLayout
                         android:id="@+id/wallet_btn_history"
                         android:layout_width="wrap_content"
                         android:layout_height="32dp"
-                        android:layout_marginStart="8dp"
                         android:background="@drawable/bg_filter_pill_inactive"
                         android:clickable="true"
                         android:focusable="true"
@@ -499,24 +380,12 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:text="Sổ tiết kiệm ⌄"
                         android:textColor="@color/white"
                         android:textSize="17sp"
                         android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:background="@drawable/bg_filter_pill_inactive"
-                        android:gravity="center"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:text="+ Thêm sổ"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
                 </LinearLayout>
 
                 <!-- Khung Sổ tiết kiệm rỗng -->
