@@ -1,5 +1,6 @@
 package com.example.comgroupcapmoney.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.model.Transaction;
+import com.example.comgroupcapmoney.ui.capture.CaptureExpenseActivity;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
 import com.example.comgroupcapmoney.utils.DateUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -73,6 +75,16 @@ public class DayTransactionsBottomSheet extends BottomSheetDialogFragment {
             TransactionDetailDialog.newInstance(tx).show(getParentFragmentManager(), "detail_dialog");
         });
         rvDayTransactions.setAdapter(adapter);
+
+        View btnAdd = view.findViewById(R.id.btn_day_sheet_add);
+        if (btnAdd != null) {
+            btnAdd.setOnClickListener(v -> {
+                dismiss();
+                Intent intent = new Intent(requireContext(), CaptureExpenseActivity.class);
+                intent.putExtra(CaptureExpenseActivity.EXTRA_PRESELECTED_DATE, dayKey);
+                startActivity(intent);
+            });
+        }
 
         viewModel.getTransactions().observe(getViewLifecycleOwner(), allList -> {
             List<Transaction> dayList = new ArrayList<>();

@@ -7,15 +7,25 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.comgroupcapmoney.R;
 import com.example.comgroupcapmoney.data.local.TransactionCache;
+import com.example.comgroupcapmoney.data.local.TransactionEntity;
+import com.example.comgroupcapmoney.data.local.WalletCache;
 import com.example.comgroupcapmoney.data.repository.StatsRepository;
 import com.example.comgroupcapmoney.model.StatsSummary;
 import com.example.comgroupcapmoney.model.Transaction;
 import com.example.comgroupcapmoney.model.TrendPoint;
+import com.example.comgroupcapmoney.model.Wallet;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class StatsViewModel extends AndroidViewModel {
+
+    public static final int FILTER_ALL = 0;
+    public static final int FILTER_WALLET = 1;
+    public static final int FILTER_BANK = 2;
 
     private final StatsRepository repository;
     private final TransactionCache cache;
@@ -23,6 +33,11 @@ public class StatsViewModel extends AndroidViewModel {
     private int month;
     private int year;
     private String type = StatsSummary.TYPE_EXPENSE;
+
+    private final MutableLiveData<Integer> walletFilter = new MutableLiveData<>(FILTER_ALL);
+    private int currentFilter = FILTER_ALL;
+    private List<Transaction> monthTransactions = new ArrayList<>();
+    private final Map<Integer, String> walletTypes = new HashMap<>();
 
     /** Moi lan goi load() tang len; ket qua ve (ca tu API lan tu cache) ma requestId cu thi bo. */
     private int requestId = 0;
@@ -57,10 +72,13 @@ public class StatsViewModel extends AndroidViewModel {
         month = now.get(Calendar.MONTH) + 1;
         year = now.get(Calendar.YEAR);
         period.setValue(new int[]{month, year});
+
+        loadWalletTypes();
     }
 
     public LiveData<int[]> getPeriod() { return period; }
     public LiveData<String> getType() { return typeLiveData; }
+    public LiveData<Integer> getWalletFilter() { return walletFilter; }
     public LiveData<StatsSummary> getSummary() { return summary; }
     public LiveData<Boolean> getLoading() { return loading; }
     public LiveData<String> getError() { return error; }
@@ -97,17 +115,77 @@ public class StatsViewModel extends AndroidViewModel {
         onSelectionChanged(true);
     }
 
+    public void setWalletFilter(int filter) {
+        if (currentFilter == filter) return;
+        currentFilter = filter;
+        walletFilter.setValue(filter);
+        applyFilter();
+    }
+
+    public void loadWalletTypes() {
+        WalletCache walletCache = new WalletCache(getApplication());
+        walletCache.getWallets(wallets -> {
+            if (wallets != null) {
+                for (Wallet w : wallets) {
+                    if (w != null) {
+                        walletTypes.put(w.getId(), w.getType());
+                    }
+                }
+            }
+            applyFilter();
+        }, cachedAt -> {});
+    }
+
+    private void applyFilter() {
+        if (monthTransactions == null) return;
+        List<Transaction> filtered = new ArrayList<>();
+        for (Transaction tx : monthTransactions) {
+            if (matchesFilter(tx, currentFilter)) {
+                filtered.add(tx);
+            }
+        }
+        StatsSummary calculated = StatsCalculator.fromTransactions(filtered, month, year, type);
+        showSummary(calculated, offlineCachedAt.getValue());
+    }
+
+    private boolean matchesFilter(Transaction tx, int filter) {
+        if (filter == FILTER_ALL) return true;
+        String wType = walletTypes.get(tx.getWalletId());
+        String name = tx.getWalletName();
+        String lower = name != null ? name.toLowerCase(Locale.getDefault()) : "";
+
+        if (filter == FILTER_WALLET) {
+            if ("cash".equalsIgnoreCase(wType)) return true;
+            if (lower.contains("wallet") || lower.contains("ví") || lower.contains("vi")
+                    || lower.contains("tiền mặt") || lower.contains("tien mat") || lower.contains("cash")) {
+                return true;
+            }
+            if (!"bank".equalsIgnoreCase(wType) && !lower.contains("bank")
+                    && !lower.contains("ngân hàng") && !lower.contains("chuyển khoản") && !lower.contains("ck")) {
+                return true;
+            }
+            return false;
+        } else if (filter == FILTER_BANK) {
+            if ("bank".equalsIgnoreCase(wType)) return true;
+            if (lower.contains("bank") || lower.contains("ngân hàng") || lower.contains("ngan hang")
+                    || lower.contains("chuyển khoản") || lower.contains("chuyen khoan") || lower.contains("ck")) {
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
     public void setType(String newType) {
         if (newType == null || newType.equals(type)) return;
         type = newType;
         typeLiveData.setValue(newType);
-        // Bieu do 6 thang luon co ca Chi va Thu: doi tab khong can tai lai
-        onSelectionChanged(false);
+        // Khi đổi loại Thu/Chi, tính lại summary từ transactions đã có
+        applyFilter();
     }
 
     private void onSelectionChanged(boolean monthChanged) {
         period.setValue(new int[]{month, year});
-        // Bo so lieu cua thang/tab cu de khong hien nham trong luc tai
         summary.setValue(null);
         offlineCachedAt.setValue(null);
         load(monthChanged);
@@ -130,12 +208,13 @@ public class StatsViewModel extends AndroidViewModel {
         loading.setValue(true);
         error.setValue(null);
 
-        repository.getSummary(m, y, t, new StatsRepository.Callback<StatsSummary>() {
+        repository.getTransactions(m, y, new StatsRepository.Callback<List<Transaction>>() {
             @Override
-            public void onSuccess(StatsSummary data) {
+            public void onSuccess(List<Transaction> data) {
                 if (id != requestId) return;
-                showSummary(data != null ? data : new StatsSummary(m, y, t, 0, 0, 0, new ArrayList<>()), null);
-                refreshCache(m, y);
+                monthTransactions = data != null ? data : new ArrayList<>();
+                cache.saveMonth(m, y, monthTransactions);
+                applyFilter();
             }
 
             @Override
@@ -144,7 +223,6 @@ public class StatsViewModel extends AndroidViewModel {
                 if (isNetworkError) {
                     loadFromCache(id, m, y, t);
                 } else {
-                    // 401, 400, 500...: bao loi, khong dung cache
                     showError(message);
                 }
             }
@@ -205,7 +283,13 @@ public class StatsViewModel extends AndroidViewModel {
             }
             cache.getCachedAt(m, y, cachedAt -> {
                 if (id != requestId) return;
-                showSummary(StatsCalculator.fromCache(items, m, y, t), cachedAt);
+                List<Transaction> list = new ArrayList<>();
+                for (TransactionEntity e : items) {
+                    list.add(e.toTransaction());
+                }
+                monthTransactions = list;
+                offlineCachedAt.setValue(cachedAt);
+                applyFilter();
             });
         });
     }

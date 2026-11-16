@@ -50,6 +50,28 @@
                 app:tint="@color/text_secondary" />
         </LinearLayout>
 
+        <!-- Add transaction for this day button (+) -->
+        <FrameLayout
+            android:id="@+id/btn_detail_add"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_toStartOf="@id/btn_close_detail"
+            android:layout_marginEnd="8dp"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/bg_circle_button">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_add_24"
+                app:tint="@color/color_accent"
+                android:contentDescription="Thêm giao dịch ngày này" />
+        </FrameLayout>
+
         <!-- Right Close Button (✕) -->
         <FrameLayout
             android:id="@+id/btn_close_detail"
@@ -214,6 +236,17 @@
             android:layout_weight="1"
             android:text="Xóa giao dịch"
             android:textColor="@color/color_expense"
+            app:cornerRadius="@dimen/corner_radius_pill" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_tx_same_day"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="+ Thêm mới"
+            android:textColor="@color/color_accent"
             app:cornerRadius="@dimen/corner_radius_pill" />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator

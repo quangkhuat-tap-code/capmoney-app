@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -43,6 +45,13 @@ public class WalletsFragment extends Fragment {
     private View btnAdd;
     private View btnTransfer;
     private View btnHistory;
+
+    private ImageButton btnPrevMonth;
+    private ImageButton btnNextMonth;
+    private TextView tvMonthTitle;
+    private TextView btnCurrentMonth;
+    private TextView tvSummaryIncome;
+    private TextView tvSummaryExpense;
 
     // Xoay man hinh: ViewModel da co du lieu thi lan onResume dau tien khong goi lai API
     private boolean skipNextResumeLoad;
@@ -82,6 +91,23 @@ public class WalletsFragment extends Fragment {
         btnTransfer = view.findViewById(R.id.wallet_btn_transfer);
         btnHistory = view.findViewById(R.id.wallet_btn_history);
 
+        btnPrevMonth = view.findViewById(R.id.wallet_btn_prev_month);
+        btnNextMonth = view.findViewById(R.id.wallet_btn_next_month);
+        tvMonthTitle = view.findViewById(R.id.wallet_tv_month_title);
+        btnCurrentMonth = view.findViewById(R.id.wallet_btn_current_month);
+        tvSummaryIncome = view.findViewById(R.id.wallet_tv_summary_income);
+        tvSummaryExpense = view.findViewById(R.id.wallet_tv_summary_expense);
+
+        if (btnPrevMonth != null) {
+            btnPrevMonth.setOnClickListener(v -> viewModel.prevMonth());
+        }
+        if (btnNextMonth != null) {
+            btnNextMonth.setOnClickListener(v -> viewModel.nextMonth());
+        }
+        if (btnCurrentMonth != null) {
+            btnCurrentMonth.setOnClickListener(v -> viewModel.setCurrentMonth());
+        }
+
         btnAdd.setOnClickListener(v -> openAddWallet());
         btnTransfer.setOnClickListener(v -> openTransfer());
         btnHistory.setOnClickListener(v ->
@@ -102,6 +128,50 @@ public class WalletsFragment extends Fragment {
         viewModel.getUnauthorized().observe(getViewLifecycleOwner(), event -> {
             if (event != null && event.getContentIfNotHandled() != null) {
                 SessionManager.logout(requireActivity(), true);
+            }
+        });
+
+        viewModel.getPeriod().observe(getViewLifecycleOwner(), p -> {
+            if (p == null || p.length < 2) return;
+            int m = p[0];
+            int y = p[1];
+            if (tvMonthTitle != null) {
+                tvMonthTitle.setText("tháng " + m + " " + y);
+            }
+            boolean isCurrent = viewModel.isCurrentMonth();
+            if (btnNextMonth != null) {
+                btnNextMonth.setEnabled(!isCurrent);
+                btnNextMonth.setAlpha(isCurrent ? 0.3f : 1.0f);
+            }
+            if (btnCurrentMonth != null) {
+                btnCurrentMonth.setBackgroundResource(isCurrent ? R.drawable.bg_filter_pill_active : R.drawable.bg_filter_pill_inactive);
+                btnCurrentMonth.setTextColor(ContextCompat.getColor(requireContext(), isCurrent ? R.color.white : R.color.text_secondary));
+                int padH = (int) (14 * getResources().getDisplayMetrics().density + 0.5f);
+                btnCurrentMonth.setPadding(padH, 0, padH, 0);
+            }
+        });
+
+        viewModel.getMonthSummary().observe(getViewLifecycleOwner(), summary -> {
+            if (summary == null || summary.length < 3) return;
+            double exp = summary[0];
+            double inc = summary[1];
+            double bal = summary[2];
+
+            if (tvSummaryIncome != null) {
+                tvSummaryIncome.setText(CurrencyUtils.format(inc));
+            }
+            if (tvSummaryExpense != null) {
+                tvSummaryExpense.setText(CurrencyUtils.format(exp));
+            }
+            if (tvTotal != null) {
+                tvTotal.setText(CurrencyUtils.format(bal));
+                if (bal < 0) {
+                    tvTotal.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_expense));
+                } else if (bal > 0) {
+                    tvTotal.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_income));
+                } else {
+                    tvTotal.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+                }
             }
         });
     }
@@ -150,22 +220,12 @@ public class WalletsFragment extends Fragment {
 
         List<Wallet> payment = new ArrayList<>();
         List<Wallet> saving = new ArrayList<>();
-        double total = 0;
         for (Wallet w : wallets) {
-            total += w.getBalance();
             if (w.isSaving()) {
                 saving.add(w);
             } else {
                 payment.add(w);
             }
-        }
-        tvTotal.setText(CurrencyUtils.format(total));
-        if (total < 0) {
-            tvTotal.setTextColor(requireContext().getColor(R.color.color_expense));
-        } else if (total > 0) {
-            tvTotal.setTextColor(requireContext().getColor(R.color.color_income));
-        } else {
-            tvTotal.setTextColor(requireContext().getColor(R.color.white));
         }
         if (tvCount != null) {
             tvCount.setText(getString(R.string.wallet_count, wallets.size()));

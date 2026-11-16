@@ -52,6 +52,7 @@ public class CaptureExpenseActivity extends AppCompatActivity {
 
     private static final String KEY_PENDING_CAPTURE_URI = "pending_capture_uri";
     public static final String EXTRA_EDIT_TX = "edit_tx";
+    public static final String EXTRA_PRESELECTED_DATE = "extra_preselected_date";
 
     public static Intent editIntent(Context context, Transaction tx) {
         Intent intent = new Intent(context, CaptureExpenseActivity.class);
@@ -117,6 +118,23 @@ public class CaptureExpenseActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(CaptureViewModel.class);
         SessionManager.observeExpired(this, this);
+
+        String preselectedDate = getIntent().getStringExtra(EXTRA_PRESELECTED_DATE);
+        if (preselectedDate != null && !preselectedDate.isEmpty() && savedInstanceState == null) {
+            try {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+                java.util.Date parsed = sdf.parse(preselectedDate);
+                if (parsed != null) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(parsed);
+                    Calendar now = Calendar.getInstance();
+                    cal.set(Calendar.HOUR_OF_DAY, now.get(Calendar.HOUR_OF_DAY));
+                    cal.set(Calendar.MINUTE, now.get(Calendar.MINUTE));
+                    cal.set(Calendar.SECOND, 0);
+                    viewModel.setDateTime(cal);
+                }
+            } catch (Exception ignored) {}
+        }
 
         initViews();
         setupCalculatorNumpad();
