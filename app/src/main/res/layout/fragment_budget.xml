@@ -53,22 +53,11 @@
                         android:textSize="13sp" />
                 </LinearLayout>
 
-                <!-- Nút chia sẻ nhóm / bạn bè -->
-                <ImageButton
-                    android:id="@+id/budget_btn_share"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_circle_button"
-                    android:contentDescription="Chia sẻ"
-                    android:src="@drawable/ic_users_group_24"
-                    app:tint="@color/color_accent" />
-
                 <!-- Nút + Xanh dương -->
                 <FrameLayout
                     android:id="@+id/budget_btn_add"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="10dp"
                     android:background="@drawable/bg_circle_button"
                     android:backgroundTint="@color/color_accent"
                     android:clickable="true"
