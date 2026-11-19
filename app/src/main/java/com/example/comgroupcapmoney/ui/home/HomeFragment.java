@@ -132,7 +132,7 @@ public class HomeFragment extends Fragment {
             if (name != null && !name.trim().isEmpty() && !name.equalsIgnoreCase("User")) {
                 tvUserName.setText(name);
             } else {
-                tvUserName.setText("Quang");
+                tvUserName.setText(R.string.home_default_name);
             }
 
             int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);

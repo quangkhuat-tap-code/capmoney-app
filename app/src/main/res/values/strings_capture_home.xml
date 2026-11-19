@@ -59,4 +59,5 @@
         <item>CN</item>
     </string-array>
     <string name="home_offline_banner">Đang xem dữ liệu đã lưu lúc %1$s (không có mạng)</string>
+    <string name="home_default_name">bạn</string>
 </resources>

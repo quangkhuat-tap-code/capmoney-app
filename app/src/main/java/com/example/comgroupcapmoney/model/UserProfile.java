@@ -1,5 +1,6 @@
 package com.example.comgroupcapmoney.model;
 
+import com.example.comgroupcapmoney.data.api.ApiClient;
 import com.google.gson.annotations.SerializedName;
 
 public class UserProfile {
@@ -46,6 +47,14 @@ public class UserProfile {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    // URL day du de Glide tai anh, null = chua co anh (giong Transaction.getFullImageUrl)
+    public String getFullAvatarUrl() {
+        if (avatarUrl == null || avatarUrl.trim().isEmpty()) {
+            return null;
+        }
+        return ApiClient.IMAGE_BASE_URL + avatarUrl;
     }
 
     public String getCreatedAt() {

@@ -150,29 +150,10 @@ public class StatsViewModel extends AndroidViewModel {
 
     private boolean matchesFilter(Transaction tx, int filter) {
         if (filter == FILTER_ALL) return true;
-        String wType = walletTypes.get(tx.getWalletId());
-        String name = tx.getWalletName();
-        String lower = name != null ? name.toLowerCase(Locale.getDefault()) : "";
-
-        if (filter == FILTER_WALLET) {
-            if ("cash".equalsIgnoreCase(wType)) return true;
-            if (lower.contains("wallet") || lower.contains("ví") || lower.contains("vi")
-                    || lower.contains("tiền mặt") || lower.contains("tien mat") || lower.contains("cash")) {
-                return true;
-            }
-            if (!"bank".equalsIgnoreCase(wType) && !lower.contains("bank")
-                    && !lower.contains("ngân hàng") && !lower.contains("chuyển khoản") && !lower.contains("ck")) {
-                return true;
-            }
-            return false;
-        } else if (filter == FILTER_BANK) {
-            if ("bank".equalsIgnoreCase(wType)) return true;
-            if (lower.contains("bank") || lower.contains("ngân hàng") || lower.contains("ngan hang")
-                    || lower.contains("chuyển khoản") || lower.contains("chuyen khoan") || lower.contains("ck")) {
-                return true;
-            }
-            return false;
-        }
+        // Moi vi chi thuoc 1 nhom: Bank (type = bank) hoac Wallet (cash, saving)
+        boolean isBank = Wallet.isBankWallet(walletTypes.get(tx.getWalletId()), tx.getWalletName());
+        if (filter == FILTER_WALLET) return !isBank;
+        if (filter == FILTER_BANK) return isBank;
         return true;
     }
 
@@ -214,6 +195,8 @@ public class StatsViewModel extends AndroidViewModel {
                 if (id != requestId) return;
                 monthTransactions = data != null ? data : new ArrayList<>();
                 cache.saveMonth(m, y, monthTransactions);
+                // Da tai duoc tu server: tat banner "dang xem du lieu da luu"
+                offlineCachedAt.setValue(null);
                 applyFilter();
             }
 

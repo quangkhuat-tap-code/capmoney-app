@@ -57,6 +57,21 @@ public class Wallet implements Serializable {
         return "saving".equals(type);
     }
 
+    /**
+     * Ví thuộc nhóm "Bank" ở bộ lọc Home/Thống kê hay không.
+     * Ưu tiên loại ví lưu trên server (type); chỉ khi chưa biết type (chưa mở Tab Tài khoản lần nào)
+     * mới đoán theo tên ví. Các ví còn lại (cash, saving) thuộc nhóm "Wallet".
+     */
+    public static boolean isBankWallet(String type, String walletName) {
+        if (type != null && !type.trim().isEmpty()) {
+            return "bank".equalsIgnoreCase(type);
+        }
+        String n = walletName != null ? walletName.toLowerCase(java.util.Locale.ROOT).trim() : "";
+        return n.contains("bank") || n.contains("ngân hàng") || n.contains("ngan hang")
+                || n.contains("chuyển khoản") || n.contains("chuyen khoan")
+                || n.equals("ck") || n.startsWith("ck ") || n.endsWith(" ck") || n.contains(" ck ");
+    }
+
     public String getTypeEmoji() {
         if ("cash".equals(type)) {
             return "💵";

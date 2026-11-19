@@ -63,6 +63,8 @@
     <string name="profile_stat_income">Tổng thu</string>
     <string name="profile_stat_expense">Tổng chi</string>
     <string name="profile_member_since">Thành viên từ %1$s</string>
+    <string name="profile_default_name">Bạn</string>
+    <string name="wallet_month_net_label">Chênh lệch thu − chi</string>
     <string name="profile_btn_logout">Đăng xuất</string>
     <string name="profile_logout_confirm_title">Đăng xuất?</string>
     <string name="profile_logout_confirm_msg">Bạn sẽ cần đăng nhập lại để dùng ứng dụng.</string>

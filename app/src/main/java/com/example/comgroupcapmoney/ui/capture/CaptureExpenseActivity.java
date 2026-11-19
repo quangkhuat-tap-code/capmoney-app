@@ -321,6 +321,13 @@ public class CaptureExpenseActivity extends AppCompatActivity {
         layoutPhotoEmpty.setVisibility(View.GONE);
         layoutPhotoInput.setVisibility(View.VISIBLE);
 
+        // Server khong cho doi loai Chi/Thu va API sua khong gui anh moi: khoa 2 thu nay
+        btnToggleChi.setEnabled(false);
+        btnToggleThu.setEnabled(false);
+        boolean isExpense = Transaction.TYPE_EXPENSE.equalsIgnoreCase(tx.getType());
+        (isExpense ? btnToggleThu : btnToggleChi).setAlpha(0.3f);
+        btnChangePhoto.setVisibility(View.GONE);
+
         String imageUrl = tx.getFullImageUrl();
         if (imageUrl != null && !imageUrl.trim().isEmpty()) {
             ivPhoto.setVisibility(View.VISIBLE);
