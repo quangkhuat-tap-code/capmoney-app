@@ -122,35 +122,12 @@ public class HomeViewModel extends AndroidViewModel {
         if (filter == FILTER_ALL) {
             return true;
         }
-        String type = walletTypes.get(tx.getWalletId());
-        String name = tx.getWalletName();
-        String lowerName = name != null ? name.toLowerCase(Locale.getDefault()) : "";
-
+        // Moi vi chi thuoc 1 nhom: Bank (type = bank) hoac Wallet (cash, saving)
+        boolean isBank = Wallet.isBankWallet(walletTypes.get(tx.getWalletId()), tx.getWalletName());
         if (filter == FILTER_WALLET) {
-            // Ví / Tiền mặt
-            if ("cash".equalsIgnoreCase(type)) {
-                return true;
-            }
-            if (lowerName.contains("wallet") || lowerName.contains("ví") || lowerName.contains("vi")
-                    || lowerName.contains("tiền mặt") || lowerName.contains("tien mat") || lowerName.contains("cash")) {
-                return true;
-            }
-            // Mặc định nếu không phải ngân hàng/chuyển khoản thì thuộc ví tiền mặt
-            if (!"bank".equalsIgnoreCase(type) && !lowerName.contains("bank")
-                    && !lowerName.contains("ngân hàng") && !lowerName.contains("chuyển khoản") && !lowerName.contains("ck")) {
-                return true;
-            }
-            return false;
+            return !isBank;
         } else if (filter == FILTER_BANK) {
-            // Ngân hàng / Chuyển khoản
-            if ("bank".equalsIgnoreCase(type)) {
-                return true;
-            }
-            if (lowerName.contains("bank") || lowerName.contains("ngân hàng") || lowerName.contains("ngan hang")
-                    || lowerName.contains("chuyển khoản") || lowerName.contains("chuyen khoan") || lowerName.contains("ck")) {
-                return true;
-            }
-            return false;
+            return isBank;
         }
         return true;
     }

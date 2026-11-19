@@ -25,7 +25,6 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.comgroupcapmoney.R;
-import com.example.comgroupcapmoney.data.api.ApiClient;
 import com.example.comgroupcapmoney.model.UserProfile;
 import com.example.comgroupcapmoney.ui.auth.SessionManager;
 import com.example.comgroupcapmoney.utils.CurrencyUtils;
@@ -156,34 +155,41 @@ public class ProfileFragment extends Fragment {
             // Loi mang (hoac chua tai xong): dung ten luu tren may, so lieu hien "—"
             String name = SharedPrefManager.getInstance(requireContext()).getUserName();
             if (name == null || name.trim().isEmpty()) {
-                name = "Quang";
+                name = getString(R.string.profile_default_name);
             }
             tvAvatar.setText(avatarLetter(name));
             tvName.setText(name);
             tvEmail.setText("");
-            tvMemberSince.setText("📅 Thành viên từ tháng 03, 2026");
+            // Chua tai duoc ngay tao tai khoan thi an badge, khong hien ngay gia
+            tvMemberSince.setVisibility(View.GONE);
             tvTransactions.setText(NO_VALUE);
             tvIncome.setText(NO_VALUE);
             tvExpense.setText(NO_VALUE);
             btnRetry.setVisibility(error != null ? View.VISIBLE : View.GONE);
             // Mat mang nhung da tung tai: giu anh dang hien
-            showAvatar(profile != null ? profile.getAvatarUrl() : shownAvatarUrl);
+            showAvatar(profile != null ? profile.getFullAvatarUrl() : shownAvatarUrl);
             return;
         }
 
         btnRetry.setVisibility(View.GONE);
         tvAvatar.setText(avatarLetter(profile.getFullName()));
-        showAvatar(profile.getAvatarUrl());
+        showAvatar(profile.getFullAvatarUrl());
         tvName.setText(profile.getFullName());
         tvEmail.setText(profile.getEmail());
         String date = toDisplayDate(profile.getCreatedAt());
-        tvMemberSince.setText(date != null ? "📅 " + getString(R.string.profile_member_since, date) : "📅 Thành viên từ tháng 03, 2026");
+        if (date != null) {
+            tvMemberSince.setVisibility(View.VISIBLE);
+            tvMemberSince.setText("📅 " + getString(R.string.profile_member_since, date));
+        } else {
+            tvMemberSince.setVisibility(View.GONE);
+        }
         tvTransactions.setText(String.valueOf(profile.getTotalTransactions()));
         tvIncome.setText(CurrencyUtils.format(profile.getTotalIncome()));
         tvExpense.setText(CurrencyUtils.format(profile.getTotalExpense()));
     }
 
     // Co anh thi chong anh tron len chu cai; khong co anh hoac tai anh loi thi hien chu cai
+    // avatarUrl la URL day du (UserProfile.getFullAvatarUrl)
     private void showAvatar(String avatarUrl) {
         if (avatarUrl == null || avatarUrl.trim().isEmpty()) {
             shownAvatarUrl = null;
@@ -196,7 +202,7 @@ public class ProfileFragment extends Fragment {
         shownAvatarUrl = avatarUrl;
         ivAvatar.setVisibility(View.VISIBLE);
         Glide.with(this)
-                .load(ApiClient.IMAGE_BASE_URL + avatarUrl)
+                .load(avatarUrl)
                 .circleCrop()
                 .listener(new RequestListener<Drawable>() {
                     @Override

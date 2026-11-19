@@ -105,7 +105,7 @@
                     android:textSize="22sp"
                     android:textStyle="bold" />
 
-                <!-- Badge Thành viên từ tháng 03, 2026 -->
+                <!-- Badge "Thành viên từ tháng MM, yyyy": ẩn khi chưa có ngày tạo tài khoản -->
                 <TextView
                     android:id="@+id/profile_tv_member_since"
                     android:layout_width="wrap_content"
